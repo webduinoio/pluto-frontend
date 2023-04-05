@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
+    <script src="../js/mqttapp.js"></script>
+    <script type="module" src="../coms/wa-select-prompt.js"></script>
+    <style>
+        body {
+            margin: 0px;
+        }
+
+        .send {
+            margin: 6px;
+            margin-top: 12px;
+            width: 50px;
+            height: 32px;
+        }
+
+        .title-content {
+            margin: 5px;
+        }
+
+        .txt-content {
+            width: calc(100% - 9px);
+            height: 90px;
+            font-size: 1.1em;
+            margin: 3px;
+            background-color: #ffd;
+        }
+
+        .title-resp {
+            margin: 10px;
+            margin-top: 20px;
+        }
+
+        .txt-response {
+            font-size: 1em;
+            margin: 6px;
+            border: 1px solid;
+            padding: 5px;
+            background-color: #ffd;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="gptbot-content">
+        <wa-select-prompt></wa-select-prompt>
+        <button id='sendBtn' class='send' onclick="send()">Send</button>
+        <div class="title-content">說明功能需求</div>
+        <div class="txt-content">
+            <textarea id="show" class='txt-content' id="messageInput" cols="50"></textarea>
+        </div>
+        <div class="title-resp">GPT助手</div>
+        <div id="resp" class="txt-response">
+        </div>
+    </div>
+    <script>
+        var isCode = false;
+        var genCode = '';
+
+        function fixCode(code) {
+            const hasWbitPub = code.includes('wbit.pub');
+            const hasWbitSub = code.includes('wbit.sub');
+            const hasWbitCheckMsg = code.includes('wbit.checkMsg');
+            const hasWbitWriteSheet = code.includes('wbit.writeSheet');
+            const hasWbitFunctions = hasWbitPub || hasWbitSub || hasWbitWriteSheet || hasWbitCheckMsg;
+            code = code.replaceAll('以下程式', '右邊程式');
+            if (hasWbitFunctions) {
+                code = code.replaceAll('wbit = WebBit()', 'wbit = WebBit()\nwbit.connect()')
+            }
+            return code;
+        }
+
+        function send() {
+            resp.innerHTML = '';
+            sendBtn.disabled = true;
+            app.publish(show.value);
+        }
+
+        function appendToShow(str, isEnd) {
+            try {
+                setCode(str);
+            } catch (e) { }
+            if (!isCode) {
+                var cnt = resp.innerHTML;
+                cnt = cnt + str + "<br>";
+                resp.innerHTML = cnt;
+            }
+            if (isEnd) {
+                var code = parent.editor.getCode();
+                //code = fixCode(code);
+                parent.editor.setCode(code);
+                sendBtn.disabled = false;
+            }
+        }
+        function setCode(code) {
+            if (code.indexOf('```') == 0 && isCode) {
+                isCode = false;
+                genCode = '';
+                return;
+            }
+            if (code.indexOf('```') == 0) {
+                isCode = true;
+                return;
+            }
+            if (!isCode) return;
+            genCode = genCode + code + '\n';
+            parent.editor.setCode(genCode); // 輸出提取結果
+        }
+        const app = new MQTTApp('user_'+Math.random());
+        (async function () {
+            await app.init(appendToShow);
+        })();
+    </script>
+</body>
+
+</html>
