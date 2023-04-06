@@ -110,7 +110,11 @@
             genCode = genCode + code + '\n';
             parent.editor.setCode(genCode); // 輸出提取結果
         }
-        const app = new MQTTApp('user_'+Math.random());
+        var userId = "v2";
+        if (location.hash != '') {
+            userId = location.hash.substring(1);
+        }
+        const app = new MQTTApp(userId + "_" + Math.random());
         (async function () {
             await app.init(appendToShow);
         })();
