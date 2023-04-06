@@ -111,8 +111,8 @@
             parent.editor.setCode(genCode); // 輸出提取結果
         }
         var userId = "v2";
-        if (location.hash != '') {
-            userId = location.hash.substring(1);
+        if (parent.location.hash.length > 1) {
+            userId = parent.location.hash.substring(1);
         }
         const app = new MQTTApp(userId + "_" + Math.random());
         (async function () {
