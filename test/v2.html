@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>bitv2 ESPTool</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="board/webbitv2/js/utilities.js" defer></script>
+    <script src="board/webbitv2/js/esptool.js" defer></script>
+    <script src="board/webbitv2/js/v2.js" defer></script>
+</head>
+
+<body>
+    <div style="padding:10px">
+        <h1>Web:Bit v2 Micropython</h1>
+        <button id="btnPython" type="button">燒錄</button>
+        <br><br>
+        <div>訊息：<span id="msg">尚未連線</span></div>
+        <br>
+        <div class="w3-light-grey" style="width:200px;">
+            <div id="myBar" class="w3-container w3-green" style="padding: 0px;width:0%;display:none">0%</div>
+        </div>
+        <div id='ready2go' style="display:none"><h3>重新插拔 Web:Bit USB 後，點選 [<a href="./index.html#v2">連結</a>] 開始試用</h3></div>
+    </div>
+    <script>
+        function progressShow() {
+            myBar.style.display = '';
+        }
+
+        function progressHide() {
+            myBar.style.display = 'none';
+        }
+
+        function progressSet(n) {
+            var elem = document.getElementById("myBar");
+            elem.style.width = n + '%';
+            elem.innerHTML = n + '%';
+        }
+    </script>
+</body>
+
+</html>
