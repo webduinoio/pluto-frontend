@@ -14,6 +14,7 @@ class MenuTextarea extends LitElement {
         font-size: 1.2em;
         padding: 5px;
         padding-top:0px;
+        width:calc(100% - 10px);
       }
     `;
   }

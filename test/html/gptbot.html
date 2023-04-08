@@ -6,6 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
     <script src="../js/mqttapp.js"></script>
     <script type="module" src="../coms/wa-select-prompt.js"></script>
+    <script type="module" src="../coms/wa-voice.js"></script>
     <style>
         body {
             margin: 0px;
@@ -16,6 +17,11 @@
             margin-top: 12px;
             width: 50px;
             height: 32px;
+        }
+
+        #voice {
+            margin: 6px;
+            margin-top: 12px;
         }
 
         .title-content {
@@ -47,8 +53,9 @@
 
 <body>
     <div id="gptbot-content">
-        <wa-select-prompt></wa-select-prompt>
+        <wa-select-prompt style="width:100%"></wa-select-prompt><br>
         <button id='sendBtn' class='send' onclick="send()">Send</button>
+        <wa-voice id='voice' callback="voiceToTextarea" style="float:left"></wa-voice>
         <div class="title-content">說明功能需求</div>
         <div class="txt-content">
             <textarea id="show" class='txt-content' id="messageInput" cols="50"></textarea>
@@ -57,9 +64,12 @@
         <div id="resp" class="txt-response">
         </div>
     </div>
+
     <script>
         var isCode = false;
         var genCode = '';
+        const textarea = document.getElementById('show');
+        const voice = document.getElementById('voice');
 
         function fixCode(code) {
             const hasWbitPub = code.includes('wbit.pub');
@@ -79,6 +89,14 @@
             sendBtn.disabled = true;
             app.publish(show.value);
         }
+
+        function voiceToTextarea(str) {
+            show.value = str;
+        }
+
+        textarea.addEventListener('keyup', () => {
+            voice.updateResult(textarea.value);
+        });
 
         function appendToShow(str, isEnd) {
             try {
