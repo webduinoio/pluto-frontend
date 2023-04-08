@@ -18,6 +18,24 @@
             margin: 0px;
         }
 
+        .sendBtn-animation {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
         .send {
             margin: 6px;
             margin-top: 12px;
@@ -79,7 +97,7 @@
             <button id='sendBtn' class='send' onclick="send()">送出</button>
             <wa-deploy-bitv2 class='btnStyle' id="deploy"></wa-deploy-bitv2>
         </div>
-        <div class="title-content">說明功能需求</div>
+        <div class="title-content">程式需求</div>
         <div class="txt-content">
             <textarea id="show" class='txt-content' id="messageInput" cols="50"></textarea>
         </div>
@@ -97,6 +115,8 @@
         function send() {
             resp.innerHTML = '';
             sendBtn.disabled = true;
+            sendBtn.style.backgroundColor = '#aac';
+            sendBtn.classList.add('sendBtn-animation');
             app.publish(show.value);
         }
 
@@ -121,6 +141,8 @@
                 var code = parent.editor.getCode();
                 parent.editor.setCode(code);
                 sendBtn.disabled = false;
+                sendBtn.style.backgroundColor = '#2ecc71';
+                sendBtn.classList.remove('sendBtn-animation');
             }
         }
         function setCode(code) {
