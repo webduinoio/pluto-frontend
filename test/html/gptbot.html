@@ -4,9 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
+    <!-- MQTT -->
     <script src="../js/mqttapp.js"></script>
+    <!-- REPL -->
+    <script src="../js/repl.js" type="text/javascript"></script>
+
     <script type="module" src="../coms/wa-select-prompt.js"></script>
     <script type="module" src="../coms/wa-voice.js"></script>
+    <script type="module" src="../coms/wa-deploy-bitv2.js"></script>
+
     <style>
         body {
             margin: 0px;
@@ -15,13 +21,27 @@
         .send {
             margin: 6px;
             margin-top: 12px;
-            width: 50px;
             height: 32px;
+            width: 60px;
+            float: left;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            font-weight: bold;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2ecc71;
+            color: #fff;
+            cursor: pointer;
         }
 
-        #voice {
+        .btnStyle {
             margin: 6px;
             margin-top: 12px;
+            float: left;
         }
 
         .title-content {
@@ -54,8 +74,11 @@
 <body>
     <div id="gptbot-content">
         <wa-select-prompt style="width:100%"></wa-select-prompt><br>
-        <button id='sendBtn' class='send' onclick="send()">Send</button>
-        <wa-voice id='voice' callback="voiceToTextarea" style="float:left"></wa-voice>
+        <div style="display:block;height:46px">
+            <wa-voice id='voice' class='btnStyle' callback="voiceToTextarea" style="float:left"></wa-voice>
+            <button id='sendBtn' class='send' onclick="send()">送出</button>
+            <wa-deploy-bitv2 class='btnStyle' id="deploy"></wa-deploy-bitv2>
+        </div>
         <div class="title-content">說明功能需求</div>
         <div class="txt-content">
             <textarea id="show" class='txt-content' id="messageInput" cols="50"></textarea>
@@ -70,19 +93,6 @@
         var genCode = '';
         const textarea = document.getElementById('show');
         const voice = document.getElementById('voice');
-
-        function fixCode(code) {
-            const hasWbitPub = code.includes('wbit.pub');
-            const hasWbitSub = code.includes('wbit.sub');
-            const hasWbitCheckMsg = code.includes('wbit.checkMsg');
-            const hasWbitWriteSheet = code.includes('wbit.writeSheet');
-            const hasWbitFunctions = hasWbitPub || hasWbitSub || hasWbitWriteSheet || hasWbitCheckMsg;
-            code = code.replaceAll('以下程式', '右邊程式');
-            if (hasWbitFunctions) {
-                code = code.replaceAll('wbit = WebBit()', 'wbit = WebBit()\nwbit.connect()')
-            }
-            return code;
-        }
 
         function send() {
             resp.innerHTML = '';
@@ -109,7 +119,6 @@
             }
             if (isEnd) {
                 var code = parent.editor.getCode();
-                //code = fixCode(code);
                 parent.editor.setCode(code);
                 sendBtn.disabled = false;
             }
