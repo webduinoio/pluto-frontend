@@ -12,54 +12,11 @@
     <script type="module" src="../coms/wa-select-prompt.js"></script>
     <script type="module" src="../coms/wa-voice.js"></script>
     <script type="module" src="../coms/wa-deploy-bitv2.js"></script>
+    <script type="module" src="../coms/wa-gpt-btn.js"></script>
 
     <style>
         body {
             margin: 0px;
-        }
-
-        .sendBtn-animation {
-            animation: shake 0.5s infinite;
-        }
-
-        @keyframes shake {
-            0% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-3px);
-            }
-
-            100% {
-                transform: translateY(0);
-            }
-        }
-
-        .send {
-            margin: 6px;
-            margin-top: 12px;
-            height: 32px;
-            width: 60px;
-            float: left;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1em;
-            font-weight: bold;
-            padding: 5px;
-            border: none;
-            border-radius: 5px;
-            background-color: #2ecc71;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        .btnStyle {
-            margin: 6px;
-            margin-top: 12px;
-            float: left;
         }
 
         .title-content {
@@ -86,6 +43,11 @@
             padding: 5px;
             background-color: #ffd;
         }
+
+        .menuBtn {
+            float: left;
+            margin: 5px;
+        }
     </style>
 </head>
 
@@ -93,9 +55,9 @@
     <div id="gptbot-content">
         <wa-select-prompt style="width:100%"></wa-select-prompt><br>
         <div style="display:block;height:46px">
-            <wa-voice id='voice' class='btnStyle' callback="voiceToTextarea" style="float:left"></wa-voice>
-            <button id='sendBtn' class='send' onclick="send()">送出</button>
-            <wa-deploy-bitv2 class='btnStyle' id="deploy"></wa-deploy-bitv2>
+            <wa-voice id='voice' class='menuBtn' callback="voiceToTextarea"></wa-voice>
+            <wa-gpt-btn id="sendBtn" class='menuBtn' callback="send"></wa-gpt-btn>
+            <wa-deploy-bitv2 id="deploy" class='menuBtn'></wa-deploy-bitv2>
         </div>
         <div class="title-content">程式需求</div>
         <div class="txt-content">
@@ -114,9 +76,6 @@
 
         function send() {
             resp.innerHTML = '';
-            sendBtn.disabled = true;
-            sendBtn.style.backgroundColor = '#aac';
-            sendBtn.classList.add('sendBtn-animation');
             app.publish(show.value);
         }
 
@@ -140,9 +99,7 @@
             if (isEnd) {
                 var code = parent.editor.getCode();
                 parent.editor.setCode(code);
-                sendBtn.disabled = false;
-                sendBtn.style.backgroundColor = '#2ecc71';
-                sendBtn.classList.remove('sendBtn-animation');
+                sendBtn.stopShakeAnimation();
             }
         }
         function setCode(code) {
