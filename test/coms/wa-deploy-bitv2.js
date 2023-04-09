@@ -17,7 +17,7 @@ export class DeployBitV2 extends LitElement {
             justify-content: center;
             font-size: 1em;
             font-weight: bold;
-            padding: 4px;
+            padding: 5px;
             border: none;
             border-radius: 5px;
             background-color: #ee3c71;
@@ -57,7 +57,7 @@ export class DeployBitV2 extends LitElement {
     render() {
         return html`
             <button id='usb' class='btn'>
-            <svg viewBox="-2 0 20 20">
+            <svg viewBox="-2 0 24 24">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
