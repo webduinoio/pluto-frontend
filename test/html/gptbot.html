@@ -13,6 +13,7 @@
     <script type="module" src="../coms/wa-voice.js"></script>
     <script type="module" src="../coms/wa-deploy-bitv2.js"></script>
     <script type="module" src="../coms/wa-gpt-btn.js"></script>
+    <script type="module" src="../coms/wa-gpt-regen.js"></script>
 
     <style>
         body {
@@ -59,7 +60,13 @@
             <wa-gpt-btn id="sendBtn" class='menuBtn' callback="send"></wa-gpt-btn>
             <wa-deploy-bitv2 id="deploy" class='menuBtn'></wa-deploy-bitv2>
         </div>
-        <div class="title-content">程式需求</div>
+        <div class="title-content">
+            <div>程式需求</div>
+            <!--
+            <div style="float:left;margin:2px;margin-right: 10px;">程式需求</div>
+            <wa-gpt-regen id="regen"></wa-gpt-regen>
+            -->
+        </div>
         <div class="txt-content">
             <textarea id="show" class='txt-content' id="messageInput" cols="50"></textarea>
         </div>
