@@ -14,7 +14,16 @@
 
 <body>
     <div style="width:480px;height:600px;background-color:blanchedalmond;">
-        <wa-gpt-bot></wa-gpt-bot>
+        <wa-gpt-bot id="bot"></wa-gpt-bot>
+        <script>
+            setTimeout(function () {
+                bot.start();
+                bot.write("123");
+
+
+
+            }, 1000);
+        </script>
     </div>
 </body>
 

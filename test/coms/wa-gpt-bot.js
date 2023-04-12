@@ -130,7 +130,7 @@ class ChatGPTBot extends LitElement {
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
-  botSay(message) {
+  start() {
     const chatbox = this.shadowRoot.querySelector('#chatbox');
     const div = document.createElement('div');
     div.style.backgroundColor = '#eee';
@@ -138,17 +138,22 @@ class ChatGPTBot extends LitElement {
     div.style.paddingBottom = '10px';
     const icon = document.createElement('img');
     icon.style.float = 'left';
-    icon.src = 'https://avatars.slack-edge.com/2021-03-25/1882974265975_c2814223e012464d1ead_512.png';
+    icon.src = 'https://test.bpi-steam.com/static/image/WebBit_V2_500x.png';
     icon.width = 30;
     icon.height = 30;
     div.appendChild(icon);
     const text = document.createElement('div');
     text.style.paddingLeft = '50px';
     text.style.paddingTop = '10px';
-    text.innerHTML = message;
+    text.innerHTML = '';
+    this.message = text;
     div.appendChild(text);
     chatbox.appendChild(div);
-    // 捲動至底部
+  }
+
+  write(msg) {
+    this.message.innerHTML = msg;
+    const chatbox = this.shadowRoot.querySelector('#chatbox');
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
@@ -160,7 +165,7 @@ class ChatGPTBot extends LitElement {
     textarea.style.height = '44px';
     textarea.style.marginTop = '';
     textarea.focus();
-    this.botSay("好的.");
+    //this.botSay("好的.");
   }
 }
 
