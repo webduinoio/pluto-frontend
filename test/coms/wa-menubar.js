@@ -10,7 +10,7 @@ export class MenuBar extends LitElement {
 
     constructor() {
         super();
-        this.currentMode = 2;
+        this.currentMode = 1;
     }
 
     static styles = [css`

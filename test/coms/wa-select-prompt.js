@@ -26,11 +26,11 @@ class MenuTextarea extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    //fetch('./challenge.json')
     fetch('./gptbot.json')
       .then(response => response.json())
       .then(data => {
         this.options = this.options.concat(data);
-        console.log(this.options);
         this.requestUpdate();
       })
       .catch(error => {
@@ -55,10 +55,8 @@ class MenuTextarea extends LitElement {
 
   _handleSelectChange(event) {
     const selectedValue = decodeURIComponent(event.target.value);
-    const textarea = document.getElementById('show');
-    if (textarea) {
-      textarea.value = selectedValue + '\n';
-    }
+    const gpt = document.getElementById('gpt');
+    gpt.prompt(selectedValue);
   }
 }
 

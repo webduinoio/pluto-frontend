@@ -12,6 +12,8 @@
     <script type="module" src="../coms/wa-select-prompt.js"></script>
     <script type="module" src="../coms/wa-voice.js"></script>
     <script type="module" src="../coms/wa-deploy-bitv2.js"></script>
+    <script type="module" src="../coms/wa-gpt-btn.js"></script>
+    <script type="module" src="../coms/wa-gpt-regen.js"></script>
     <script type="module" src="../coms/wa-gpt-bot.js"></script>
 
     <style>
@@ -19,22 +21,29 @@
             margin: 0px;
         }
 
-        .quiz-panel {
+        .title-content {
             margin: 5px;
-            height: calc(35vh);
         }
 
-        .chat-panel {
-            margin: 5px;
-            height: calc(65vh - 100px);
-            background-color: #eee;
+        .txt-content {
+            width: calc(100% - 9px);
+            height: 90px;
+            font-size: 1.1em;
+            margin: 3px;
+            background-color: #ffd;
         }
 
-        .menuBar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 46px;
+        .title-resp {
+            margin: 10px;
+            margin-top: 20px;
+        }
+
+        .txt-response {
+            font-size: 1em;
+            margin: 6px;
+            border: 1px solid;
+            padding: 5px;
+            background-color: #ffd;
         }
 
         .menuBtn {
@@ -47,16 +56,19 @@
 <body>
     <div id="gptbot-content">
         <wa-select-prompt style="width:100%"></wa-select-prompt><br>
-        <div class="chat-panel">
-            <wa-gpt-bot id="gpt"></wa-gpt-bot>
-            <div class="menuBar">
-                <wa-voice id='voice' class='menuBtn' callback="voiceToTextarea"></wa-voice>
-                <wa-gpt-btn id="sendBtn" class='menuBtn' callback="send"></wa-gpt-btn>
-                <wa-deploy-bitv2 id="deploy" class='menuBtn'></wa-deploy-bitv2>
-            </div>
+        <div style="display:block;height:46px">
+            <wa-voice id='voice' class='menuBtn' callback="voiceToTextarea"></wa-voice>
+            <wa-gpt-btn id="sendBtn" class='menuBtn' callback="send"></wa-gpt-btn>
+            <wa-deploy-bitv2 id="deploy" class='menuBtn'></wa-deploy-bitv2>
         </div>
-        <div class="quiz-panel">
-
+        <div class="title-content">
+            <div>程式需求</div>
+        </div>
+        <div class="txt-content">
+            <textarea id="show" class='txt-content' id="messageInput" cols="50"></textarea>
+        </div>
+        <div class="title-resp">GPT助手</div>
+        <div id="resp" class="txt-response">
         </div>
     </div>
 
@@ -66,26 +78,34 @@
         const textarea = document.getElementById('show');
         const voice = document.getElementById('voice');
 
-        function voiceToTextarea(str) {
-            gpt.prompt(str);
+        function send() {
+            resp.innerHTML = '';
+            app.publish(show.value);
         }
 
-        function appendToShow(msg, isEnd) {
-            if (msg == '') return;
+        function voiceToTextarea(str) {
+            show.value = str;
+        }
+
+        textarea.addEventListener('keyup', () => {
+            voice.updateResult(textarea.value);
+        });
+
+        function appendToShow(str, isEnd) {
             try {
-                setCode(msg);
+                setCode(str);
             } catch (e) { }
             if (!isCode) {
-                var cnt = gpt.read();
-                cnt = cnt + msg + "<br>";
-                gpt.write(cnt);
+                var cnt = resp.innerHTML;
+                cnt = cnt + str + "<br>";
+                resp.innerHTML = cnt;
             }
             if (isEnd) {
                 var code = parent.editor.getCode();
                 parent.editor.setCode(code);
+                sendBtn.stopShakeAnimation();
             }
         }
-
         function setCode(code) {
             if (code.indexOf('```') == 0 && isCode) {
                 isCode = false;
@@ -105,14 +125,9 @@
             userId = parent.location.hash.substring(1);
         }
         const app = new MQTTApp(userId + "_" + Math.random());
-        async function init() {
+        (async function () {
             await app.init(appendToShow);
-            gpt.promptCallback(function (prompt) {
-                console.log("prompt callback:", prompt);
-                app.publish(prompt);
-                gpt.start();
-            });
-        }
+        })();
     </script>
 </body>
 
