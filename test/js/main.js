@@ -60,9 +60,11 @@ class Main {
         // 改成所有元件ready再初始化,不要用 setTimeout
         setTimeout(function () {
             window.Main.editor = editor;
+            window.Main.flow = document.getElementById('flow');
             Container.init({
                 'c1': 'drag1', 'c2': 'drag2', 'c3': 'drag3'
             });
+            window.Main.flow.output('');
         }, 100);
     }
     ready(name, obj) {

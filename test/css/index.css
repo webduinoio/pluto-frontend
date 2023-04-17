@@ -21,14 +21,20 @@ body {
     margin: -1px 0 0 0;
 }
 
+#right-01 {
+    float: left;
+    margin: 5px 0 0 0;
+}
+
+#right-02 {
+    float: left;
+    margin: 0 0 0 0;
+}
+
 .CodeMirror {
     font-family: Arial, monospace;
     font-size: 20px;
 }
-
-
-
-
 
 .container {
     position: relative;
