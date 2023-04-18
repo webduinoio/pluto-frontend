@@ -2,33 +2,43 @@ import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/al
 
 class WAFlowchart extends LitElement {
 
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 
-    static get styles() {
-        return css`
+  static get styles() {
+    return css`
           :host {
             --my-element-margin: 0px;
             margin: var(--my-element-margin);
           }
         `;
-      }
+  }
 
-    firstUpdated() {
-        this.ele = this.parentElement;
-    }
+  firstUpdated() {
+    this.ele = this.shadowRoot;
+  }
 
-    render() {
-        return html``;
-    }
+  render() {
+    return html`<h1 style="color:#ccc">流程圖</h1>`;
+  }
 
-    output(strDigraph) {
-        this.graph = strDigraph;
-        var imgEle = Viz(this.graph, { format: 'png-image-element', engine: 'dot' });
-        this.ele.removeChild(this.ele.firstChild);
-        this.ele.appendChild(imgEle);
+  clear() {
+    while (this.ele.firstChild) {
+      this.ele.removeChild(this.ele.firstChild);
     }
+  }
+
+  setCode(code) {
+    try {
+      this.graph = code;
+      var imgEle = Viz(this.graph, { format: 'png-image-element', engine: 'dot' });
+      this.clear();
+      this.ele.appendChild(imgEle);
+    } catch (e) {
+      //console.log("flow:", e);
+    }
+  }
 }
 
 customElements.define('wa-flow', WAFlowchart);

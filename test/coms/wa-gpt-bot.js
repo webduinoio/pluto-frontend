@@ -32,7 +32,7 @@ class ChatGPTBot extends LitElement {
         position: absolute;
         height: 20px;
         right: 10px;
-        bottom: 17px;
+        bottom: 15px;
       }
       ::placeholder {
         color: #ccc;

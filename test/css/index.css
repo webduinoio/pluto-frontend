@@ -23,7 +23,11 @@ body {
 
 #right-01 {
     float: left;
-    margin: 5px 0 0 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center; /* 將子元素水平置中 */
+    align-items: center; /* 將子元素垂直置中 */    
+    overflow: auto; /* 添加捲軸，只在內容超過容器大小時顯示 */
 }
 
 #right-02 {

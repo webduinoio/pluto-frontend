@@ -63,7 +63,7 @@ class MQTTApp {
     // MQTT message received handler 
     onMessageArrived(message) {
         const topic = message.destinationName;
-        console.log("topic:", topic);
+        //console.log("topic:", topic);
         const payload = message.payloadString;
         //console.log(`Received message: ${payload} on topic: ${topic}`);
         if (this.subscriptions[topic] && this.subscriptions[topic].onMessageReceived) {

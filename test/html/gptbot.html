@@ -62,6 +62,8 @@
 
     <script>
         var isCode = false;
+        var codeType = ['python', 'flow'];
+        var _codeType = -1;
         var genCode = '';
         const textarea = document.getElementById('show');
         const voice = document.getElementById('voice');
@@ -80,9 +82,22 @@
                 cnt = cnt + msg + "<br>";
                 gpt.write(cnt);
             }
+            /* enhance code function
             if (isEnd) {
                 var code = parent.editor.getCode();
                 parent.editor.setCode(code);
+            }
+            //*/
+        }
+
+        function setGenCode(code) {
+            switch (_codeType) {
+                case 0: // python
+                    parent.editor.setCode(code);
+                    break;
+                case 1:
+                    parent.flow.setCode(code);
+                    break;
             }
         }
 
@@ -93,13 +108,13 @@
                 return;
             }
             if (code.indexOf('```') == 0) {
-                console.log("========== code block start ==========");
+                _codeType = ++_codeType;
                 isCode = true;
                 return;
             }
             if (!isCode) return;
             genCode = genCode + code + '\n';
-            parent.editor.setCode(genCode); // 輸出提取結果
+            setGenCode(genCode);
         }
         var userId = "v2";
         if (parent.location.hash.length > 1) {
@@ -109,6 +124,8 @@
         async function init() {
             await app.init(appendToShow);
             gpt.promptCallback(function (prompt) {
+                _codeType = -1; // -1:none , 0:python , 1:flow
+                parent.flow.clear();
                 console.log("prompt callback:", prompt);
                 app.publish(prompt);
                 gpt.start();
