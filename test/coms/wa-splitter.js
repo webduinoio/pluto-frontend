@@ -85,7 +85,6 @@ export class Splitter extends LitElement {
         this.leftFrame.style.width = this.startWidth + diffX + "px";
         var calWidth = this.leftFrame.offsetWidth + Splitter.barWidthPx;
         this.rightFrame.style.width = `calc(100% - ${calWidth}px)`;
-        this.overlay.style.width = `${calWidth}px`;
         editor.blockEditor.resized();
     }
 
