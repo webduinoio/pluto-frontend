@@ -51,9 +51,9 @@ export class Splitter extends LitElement {
         self.leftFrame = ele.children[0];
         self.rightFrame = ele.children[2];
         self.leftFrame.style.width = this.left;
-
         var calWidth = self.leftFrame.offsetWidth + Splitter.barWidthPx;
         self.rightFrame.style.width = `calc(100% - ${calWidth}px)`;
+        self.updateWidth(calWidth);
         editor.blockEditor.resized();
 
         splitter.addEventListener("mousedown", (e) => {
@@ -74,9 +74,9 @@ export class Splitter extends LitElement {
         });
         document.addEventListener("mouseup", (e) => {
             isDragging = false;
-            try{
-            self.overlay.parentNode.removeChild(self.overlay);
-            }catch(e){}
+            try {
+                self.overlay.parentNode.removeChild(self.overlay);
+            } catch (e) { }
             self.overlay = null;
         });
     }
