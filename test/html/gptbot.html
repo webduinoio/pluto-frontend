@@ -82,10 +82,12 @@
                 cnt = cnt + msg + "<br>";
                 gpt.write(cnt);
             }
-            /* enhance code function
+            //* enhance code function
             if (isEnd) {
-                var code = parent.editor.getCode();
-                parent.editor.setCode(code);
+                gpt.done();
+                deploy.setEnable(true);
+                //var code = parent.editor.getCode();
+                //parent.editor.setCode(code);
             }
             //*/
         }
@@ -96,7 +98,7 @@
                     parent.editor.setCode(code);
                     break;
                 case 1:
-                    parent.flow.setCode(code);
+                    parent.flow.setCode(code);                    
                     break;
             }
         }
@@ -125,10 +127,11 @@
             await app.init(appendToShow);
             gpt.promptCallback(function (prompt) {
                 _codeType = -1; // -1:none , 0:python , 1:flow
-                parent.flow.clear();
                 console.log("prompt callback:", prompt);
                 app.publish(prompt);
                 gpt.start();
+                deploy.setEnable(false);
+                parent.flow.processing();
             });
         }
     </script>

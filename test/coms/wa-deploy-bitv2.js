@@ -24,6 +24,11 @@ export class DeployBitV2 extends LitElement {
             color: #fff;
             cursor: pointer;
         }
+        button[disabled] {
+            background-color: #eee;
+            color: #aaa;
+            cursor: not-allowed;
+        }
         svg {
             fill: #eee;
             width: 24px;
@@ -40,18 +45,27 @@ export class DeployBitV2 extends LitElement {
     async firstUpdated() {
         let self = this;
         self.repl = new REPL();
-        const usb = this.renderRoot.querySelector("#usb");
-        const msg = this.renderRoot.querySelector("#msg");
-        usb.addEventListener('click', async function (e) {
-            msg.innerHTML = '部署中';
+        self.usbButton = this.renderRoot.querySelector("#usb");
+        self.msg = this.renderRoot.querySelector("#msg");
+        self.usbButton.addEventListener('click', async function (e) {
+            self.msg.innerHTML = '部署中';
             await self.repl.usbConnect();
             var code = parent.editor.getCode();
             var writeLen = await self.repl.uploadFile(code);
-            msg.innerHTML = writeLen > 0 ? '完成' : '失敗';
+            self.msg.innerHTML = writeLen > 0 ? '完成' : '失敗';
             setTimeout(function () {
-                msg.innerHTML = '部署';
+                self.msg.innerHTML = '部署';
             }, 1500);
         });
+    }
+
+    setEnable(enabled) {
+        this.usbButton.disabled = !enabled;
+        if (enabled) {
+            this.usbButton.classList.remove('disabled');
+        } else {
+            this.usbButton.classList.add('disabled');
+        }
     }
 
     render() {
