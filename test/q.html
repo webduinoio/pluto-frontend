@@ -1,0 +1,155 @@
+<html>
+
+<head>
+    <style>
+        /* 定義 div 的樣式 */
+        #container {
+            width: 800px;
+            height: 600px;
+            border: 1px solid black;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 定義圖片的樣式 */
+        #image {
+            width: 320px;
+            height: 240px;
+            position: absolute;
+            left: 25%;
+            top: 25%;
+            cursor: move;
+        }
+
+        /* 定義按鈕的樣式 */
+        #zoom-in,
+        #zoom-out {
+            position: absolute;
+            bottom: 10px;
+            padding: 10px;
+            font-size: 20px;
+            background-color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #zoom-in {
+            right: 60px;
+        }
+
+        #zoom-out {
+            right: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="container">
+        <img id="image" src="https://images.unsplash.com/photo-1535026793569-5a810fda9660" />
+        <button id="zoom-in">+</button>
+        <button id="zoom-out">-</button>
+    </div>
+
+    <script>
+        // 獲取元素 
+        var container = document.getElementById("container");
+        var image = document.getElementById("image");
+        var zoomIn = document.getElementById("zoom-in");
+        var zoomOut = document.getElementById("zoom-out");
+
+        // 定義變量 
+        var isDragging = false; // 是否正在拖動圖片 
+        var startX = 0; // 滑鼠按下時的 x 坐標 
+        var startY = 0; // 滑鼠按下時的 y 坐標 
+        var offsetX = 0; // 圖片相對於 div 的 x 偏移量 
+        var offsetY = 0; // 圖片相對於 div 的 y 偏移量 
+        var scale = 1; // 圖片的縮放比例 
+
+        // 綁定事件 
+        image.addEventListener("mousedown", function (e) {
+            // 滑鼠按下時，開始拖動圖片 
+            isDragging = true;
+            // 記錄滑鼠按下時的坐標 
+            startX = e.clientX;
+            startY = e.clientY;
+            // 計算圖片相對於 div 的偏移量 
+            offsetX = image.offsetLeft - container.offsetLeft;
+            offsetY = image.offsetTop - container.offsetTop;
+        });
+
+        document.addEventListener("mousemove", function (e) {
+            // 滑鼠移動時，如果正在拖動圖片，則更新圖片的位置 
+            if (isDragging) {
+                // 計算滑鼠移動的距離 
+                var dx = e.clientX - startX;
+                var dy = e.clientY - startY;
+                // 設置圖片的 left 和 top 屬性，使其跟隨滑鼠移動 
+                image.style.left = offsetX + dx + "px";
+                image.style.top = offsetY + dy + "px";
+                // 防止圖片超出 div 的範圍 
+                checkBounds();
+            }
+        });
+
+        document.addEventListener("mouseup", function (e) {
+            // 滑鼠放開時，停止拖動圖片 
+            isDragging = false;
+        });
+
+        zoomIn.addEventListener("click", function (e) {
+            // Calculate the image's center point before scaling
+            var centerX = (image.offsetLeft - container.offsetLeft) + image.offsetWidth / 2;
+            var centerY = (image.offsetTop - container.offsetTop) + image.offsetHeight / 2;
+
+            // Increase the scale and update image's width and height
+            scale += 0.1;
+            image.style.width = scale * image.offsetWidth + "px";
+            image.style.height = scale * image.offsetHeight + "px";
+
+            // Update image's left and top attributes to maintain the center point
+            image.style.left = (container.offsetLeft + centerX) - image.offsetWidth / 2 + "px";
+            image.style.top = (container.offsetTop + centerY) - image.offsetHeight / 2 + "px";
+
+            // Check if the image is out of the div's bounds
+            checkBounds();
+        });
+
+        zoomOut.addEventListener("click", function (e) {
+            // Calculate the image's center point before scaling
+            var centerX = (image.offsetLeft - container.offsetLeft) + image.offsetWidth / 2;
+            var centerY = (image.offsetTop - container.offsetTop) + image.offsetHeight / 2;
+
+            // Decrease the scale and update image's width and height
+            scale -= 0.1;
+            image.style.width = scale * image.offsetWidth + "px";
+            image.style.height = scale * image.offsetHeight + "px";
+
+            // Update image's left and top attributes to maintain the center point
+            image.style.left = (container.offsetLeft + centerX) - image.offsetWidth / 2 + "px";
+            image.style.top = (container.offsetTop + centerY) - image.offsetHeight / 2 + "px";
+
+            // Check if the image is out of the div's bounds
+            checkBounds();
+        });
+
+        function checkBounds() {
+            // 如果圖片的左側或上側超出了 div 的範圍，則將其設置為最小的值 
+            if (image.offsetLeft < container.offsetLeft) {
+                image.style.left = container.offsetLeft + "px";
+            }
+            if (image.offsetTop < container.offsetTop) {
+                image.style.top = container.offsetTop + "px";
+            }
+            // 如果圖片的右側或下側超出了 div 的範圍，則將其設置為最大的值 
+            if (image.offsetLeft + image.offsetWidth > container.offsetLeft + container.offsetWidth) {
+                image.style.left = container.offsetLeft + container.offsetWidth - image.offsetWidth + "px";
+            }
+            if (image.offsetTop + image.offsetHeight > container.offsetTop + container.offsetHeight) {
+                image.style.top = container.offsetTop + container.offsetHeight - image.offsetHeight + "px";
+            }
+        } 
+    </script>
+</body>
+
+</html>
