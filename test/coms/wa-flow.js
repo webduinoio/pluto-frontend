@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js'
 
 class WAFlowchart extends LitElement {
+
   static get properties() {
     return {
       scale: { type: Number },
@@ -11,25 +12,32 @@ class WAFlowchart extends LitElement {
       startY: { type: Number },
     };
   }
+
   static get styles() {
     return css`
+        :host {
+          width: 100%;
+          height: 100%;
+        }
         /* Define div styles */
         #container {
-          width: 800px;
-          height: 600px;
-          border: 1px solid black;
+          width: 100%;
+          height: 100%;
           position: relative;
           overflow: hidden;
+
+          display: flex; /* 讓 div 變成彈性容器 */
+          justify-content: center; /* 水平置中 */
+          align-items: center; /* 垂直置中 */
         }
+
          /* Define image styles */
         #image {
-          width: 320px;
-          height: 240px;
           position: absolute;
-          left: 25%;
-          top: 25%;
-          cursor: move;
+          pointer-events: none;
+          user-select: none;
         }
+
          /* Define button styles */
         #zoom-in,
         #zoom-out {
@@ -42,13 +50,14 @@ class WAFlowchart extends LitElement {
           cursor: pointer;
         }
          #zoom-in {
-          right: 60px;
+          right: 50px;
         }
          #zoom-out {
           right: 10px;
         }
       `;
   }
+
   constructor() {
     super();
     this.scale = 1;
@@ -61,32 +70,95 @@ class WAFlowchart extends LitElement {
 
   firstUpdated() {
     this.container = this.shadowRoot.getElementById('container');
-    this.image = this.shadowRoot.getElementById('image');
+    this.image = null;
+    window.ww = this;
+  }
+
+  clearImage() {
+    let oldImage = this.shadowRoot.getElementById('image');
+    if (oldImage != null) {
+      oldImage.parentNode.removeChild(oldImage);
+    }
+  }
+
+  setImage(image) {
+    this.clearImage();
+    this.container.appendChild(image);
+    //image
+    image.id = 'image';
+    var self = this;
+    setTimeout(function () {
+      console.log(image.width, image.height, "!!!!");
+      image.style.left = (self.container.offsetWidth / 2 - image.offsetWidth / 2) + "px";
+      image.style.top = (self.container.offsetHeight / 2 - image.offsetHeight / 2) + "px";
+      self.imageOriginWidth = image.offsetWidth;
+      self.imageOriginHeight = image.offsetHeight;
+      self.image = image;
+    }, 100);
+  }
+
+  processing() {
+    this.clearImage();
+    const h1 = this.shadowRoot.getElementById('loading');
+    h1.style['width'] = '100px';
+    h1.style['font-size'] = '32px';
+    h1.style['color'] = '#ccc';
+    h1.style.display = 'flex';
+    h1.style.justifyContent = 'center';
+    h1.style.alignItems = 'center';
+    const texts = ['.', '..', '...'];
+    let index = 0;
+    this.intervalId = setInterval(() => {
+      h1.textContent = `${texts[index]}`;
+      index = (index + 1) % texts.length;
+    }, 250);
+  }
+
+  done() {
+    clearInterval(this.intervalId);
+    const h1 = this.shadowRoot.getElementById('loading');
+    h1.innerHTML = '流程圖';
   }
 
   render() {
     return html`
-        <div id="container">
-          <img
-            id="image"
-            src="https://images.unsplash.com/photo-1535026793569-5a810fda9660"
-            @mousedown="${this.onMouseDown}"
-            @mousemove="${this.onMouseMove}"
-            @mouseup="${this.onMouseUp}"
-          />
+        <div id="container"
+        @mousedown="${this.onMouseDown}"
+        @mousemove="${this.onMouseMove}"
+        @mouseup="${this.onMouseUp}">
+          <h1 id="loading" style="color:#ccc;user-select: none;">流程圖</h1>
           <button id="zoom-in" @click="${this.zoomIn}">+</button>
           <button id="zoom-out" @click="${this.zoomOut}">-</button>
         </div>
       `;
   }
+
+  setCode(code) {
+    try {
+      this.graph = code;
+      const imgEle = Viz(this.graph, { format: 'png-image-element', engine: 'dot' });
+      this.setImage(imgEle);
+    } catch (e) {
+      console.log("flow:", e);
+    }
+    console.log("-=-=-=-=-=-=-=-=-=-=-\n", code);
+  }
+
   onMouseDown(e) {
+    if (this.image == null) return;
     this.isDragging = true;
     this.startX = e.clientX;
     this.startY = e.clientY;
-    let image = this.image;
-    this.offsetX = image.offsetLeft;
-    this.offsetY = image.offsetTop;
+    this.updateOffset();
   }
+
+  updateOffset() {
+    this.offsetX = this.image.style.left;
+    this.offsetY = this.image.style.top;
+    this.offsetX = parseInt(this.offsetX.substring(0, this.offsetX.length - 2));
+    this.offsetY = parseInt(this.offsetY.substring(0, this.offsetY.length - 2));
+  }
+
   onMouseMove(e) {
     if (this.isDragging) {
       let dx = e.clientX - this.startX;
@@ -94,72 +166,43 @@ class WAFlowchart extends LitElement {
       let image = this.image;
       image.style.left = this.offsetX + dx + 'px';
       image.style.top = this.offsetY + dy + 'px';
-      this.checkBounds();
     }
   }
 
   onMouseUp(e) {
+    if (this.image == null) return;
     this.isDragging = false;
+    this.updateOffset();
   }
 
   zoomIn() {
     let image = this.image;
     let container = this.container;
+    // Increase the scale and update image's width and height
+    this.scale = this.scale + 0.1;
+    image.style.width = this.scale * this.imageOriginWidth + "px";
+    image.style.height = this.scale * this.imageOriginHeight + "px";
     // Calculate the image's center point before scaling
     var centerX = (image.offsetLeft - container.offsetLeft) + image.offsetWidth / 2;
     var centerY = (image.offsetTop - container.offsetTop) + image.offsetHeight / 2;
-
-    // Increase the scale and update image's width and height
-    this.scale += 0.1;
-    image.style.width = this.scale * image.offsetWidth + "px";
-    image.style.height = this.scale * image.offsetHeight + "px";
-
     // Update image's left and top attributes to maintain the center point
     image.style.left = (container.offsetLeft + centerX) - image.offsetWidth / 2 + "px";
     image.style.top = (container.offsetTop + centerY) - image.offsetHeight / 2 + "px";
-
-    // Check if the image is out of the div's bounds
-    this.checkBounds();
   }
 
   zoomOut() {
     let image = this.image;
     let container = this.container;
-
+    // Decrease the scale and update image's width and height
+    this.scale = this.scale - 0.1;
+    image.style.width = this.scale * this.imageOriginWidth + "px";
+    image.style.height = this.scale * this.imageOriginHeight + "px";
     // Calculate the image's center point before scaling
     var centerX = (image.offsetLeft - container.offsetLeft) + image.offsetWidth / 2;
     var centerY = (image.offsetTop - container.offsetTop) + image.offsetHeight / 2;
-
-    // Decrease the scale and update image's width and height
-    this.scale -= 0.1;
-    image.style.width = this.scale * image.offsetWidth + "px";
-    image.style.height = this.scale * image.offsetHeight + "px";
-
     // Update image's left and top attributes to maintain the center point
     image.style.left = (container.offsetLeft + centerX) - image.offsetWidth / 2 + "px";
     image.style.top = (container.offsetTop + centerY) - image.offsetHeight / 2 + "px";
-
-    // Check if the image is out of the div's bounds
-    this.checkBounds();
-  }
-
-  checkBounds() {
-    let image = this.image;
-    let container = this.container;
-    // 如果圖片的左側或上側超出了 div 的範圍，則將其設置為最小的值 
-    if (image.offsetLeft < container.offsetLeft) {
-      //image.style.left = container.offsetLeft + "px";
-    }
-    if (image.offsetTop < container.offsetTop) {
-      //image.style.top = container.offsetTop + "px";
-    }
-    // 如果圖片的右側或下側超出了 div 的範圍，則將其設置為最大的值 
-    if (image.offsetLeft + image.offsetWidth > container.offsetLeft + container.offsetWidth) {
-      //image.style.left = container.offsetLeft + container.offsetWidth - image.offsetWidth + "px";
-    }
-    if (image.offsetTop + image.offsetHeight > container.offsetTop + container.offsetHeight) {
-      //image.style.top = container.offsetTop + container.offsetHeight - image.offsetHeight + "px";
-    }
   }
 }
 
