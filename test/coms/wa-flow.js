@@ -43,17 +43,23 @@ class WAFlowchart extends LitElement {
         #zoom-out {
           position: absolute;
           bottom: 10px;
-          padding: 10px;
           font-size: 20px;
           background-color: white;
+          height:32px;
+          width:32px;
           border: none;
           cursor: pointer;
         }
          #zoom-in {
-          right: 50px;
+          right: 10px;
+          bottom: 50px;
+          z-index: 5;
+          border:1px #ccc solid;
         }
          #zoom-out {
           right: 10px;
+          z-index: 5;
+          border:1px #ccc solid;
         }
       `;
   }
@@ -90,7 +96,8 @@ class WAFlowchart extends LitElement {
     setTimeout(function () {
       console.log(image.width, image.height, "!!!!");
       image.style.left = (self.container.offsetWidth / 2 - image.offsetWidth / 2) + "px";
-      image.style.top = (self.container.offsetHeight / 2 - image.offsetHeight / 2) + "px";
+      //image.style.top = (self.container.offsetHeight / 2 - image.offsetHeight / 2) + "px";
+      image.style.top = "10px";
       self.imageOriginWidth = image.offsetWidth;
       self.imageOriginHeight = image.offsetHeight;
       self.image = image;

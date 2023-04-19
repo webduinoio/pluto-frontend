@@ -13,6 +13,7 @@
     <script type="module" src="../coms/wa-voice.js"></script>
     <script type="module" src="../coms/wa-deploy-bitv2.js"></script>
     <script type="module" src="../coms/wa-gpt-bot.js"></script>
+    <script type="module" src="../coms/wa-carousel.js"></script>
 
     <style>
         body {
@@ -20,13 +21,18 @@
         }
 
         .quiz-panel {
-            margin: 5px;
-            height: calc(35vh);
+            margin: 15px;
+            height: calc(30vh);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
         }
 
         .chat-panel {
             margin: 5px;
-            height: calc(65vh - 100px);
+            height: calc(70vh - 130px);
             background-color: #eee;
         }
 
@@ -47,6 +53,9 @@
 <body>
     <div id="gptbot-content">
         <wa-select-prompt style="width:100%"></wa-select-prompt><br>
+        <div class="quiz-panel">
+            <wa-carousel></wa-carousel>
+        </div>
         <div class="chat-panel">
             <wa-gpt-bot id="gpt"></wa-gpt-bot>
             <div class="menuBar">
@@ -54,9 +63,6 @@
                 <wa-gpt-btn id="sendBtn" class='menuBtn' callback="send"></wa-gpt-btn>
                 <wa-deploy-bitv2 id="deploy" class='menuBtn'></wa-deploy-bitv2>
             </div>
-        </div>
-        <div class="quiz-panel">
-
         </div>
     </div>
 
@@ -99,7 +105,7 @@
                     parent.editor.setCode(code);
                     break;
                 case 1:
-                    parent.flow.setCode(code);                    
+                    parent.flow.setCode(code);
                     break;
             }
         }
