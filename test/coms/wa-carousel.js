@@ -49,6 +49,7 @@ class ImageSlider extends LitElement {
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             overflow: hidden;
+            align-items: center; /* 垂直置中 */            
           }
     
           .slider img {
@@ -85,8 +86,8 @@ class ImageSlider extends LitElement {
     this.index = 0;
     this.lastIdx = -1;
     this.images = [
-      ['python', 'https://md.webduino.io/uploads/upload_44bd52bfc96a03cba7e9002db46d9996.png', '100px'],
-      ['wbit', 'https://webbit.webduino.io/blockly/simulator/dist/preview-bit.3c165d12.png', '100px'],
+      ['python', 'https://md.webduino.io/uploads/upload_44bd52bfc96a03cba7e9002db46d9996.png', '140px'],
+      ['wbit', '../coms/wbitv2.png', '280px'],
     ];
     this.actor = this.images[this.index][0];
   }
@@ -103,7 +104,7 @@ class ImageSlider extends LitElement {
             <span id="previous" @click=${() => this.switchImg(--this.index)}>＜</span>
             <span id="next" @click=${() => this.switchImg(++this.index)}>＞</span>
             <div id="slider" class="slider">
-              ${this.images.map((image) => html`<img style="max-width: 100%; width:100%;height:auto" src=${image[1]} />`)}
+              ${this.images.map((image) => html`<img style="max-width: 100%; width:100%;height:${image[2]}" src=${image[1]} />`)}
             </div>
           </div>
         `;
