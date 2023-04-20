@@ -112,6 +112,15 @@
             }
         }
 
+        function isUrlEncoded(str) {
+            try {
+                decodeURIComponent(str);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
         function setCode(code) {
             if (code.indexOf('```') == 0 && isCode) {
                 isCode = false;
@@ -128,13 +137,25 @@
             setGenCode(genCode);
         }
         var userId = "v2";
+        var prompt = "";
         if (parent.location.hash.length > 1) {
-            userId = parent.location.hash.substring(1);
+            if (parent.location.hash.indexOf("?") > 0) {
+                userId = parent.location.hash.substring(1, parent.location.hash.indexOf("?"));
+                prompt = parent.location.hash.substring(
+                    parent.location.hash.indexOf("?prompt=") + 8);
+                if (isUrlEncoded(prompt))
+                    prompt = decodeURIComponent(prompt);
+            } else {
+                userId = parent.location.hash.substring(1);
+            }
         }
+
         const app = new MQTTApp(userId + "_" + Math.random());
         async function init() {
+            gpt.prompt(prompt);
             await app.init(appendToShow);
             gpt.promptCallback(function (prompt) {
+                parent.location.hash = '#' + userId + '?prompt=' + encodeURIComponent(prompt);
                 wholeMsg = '';
                 _codeType = -1; // -1:none , 0:python , 1:flow
                 console.log("prompt callback:", prompt);
