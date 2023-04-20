@@ -180,7 +180,10 @@
 
             console.log(info);
             gpt.promptCallback(function (prompt) {
-                parent.location.hash = '#' + info['userId'] + '?prompt=' + encodeURIComponent(prompt);
+                parent.location.hash =
+                    '#' + info['userId'] +
+                    '?prompt=' + encodeURIComponent(prompt) +
+                    '&actor=' + carousel.actor;
                 wholeMsg = '';
                 _codeType = -1; // -1:none , 0:python , 1:flow
                 console.log("prompt callback:", prompt);
