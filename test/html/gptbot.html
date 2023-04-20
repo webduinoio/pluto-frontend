@@ -75,6 +75,7 @@
         const textarea = document.getElementById('show');
         const voice = document.getElementById('voice');
         const carousel = document.getElementById('carousel');
+
         function voiceToTextarea(str) {
             gpt.prompt(str);
         }
@@ -136,26 +137,50 @@
             genCode = genCode + code + '\n';
             setGenCode(genCode);
         }
-        var userId = "v2";
-        var prompt = "";
-        if (parent.location.hash.length > 1) {
-            if (parent.location.hash.indexOf("?") > 0) {
-                userId = parent.location.hash.substring(1, parent.location.hash.indexOf("?"));
-                prompt = parent.location.hash.substring(
-                    parent.location.hash.indexOf("?prompt=") + 8);
-                if (isUrlEncoded(prompt))
-                    prompt = decodeURIComponent(prompt);
+
+        function parseURL(str) {
+            var result = { 'prompt': '', 'actor': 'python' };
+            var userId = '';
+            var hashIndex = str.indexOf('#');
+            var questionIndex = str.indexOf('?');
+
+            if (hashIndex !== -1) {
+                if (questionIndex !== -1) {
+                    userId = str.slice(hashIndex + 1, questionIndex);
+                } else {
+                    userId = str.slice(hashIndex + 1);
+                }
             } else {
-                userId = parent.location.hash.substring(1);
+                if (questionIndex !== -1) {
+                    userId = 'guest';
+                } else {
+                    userId = str;
+                }
             }
+
+            result.userId = userId == '' ? 'guest' : userId;
+            if (questionIndex !== -1) {
+                var params = str.slice(questionIndex + 1).split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var parts = params[i].split('=');
+                    result[parts[0]] = decodeURIComponent(parts[1].replace(/\+/g, ' '));
+                }
+            }
+
+            return result;
         }
 
-        const app = new MQTTApp(userId + "_" + Math.random());
+
+        var info = parseURL(parent.location.href);
+        const app = new MQTTApp(info['userId'] + "_" + Math.random());
         async function init() {
-            gpt.prompt(prompt);
+            gpt.prompt(info['prompt']);
             await app.init(appendToShow);
+            carousel.setActor(info['actor']);
+
+            console.log(info);
             gpt.promptCallback(function (prompt) {
-                parent.location.hash = '#' + userId + '?prompt=' + encodeURIComponent(prompt);
+                parent.location.hash = '#' + info['userId'] + '?prompt=' + encodeURIComponent(prompt);
                 wholeMsg = '';
                 _codeType = -1; // -1:none , 0:python , 1:flow
                 console.log("prompt callback:", prompt);
