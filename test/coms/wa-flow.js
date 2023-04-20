@@ -146,9 +146,9 @@ class WAFlowchart extends LitElement {
       const imgEle = Viz(this.graph, { format: 'png-image-element', engine: 'dot' });
       this.setImage(imgEle);
     } catch (e) {
-      console.log("flow:", e);
+      //console.log("flow:", e);
     }
-    console.log("-=-=-=-=-=-=-=-=-=-=-\n", code);
+    //console.log("-=-=-=-=-=-=-=-=-=-=-\n", code);
   }
 
   onMouseDown(e) {
