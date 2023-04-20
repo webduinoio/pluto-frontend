@@ -22,8 +22,8 @@ class ImageSlider extends LitElement {
           #previous,
           #next {
             position: absolute;
-            top: 90%;
-            transform: translateY(-50%);
+            top: 85%;
+            transform: translateY(-70%);
             width: 40px;
             height: 40px;
             line-height: 40px;
@@ -87,27 +87,62 @@ class ImageSlider extends LitElement {
     this.lastIdx = -1;
     this.images = [
       ['python', 'https://md.webduino.io/uploads/upload_44bd52bfc96a03cba7e9002db46d9996.png', '140px'],
-      ['wbit', '../coms/wbitv2.png', '280px'],
+      ['wbit', '../coms/wbitv2.png', '250px'],
     ];
     this.actor = this.images[this.index][0];
+    this.loadImages();
+  }
+
+  loadImages() {
+    // 定義一個 Promise 物件，用來下載一張圖片
+    function downloadImage(url) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image();
+        img.onload = function () {
+          resolve(img);
+        };
+        img.onerror = function () {
+          reject(url);
+        };
+        img.src = url;
+      });
+    }
+
+    // 建立一個 Promise 陣列，用來下載所有圖片
+    var promises = this.images.map(function (image) {
+      return downloadImage(image[1]);
+    });
+
+    // 等到所有圖片都下載完畢後，再繼續執行後面的程式碼
+    Promise.all(promises).then(function (images) {
+      // 所有圖片都下載完畢，可以繼續執行後面的程式碼了
+      console.log('所有圖片都下載完畢！');
+      // ...
+    }).catch(function (url) {
+      // 有圖片下載失敗，可以在這裡處理錯誤
+      console.log('下載圖片失敗：' + url);
+    });
   }
 
   firstUpdated() {
     this.next = this.shadowRoot.getElementById('next');
     this.previous = this.shadowRoot.getElementById('previous');
-    this.switchImg();
+    var self = this;
+    setTimeout(function () {
+      self.switchImg();
+    }, 10);
   }
 
   render() {
     return html`
-          <div class="container">
-            <span id="previous" @click=${() => this.switchImg(--this.index)}>＜</span>
-            <span id="next" @click=${() => this.switchImg(++this.index)}>＞</span>
-            <div id="slider" class="slider">
-              ${this.images.map((image) => html`<img style="max-width: 100%; width:100%;height:${image[2]}" src=${image[1]} />`)}
-            </div>
-          </div>
-        `;
+      <div class="container">
+        <span id="previous" @click=${() => this.switchImg(--this.index)}>＜</span>
+        <span id="next" @click=${() => this.switchImg(++this.index)}>＞</span>
+        <div id="slider" class="slider">
+          ${this.images.map((image) => html`<img style="max-width: 100%; width:100%;height:${image[2]}" src=${image[1]} />`)}
+        </div>
+      </div>
+    `;
   }
 
   select(callback) {
