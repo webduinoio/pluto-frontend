@@ -144,7 +144,7 @@ class ChatGPTBot extends LitElement {
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
-  start() {
+  start(iconName) {
     const chatbox = this.shadowRoot.querySelector('#chatbox');
     const div = document.createElement('div');
     div.style.backgroundColor = '#ddd';
@@ -161,7 +161,7 @@ class ChatGPTBot extends LitElement {
     text.style.paddingTop = '10px';
     text.innerHTML = '';
     this.message = text;
-    this.setIconName('python');
+    this.setIconName(iconName);
     div.appendChild(text);
     chatbox.appendChild(div);
     this.sending();

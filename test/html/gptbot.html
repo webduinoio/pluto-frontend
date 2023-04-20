@@ -71,6 +71,7 @@
         var codeType = ['python', 'flow'];
         var _codeType = -1;
         var genCode = '';
+        var wholeMsg = '';
         const textarea = document.getElementById('show');
         const voice = document.getElementById('voice');
         const carousel = document.getElementById('carousel');
@@ -79,6 +80,7 @@
         }
 
         function appendToShow(msg, isEnd) {
+            wholeMsg += msg;
             if (msg == '') return;
             try {
                 setCode(msg);
@@ -133,13 +135,15 @@
         async function init() {
             await app.init(appendToShow);
             gpt.promptCallback(function (prompt) {
+                wholeMsg = '';
                 _codeType = -1; // -1:none , 0:python , 1:flow
                 console.log("prompt callback:", prompt);
                 app.publish(carousel.actor + ":" + prompt);
-                gpt.start();
-                gpt.setIconName(carousel.actor);
+                gpt.start(carousel.actor);
+
                 deploy.setEnable(false);
                 parent.flow.processing();
+                parent.editor.setCode("");
             });
         }
     </script>
