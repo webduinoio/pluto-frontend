@@ -152,18 +152,23 @@ class ChatGPTBot extends LitElement {
     div.style.paddingBottom = '10px';
     const icon = document.createElement('img');
     icon.style.float = 'left';
-    icon.src = 'https://test.bpi-steam.com/static/image/WebBit_V2_500x.png';
     icon.width = 30;
     icon.height = 30;
+    this.icon = icon;
     div.appendChild(icon);
     const text = document.createElement('div');
     text.style.paddingLeft = '50px';
     text.style.paddingTop = '10px';
     text.innerHTML = '';
     this.message = text;
+    this.setIconName('python');
     div.appendChild(text);
     chatbox.appendChild(div);
     this.sending();
+  }
+
+  setIconName(name) {
+    this.icon.src = '../coms/' + name + '.png';
   }
 
   sending() {

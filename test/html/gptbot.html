@@ -54,7 +54,7 @@
     <div id="gptbot-content">
         <wa-select-prompt style="width:100%"></wa-select-prompt><br>
         <div class="quiz-panel">
-            <wa-carousel></wa-carousel>
+            <wa-carousel id="carousel"></wa-carousel>
         </div>
         <div class="chat-panel">
             <wa-gpt-bot id="gpt"></wa-gpt-bot>
@@ -73,7 +73,7 @@
         var genCode = '';
         const textarea = document.getElementById('show');
         const voice = document.getElementById('voice');
-
+        const carousel = document.getElementById('carousel');
         function voiceToTextarea(str) {
             gpt.prompt(str);
         }
@@ -135,8 +135,9 @@
             gpt.promptCallback(function (prompt) {
                 _codeType = -1; // -1:none , 0:python , 1:flow
                 console.log("prompt callback:", prompt);
-                app.publish(prompt);
+                app.publish(carousel.actor + ":" + prompt);
                 gpt.start();
+                gpt.setIconName(carousel.actor);
                 deploy.setEnable(false);
                 parent.flow.processing();
             });

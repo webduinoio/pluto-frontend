@@ -86,8 +86,9 @@ class ImageSlider extends LitElement {
     this.lastIdx = -1;
     this.images = [
       ['python', 'https://md.webduino.io/uploads/upload_44bd52bfc96a03cba7e9002db46d9996.png', '100px'],
-      ['webbit', 'https://webbit.webduino.io/blockly/simulator/dist/preview-bit.3c165d12.png', '100px'],
+      ['wbit', 'https://webbit.webduino.io/blockly/simulator/dist/preview-bit.3c165d12.png', '100px'],
     ];
+    this.actor = this.images[this.index][0];
   }
 
   firstUpdated() {
@@ -129,6 +130,7 @@ class ImageSlider extends LitElement {
       } else {
         this.next.style['display'] = 'block';
       }
+      this.actor = this.images[this.index][0];
       this.selectCallback(this.index, this.images[this.index][0]);
       const imgWidth = this.shadowRoot.querySelector('.slider img').clientWidth;
       const recomputedWidth = this.index * imgWidth;
