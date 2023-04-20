@@ -93,6 +93,17 @@ class ImageSlider extends LitElement {
     this.loadImages();
   }
 
+  setActor(actorName) {
+    //debugger;
+    for (var i = 0; i < this.images.length; i++) {
+      if (this.images[i][0] == actorName) {
+        this.index = i;
+        this.switchImg();
+        break;
+      }
+    }
+  }
+
   loadImages() {
     // 定義一個 Promise 物件，用來下載一張圖片
     function downloadImage(url) {
@@ -112,11 +123,10 @@ class ImageSlider extends LitElement {
     var promises = this.images.map(function (image) {
       return downloadImage(image[1]);
     });
-
     // 等到所有圖片都下載完畢後，再繼續執行後面的程式碼
     Promise.all(promises).then(function (images) {
       // 所有圖片都下載完畢，可以繼續執行後面的程式碼了
-      console.log('所有圖片都下載完畢！');
+      //console.log('所有圖片都下載完畢！');
       // ...
     }).catch(function (url) {
       // 有圖片下載失敗，可以在這裡處理錯誤
