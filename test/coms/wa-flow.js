@@ -94,14 +94,17 @@ class WAFlowchart extends LitElement {
     image.id = 'image';
     var self = this;
     setTimeout(function () {
-      console.log(image.width, image.height, "!!!!");
       image.style.left = (self.container.offsetWidth / 2 - image.offsetWidth / 2) + "px";
-      //image.style.top = (self.container.offsetHeight / 2 - image.offsetHeight / 2) + "px";
-      image.style.top = "10px";
+      //console.log(">>>>>>>", image.offsetHeight);
+      if (image.offsetHeight < 770) {
+        image.style.top = (self.container.offsetHeight / 2 - image.offsetHeight / 2) + "px";
+      } else {
+        image.style.top = "10px";
+      }
       self.imageOriginWidth = image.offsetWidth;
       self.imageOriginHeight = image.offsetHeight;
       self.image = image;
-    }, 100);
+    }, 10);
   }
 
   processing() {
