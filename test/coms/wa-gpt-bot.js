@@ -130,7 +130,7 @@ class ChatGPTBot extends LitElement {
     div.style.paddingBottom = '10px';
     const icon = document.createElement('img');
     icon.style.float = 'left';
-    icon.src = 'https://cdn-icons-png.flaticon.com/512/145/145867.png';
+    icon.src = '../coms/user.png';
     icon.width = 30;
     icon.height = 30;
     div.appendChild(icon);

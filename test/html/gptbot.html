@@ -139,6 +139,9 @@
         }
 
         function parseURL(str) {
+            if (str.indexOf('#') < 0) {
+                str = "";
+            }
             var result = { 'prompt': '', 'actor': 'python' };
             var userId = '';
             var hashIndex = str.indexOf('#');
@@ -185,6 +188,7 @@
                     '?prompt=' + encodeURIComponent(prompt) +
                     '&actor=' + carousel.actor;
                 wholeMsg = '';
+                isCode = false;
                 _codeType = -1; // -1:none , 0:python , 1:flow
                 console.log("prompt callback:", prompt);
                 app.publish(carousel.actor + ":" + prompt);
