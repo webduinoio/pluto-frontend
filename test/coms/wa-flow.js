@@ -77,7 +77,6 @@ class WAFlowchart extends LitElement {
   firstUpdated() {
     this.container = this.shadowRoot.getElementById('container');
     this.image = null;
-    window.ww = this;
   }
 
   clearImage() {
