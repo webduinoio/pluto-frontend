@@ -186,12 +186,11 @@
         const app = new MQTTApp(info['userId'] + "_" + Math.random());
 
         async function init() {
-            parent.Main.registry("mqtt", app);
             parent.Main.registry("gpt", gpt);
             parent.Main.registry("voice", voice);
             parent.Main.registry("deploy", deploy);
-            parent.Main.registry("carousel", carousel);
             parent.Main.registry("flow", parent.flow);
+            parent.Main.registry("carousel", carousel);
             parent.Main.registry("editor", parent.editor);
             gpt.setMQTT(app);
             gpt.prompt(info['prompt']);

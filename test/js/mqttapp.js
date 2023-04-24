@@ -1,9 +1,14 @@
-
 class MQTTApp {
     constructor(userId) {
+        //*/
+        if (typeof (parent.Main) != "undefined") {
+            parent.Main.registry("mqtt", this);
+        }
         this.userId = userId;
         this.client = new Paho.Client('wss://mqtt1.webduino.io/mqtt', userId);
-        this.options = { userName: 'webduino', password: 'webduino' };
+        this.options = {
+            userName: 'webduino', password: 'webduino', keepAliveInterval: 3
+        };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
         var topic = "gpt35";
@@ -42,6 +47,17 @@ class MQTTApp {
         });
         await this.onConnectPromise;
         this.client.onMessageArrived = this.onMessageArrived.bind(this);
+        var self = this;
+        // add keepAlive property
+        this.keepAlive = setInterval(() => {
+            if (!this.client.isConnected()) {
+                console.log('Disconnected from MQTT broker, attempting to reconnect...');
+                if (typeof (parent.Main) != "undefined") {
+                    parent.Main.eventTrigger("mqtt", "onFailure", "");
+                }
+                clearInterval(self.keepAlive);
+            }
+        }, 3000);
     }
 
     // MQTT message publish function
@@ -75,5 +91,4 @@ class MQTTApp {
             this.subscriptions[topic].onMessageReceived(payload);
         }
     }
-
 }
