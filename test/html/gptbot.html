@@ -81,6 +81,14 @@
         }
 
         function appendToShow(msg, isEnd) {
+            if (isEnd) {
+                var uuid = msg.split('\n\n$UUID$')[1];
+                if (typeof (uuid) != "undefined") {
+                    msg = msg.split('\n\n$UUID$')[0];
+                    gpt.setUUID(uuid);
+                }
+            }
+            //console.log(isEnd, msg);
             wholeMsg += msg;
             if (msg == '') return;
             try {
@@ -179,9 +187,8 @@
         async function init() {
             gpt.prompt(info['prompt']);
             await app.init(appendToShow);
+            gpt.setMQTT(app);
             carousel.setActor(info['actor']);
-
-            console.log(info);
             gpt.promptCallback(function (prompt) {
                 parent.location.hash =
                     '#' + info['userId'] +
@@ -190,7 +197,7 @@
                 wholeMsg = '';
                 isCode = false;
                 _codeType = -1; // -1:none , 0:python , 1:flow
-                console.log("prompt callback:", prompt);
+                //console.log("prompt callback:", prompt);
                 app.publish(carousel.actor + ":" + prompt);
                 gpt.start(carousel.actor);
 

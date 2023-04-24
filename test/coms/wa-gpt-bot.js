@@ -53,6 +53,10 @@ class ChatGPTBot extends LitElement {
     this.loadingTexts = ['.', '..', '...'];
   }
 
+  setMQTT(app) {
+    this.mqtt = app;
+  }
+
   render() {
     return html`
       <div id="chatbox"></div>
@@ -157,6 +161,7 @@ class ChatGPTBot extends LitElement {
 
     const likeButton = document.createElement('button');
     likeButton.innerText = '👍';
+    likeButton.memo = 'like';
     likeButton.style.marginLeft = '10px';
     likeButton.style.filter = 'grayscale(100%)';
     this.addBtnListener(likeButton);
@@ -164,6 +169,7 @@ class ChatGPTBot extends LitElement {
 
     const dislikeButton = document.createElement('button');
     dislikeButton.innerText = '👎';
+    dislikeButton.memo = 'dislike';
     dislikeButton.style.marginLeft = '5px';
     dislikeButton.style.filter = 'grayscale(100%)';
     this.addBtnListener(dislikeButton);
@@ -184,14 +190,23 @@ class ChatGPTBot extends LitElement {
 
   addBtnListener(btn, cb) {
     btn.btnClicked = false;
+    var self = this;
+    btn.info = [];
     btn.addEventListener('click', () => {
       btn.btnClicked = !btn.btnClicked;
       if (btn.btnClicked) {
         btn.style.filter = 'none';
+        btn.info = [self.uuid, btn.memo, true];
       } else {
         btn.style.filter = 'grayscale(100%)';
+        btn.info = [self.uuid, btn.memo, false];
       }
+      this.mqtt.publish('feedback:' + JSON.stringify(btn.info));
     });
+  }
+
+  setUUID(uuid) {
+    this.uuid = uuid;
   }
 
   setIconName(name) {
