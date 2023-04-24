@@ -53,16 +53,6 @@ class ChatGPTBot extends LitElement {
     this.loadingTexts = ['.', '..', '...'];
   }
 
-  done() {
-    this.loading = false;
-    clearInterval(this.loadingInterval);
-    const sendButton = this.shadowRoot.querySelector('#send-button');
-    sendButton.disabled = false;
-    sendButton.innerHTML = `
-      <svg width="24px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20.33 3.66996C20.1408 3.48213 19.9035 3.35008 19.6442 3.28833C19.3849 3.22659 19.1135 3.23753 18.86 3.31996L4.23 8.19996C3.95867 8.28593 3.71891 8.45039 3.54099 8.67255C3.36307 8.89471 3.25498 9.16462 3.23037 9.44818C3.20576 9.73174 3.26573 10.0162 3.40271 10.2657C3.5397 10.5152 3.74754 10.7185 4 10.85L10.07 13.85L13.07 19.94C13.1906 20.1783 13.3751 20.3785 13.6029 20.518C13.8307 20.6575 14.0929 20.7309 14.36 20.73H14.46C14.7461 20.7089 15.0192 20.6023 15.2439 20.4239C15.4686 20.2456 15.6345 20.0038 15.72 19.73L20.67 5.13996C20.7584 4.88789 20.7734 4.6159 20.7132 4.35565C20.653 4.09541 20.5201 3.85762 20.33 3.66996ZM4.85 9.57996L17.62 5.31996L10.53 12.41L4.85 9.57996ZM14.43 19.15L11.59 13.47L18.68 6.37996L14.43 19.15Z" fill="#000000"></path> </g></svg>
-      `;
-  }
-
   render() {
     return html`
       <div id="chatbox"></div>
@@ -150,12 +140,36 @@ class ChatGPTBot extends LitElement {
     div.style.backgroundColor = '#ddd';
     div.style.paddingTop = '10px';
     div.style.paddingBottom = '10px';
+
+    // Add icon image
     const icon = document.createElement('img');
-    icon.style.float = 'left';
+    this.icon = icon;
     icon.width = 30;
     icon.height = 30;
-    this.icon = icon;
+    icon.style.float = 'left';
     div.appendChild(icon);
+
+    // Add like and dislike buttons
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.float = 'right';
+    buttonContainer.style['margin-right'] = '5px';
+    div.appendChild(buttonContainer);
+
+    const likeButton = document.createElement('button');
+    likeButton.innerText = '👍';
+    likeButton.style.marginLeft = '10px';
+    likeButton.style.filter = 'grayscale(100%)';
+    this.addBtnListener(likeButton);
+    buttonContainer.appendChild(likeButton);
+
+    const dislikeButton = document.createElement('button');
+    dislikeButton.innerText = '👎';
+    dislikeButton.style.marginLeft = '5px';
+    dislikeButton.style.filter = 'grayscale(100%)';
+    this.addBtnListener(dislikeButton);
+    buttonContainer.appendChild(dislikeButton);
+
+    // Add message text
     const text = document.createElement('div');
     text.style.paddingLeft = '50px';
     text.style.paddingTop = '10px';
@@ -163,8 +177,21 @@ class ChatGPTBot extends LitElement {
     this.message = text;
     this.setIconName(iconName);
     div.appendChild(text);
+
     chatbox.appendChild(div);
     this.sending();
+  }
+
+  addBtnListener(btn, cb) {
+    btn.btnClicked = false;
+    btn.addEventListener('click', () => {
+      btn.btnClicked = !btn.btnClicked;
+      if (btn.btnClicked) {
+        btn.style.filter = 'none';
+      } else {
+        btn.style.filter = 'grayscale(100%)';
+      }
+    });
   }
 
   setIconName(name) {
@@ -184,10 +211,24 @@ class ChatGPTBot extends LitElement {
   read() {
     return this.message.innerHTML;
   }
+
   write(msg) {
     this.message.innerHTML = msg;
     const chatbox = this.shadowRoot.querySelector('#chatbox');
     chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  /*
+  * 完成 completion 顯示
+  */
+  done() {
+    this.loading = false;
+    clearInterval(this.loadingInterval);
+    const sendButton = this.shadowRoot.querySelector('#send-button');
+    sendButton.disabled = false;
+    sendButton.innerHTML = `
+      <svg width="24px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20.33 3.66996C20.1408 3.48213 19.9035 3.35008 19.6442 3.28833C19.3849 3.22659 19.1135 3.23753 18.86 3.31996L4.23 8.19996C3.95867 8.28593 3.71891 8.45039 3.54099 8.67255C3.36307 8.89471 3.25498 9.16462 3.23037 9.44818C3.20576 9.73174 3.26573 10.0162 3.40271 10.2657C3.5397 10.5152 3.74754 10.7185 4 10.85L10.07 13.85L13.07 19.94C13.1906 20.1783 13.3751 20.3785 13.6029 20.518C13.8307 20.6575 14.0929 20.7309 14.36 20.73H14.46C14.7461 20.7089 15.0192 20.6023 15.2439 20.4239C15.4686 20.2456 15.6345 20.0038 15.72 19.73L20.67 5.13996C20.7584 4.88789 20.7734 4.6159 20.7132 4.35565C20.653 4.09541 20.5201 3.85762 20.33 3.66996ZM4.85 9.57996L17.62 5.31996L10.53 12.41L4.85 9.57996ZM14.43 19.15L11.59 13.47L18.68 6.37996L14.43 19.15Z" fill="#000000"></path> </g></svg>
+      `;
   }
 
   sendMessage() {
@@ -199,7 +240,6 @@ class ChatGPTBot extends LitElement {
     textarea.style.height = '44px';
     textarea.style.marginTop = '';
     textarea.focus();
-    //this.botSay("好的.");
   }
 
   prompt(msg) {
