@@ -88,14 +88,14 @@ class ImageSlider extends LitElement {
     this.images = [
       ['python', '../coms/python_logo.png', '140px'],
       ['wbit', '../coms/wbitv2.png', '280px'],
-      ['kebbi','../coms/kebbi.png', '320px'],
+      //['kebbi','../coms/kebbi.png', '320px'],
     ];
     this.actor = this.images[this.index][0];
     this.loadImages();
   }
 
-  setActor(actorName) {
-    //debugger;
+  setActor(actorName, focus) {
+    if (arguments.length == 2 && focus) this.lastIdx = -1;
     for (var i = 0; i < this.images.length; i++) {
       if (this.images[i][0] == actorName) {
         this.index = i;
@@ -166,7 +166,6 @@ class ImageSlider extends LitElement {
 
     if (this.lastIdx != this.index) {
       this.lastIdx = this.index;
-
       if (this.index == 0) {
         this.previous.style['display'] = 'none';
       } else {

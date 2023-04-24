@@ -22,6 +22,11 @@ export class SplitV extends LitElement {
     `]
 
     firstUpdated() {
+        //*/
+        if (typeof (window.Main) != "undefined") {
+            window.Main.registry("split-v", this);
+        }
+        let self = this;
         let ele = this.parentElement;
         let header = ele.children[0];
         let splitter = ele.children[1];
@@ -31,6 +36,10 @@ export class SplitV extends LitElement {
         let originalTop;
         let originalHeight;
         let originalBodyHeight;
+        this.header = header;
+        this.body = body;
+        self.lastHeaderHeight = this.header['style']['height'];
+        self.lastBodyHeight = this.body['style']['height'];
 
         splitter.addEventListener("mousedown", function (e) {
             isResizing = true;
@@ -50,8 +59,19 @@ export class SplitV extends LitElement {
             splitter.style.top = originalTop + delta + "px";
             splitter.previousElementSibling.style.height = originalBodyHeight + delta + "px";
             body.style.height = (ele.offsetHeight - header.offsetHeight) + "px";
-            //header.children[0].style.height = header.offsetHeight + "px";
+            self.lastHeaderHeight = originalBodyHeight + delta + "px";
+            self.lastBodyHeight = body.style.height;
         });
+    }
+
+    setHideBody(hide) {
+        if (hide) {
+            this.header['style']['height'] = '100%';
+            this.body['style']['height'] = '0%';
+        } else {
+            this.header['style']['height'] = this.lastHeaderHeight;
+            this.body['style']['height'] = this.lastBodyHeight;
+        }
     }
 
     render() {

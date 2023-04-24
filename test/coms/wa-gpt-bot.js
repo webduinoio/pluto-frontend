@@ -71,6 +71,10 @@ class ChatGPTBot extends LitElement {
 
   // https://jsbin.com/tihivunope/1/edit?html,output
   firstUpdated() {
+    //*/
+    if (typeof (parent.Main) != "undefined") {
+      parent.Main.registry("gpt", this);
+    }
     this.textarea = this.shadowRoot.querySelector('#txtarea');
     this.textareaStyle = window.getComputedStyle(this.textarea);
     ChatGPTBot.lineHeight = parseFloat(this.textareaStyle.lineHeight);
@@ -136,6 +140,11 @@ class ChatGPTBot extends LitElement {
     chatbox.appendChild(div);
     // 捲動至底部
     chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  clear() {
+    const chatbox = this.shadowRoot.querySelector('#chatbox');
+    chatbox.innerHTML = '';
   }
 
   start(iconName) {

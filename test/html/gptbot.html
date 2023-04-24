@@ -103,7 +103,8 @@
             if (isEnd) {
                 gpt.done();
                 parent.flow.done();
-                deploy.setEnable(true);
+                var info = parseURL(parent.location.href);
+                if (info['actor'] == 'wbit') deploy.setEnable(true);
                 //var code = parent.editor.getCode();
                 //parent.editor.setCode(code);
             }
@@ -181,15 +182,29 @@
             return result;
         }
 
-
         var info = parseURL(parent.location.href);
         const app = new MQTTApp(info['userId'] + "_" + Math.random());
+
         async function init() {
+            parent.Main.registry("mqtt", app);
+            parent.Main.registry("gpt", gpt);
+            parent.Main.registry("voice", voice);
+            parent.Main.registry("deploy", deploy);
+            parent.Main.registry("carousel", carousel);
+            parent.Main.registry("flow", parent.flow);
+            parent.Main.registry("editor", parent.editor);
+            gpt.setMQTT(app);
             gpt.prompt(info['prompt']);
             await app.init(appendToShow);
-            gpt.setMQTT(app);
-            carousel.setActor(info['actor']);
+
+            //將事件轉發到 Main
+            carousel.select(function (idx, name) {
+                parent.Main.eventTrigger("carousel", "setActor", [idx, name]);
+            });
+            carousel.setActor(info['actor'], true);
+
             gpt.promptCallback(function (prompt) {
+                parent.Main.coms['output'].cls();
                 parent.location.hash =
                     '#' + info['userId'] +
                     '?prompt=' + encodeURIComponent(prompt) +
@@ -200,7 +215,6 @@
                 //console.log("prompt callback:", prompt);
                 app.publish(carousel.actor + ":" + prompt);
                 gpt.start(carousel.actor);
-
                 deploy.setEnable(false);
                 parent.flow.processing();
                 parent.editor.setCode("");

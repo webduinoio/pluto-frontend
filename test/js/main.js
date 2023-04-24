@@ -56,7 +56,9 @@ print(year)
 */
 
 class Main {
+
     init() {
+        this.coms = {};
         // 改成所有元件ready再初始化,不要用 setTimeout
         setTimeout(function () {
             window.Main.editor = editor;
@@ -66,6 +68,7 @@ class Main {
             });
         }, 100);
     }
+
     ready(name, obj) {
         console.log("Component Ready...", name);
         if (name == 'wa-range') {
@@ -74,6 +77,27 @@ class Main {
                 document.getElementsByClassName("CodeMirror")[0].style['font-size'] = value + 'px';
                 editor.textEditor.codeMirror.refresh();
             });
+        }
+    }
+
+    // mqtt,gpt,voice,deploy,carousel,flow
+    registry(comName, obj) {
+        this.coms[comName] = obj;
+        console.log(" Registry >>> [" + comName + "]");
+    }
+
+    eventTrigger(com, action, info) {
+        console.log(com, ":", action, ":", info);
+        if (com == 'carousel' && action == 'setActor') {
+            this.coms['gpt'].clear();
+            if (info[1] == 'python') {
+                this.coms['deploy'].setEnable(false);
+                this.coms['split-v'].setHideBody(false);
+            }
+            if (info[1] == 'wbit') {
+                this.coms['deploy'].setEnable(true);
+                this.coms['split-v'].setHideBody(true);
+            }
         }
     }
 }

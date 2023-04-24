@@ -123,6 +123,10 @@ export class Output extends LitElement {
     }
 
     firstUpdated() {
+        //*/
+        if (typeof (window.Main) != "undefined") {
+            window.Main.registry("output", this);
+        }
         //*
         this.output = this.renderRoot.getElementById("output-console");
         this.clear = this.renderRoot.getElementById("clear");
@@ -131,7 +135,6 @@ export class Output extends LitElement {
             self.output.innerHTML = '';
             self.output.data = '';
         })
-        //*/
     }
 
     render() {
