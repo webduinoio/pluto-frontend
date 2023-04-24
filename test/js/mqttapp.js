@@ -6,9 +6,14 @@ class MQTTApp {
         this.options = { userName: 'webduino', password: 'webduino' };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
-        this.pubTopic = 'gpt35_prompt/' + userId;
-        this.respTopic_cb = "gpt35_completion/" + this.userId;
-        this.respTopic_end = "gpt35_completion_end/" + this.userId;
+        var topic = "gpt35";
+        //使用測試機
+        if (parent.location.href.indexOf('/test/dev') > 0) {
+            topic = "dev";
+        }
+        this.pubTopic = topic + '_prompt/' + userId;
+        this.respTopic_cb = topic + "_completion/" + this.userId;
+        this.respTopic_end = topic + "_completion_end/" + this.userId;
     }
 
     async init(cb) {
