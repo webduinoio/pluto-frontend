@@ -47,10 +47,12 @@ class SpeechRecognition extends LitElement {
 
   async firstUpdated() {
     try {
+      this.voiceBtn = this.shadowRoot.getElementById('toggle-btn');
       this.callback = window[this.callback];
       await navigator.mediaDevices.getUserMedia({ audio: true });
       this.isRecording = true;
     } catch (error) {
+      this.setEnable(false);
       console.error('無法取得麥克風權限：', error);
     }
   }
@@ -66,6 +68,15 @@ class SpeechRecognition extends LitElement {
         開始錄音
       </button>
     `;
+  }
+
+  setEnable(enabled) {
+    this.voiceBtn.disabled = !enabled;
+    if (enabled) {
+      this.voiceBtn.classList.remove('disabled');
+    } else {
+      this.voiceBtn.classList.add('disabled');
+    }
   }
 
   updateResult(txt) {
