@@ -42,6 +42,20 @@ class ImageSlider extends LitElement {
             right: 0;
           }
     
+          .title {
+            position: absolute;
+            #background-color: rgba(133, 0, 0, 0.1);
+            top: 85%;
+            right:50px;
+            transform: translateY(-70%);
+            width: 245px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            font-size: 20px;
+            color: rgba(0, 0, 0, 0.5);
+          }
+
           .slider {
             display: flex;
             overflow-x: scroll;
@@ -86,8 +100,8 @@ class ImageSlider extends LitElement {
     this.index = 0;
     this.lastIdx = -1;
     this.images = [
-      ['python', '../coms/python_logo.png', '140px'],
-      ['wbit', '../coms/wbitv2.png', '280px'],
+      ['python', 'Python 助教', '../coms/python_logo.png', '140px'],
+      ['wbit', '控制 Web:Bit v2開發板', '../coms/wbitv2.png', '280px'],
       //['kebbi','../coms/kebbi.png', '320px'],
     ];
     this.actor = this.images[this.index][0];
@@ -122,7 +136,7 @@ class ImageSlider extends LitElement {
 
     // 建立一個 Promise 陣列，用來下載所有圖片
     var promises = this.images.map(function (image) {
-      return downloadImage(image[1]);
+      return downloadImage(image[2]);
     });
     // 等到所有圖片都下載完畢後，再繼續執行後面的程式碼
     Promise.all(promises).then(function (images) {
@@ -138,6 +152,7 @@ class ImageSlider extends LitElement {
   firstUpdated() {
     this.next = this.shadowRoot.getElementById('next');
     this.previous = this.shadowRoot.getElementById('previous');
+    this.descript = this.shadowRoot.getElementById('title');
     var self = this;
     setTimeout(function () {
       self.switchImg();
@@ -149,8 +164,9 @@ class ImageSlider extends LitElement {
       <div class="container">
         <span id="previous" @click=${() => this.switchImg(--this.index)}>＜</span>
         <span id="next" @click=${() => this.switchImg(++this.index)}>＞</span>
+        <span id="title" class="title"></span>
         <div id="slider" class="slider">
-          ${this.images.map((image) => html`<img style="max-width: 100%; width:100%;height:${image[2]}" src=${image[1]} />`)}
+          ${this.images.map((image) => html`<img style="max-width: 100%; width:100%;height:${image[3]}" src=${image[2]} />`)}
         </div>
       </div>
     `;
@@ -177,6 +193,7 @@ class ImageSlider extends LitElement {
         this.next.style['display'] = 'block';
       }
       this.actor = this.images[this.index][0];
+      this.descript.innerHTML = this.images[this.index][1];
       this.selectCallback(this.index, this.images[this.index][0]);
       const imgWidth = this.shadowRoot.querySelector('.slider img').clientWidth;
       const recomputedWidth = this.index * imgWidth;
