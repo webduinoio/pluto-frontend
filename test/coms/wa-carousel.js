@@ -23,7 +23,7 @@ class ImageSlider extends LitElement {
           #next {
             position: absolute;
             top: 85%;
-            transform: translateY(-70%);
+            #transform: translateY(-70%);
             width: 40px;
             height: 40px;
             line-height: 40px;
@@ -32,6 +32,7 @@ class ImageSlider extends LitElement {
             color: rgba(0, 0, 0, 0.5);
             background-color: rgba(0, 0, 0, 0.1);
             cursor: pointer;
+            z-index:5;
           }
     
           #previous {
@@ -44,11 +45,9 @@ class ImageSlider extends LitElement {
     
           .title {
             position: absolute;
-            #background-color: rgba(133, 0, 0, 0.1);
+            #background-color: rgba(333, 0, 0, 0.1);
             top: 85%;
-            right:50px;
-            transform: translateY(-70%);
-            width: 245px;
+            width:100%;
             height: 40px;
             line-height: 40px;
             text-align: center;
@@ -63,7 +62,9 @@ class ImageSlider extends LitElement {
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             overflow: hidden;
-            align-items: center; /* 垂直置中 */            
+            align-items: center; /* 垂直置中 */  
+            width:320px;
+            height:240px;          
           }
     
           .slider img {
@@ -100,8 +101,8 @@ class ImageSlider extends LitElement {
     this.index = 0;
     this.lastIdx = -1;
     this.images = [
-      ['python', 'Python 助教', '../coms/python_logo.png', '140px'],
-      ['wbit', '控制 Web:Bit v2開發板', '../coms/wbitv2.png', '280px'],
+      ['python', 'Python 助教', '../coms/python_logo.png', '320px'],
+      ['wbit', '控制 Web:Bit v2開發板', '../coms/wbitv2.png', '320px'],
       //['kebbi','../coms/kebbi.png', '320px'],
     ];
     this.actor = this.images[this.index][0];
@@ -166,7 +167,7 @@ class ImageSlider extends LitElement {
         <span id="next" @click=${() => this.switchImg(++this.index)}>＞</span>
         <span id="title" class="title"></span>
         <div id="slider" class="slider">
-          ${this.images.map((image) => html`<img style="max-width: 100%; width:100%;height:${image[3]}" src=${image[2]} />`)}
+          ${this.images.map((image) => html`<img src=${image[2]} />`)}
         </div>
       </div>
     `;
