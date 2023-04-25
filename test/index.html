@@ -6,11 +6,12 @@
     <title>WebBit-GPT</title>
     <!-- Pyodide -->
     <script src="https://cdn.jsdelivr.net/pyodide/v0.22.1/full/pyodide.js"></script>
-
     <!-- MQTT -->
     <script src="https://cdn.jsdelivr.net/npm/mqtt@2.18.3/dist/mqtt.min.js"></script>
     <!-- Viz.js -->
     <script src="https://viz-js.com/bower_components/viz.js/viz.js"></script>
+    <!-- Google Font Material Icon -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap">
     <!-- Lit elements -->
     <script type="module" src="coms/wa-output.js"></script>
     <script type="module" src="coms/wa-splitter.js"></script>
@@ -49,6 +50,8 @@
 </head>
 
 <body>
+    <span class="material-icons help_center" onclick="window.open('https://webduino.io');">help_center</span>
+
     <wa-menubar id="menubar">
         <wa-run-python id='runPython' console="output"></wa-run-python>
     </wa-menubar>
