@@ -63,10 +63,6 @@ class SpeechRecognition extends LitElement {
         -webkit-font-feature-settings: 'liga';
         -webkit-font-smoothing: antialiased;
       }
-      .effect{
-        background-color: #ffc;
-      }
-
     `;
   }
 
