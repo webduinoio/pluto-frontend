@@ -22,8 +22,7 @@ class ImageSlider extends LitElement {
           #previous,
           #next {
             position: absolute;
-            top: 85%;
-            #transform: translateY(-70%);
+            top: 200px;
             width: 40px;
             height: 40px;
             line-height: 40px;
@@ -36,17 +35,17 @@ class ImageSlider extends LitElement {
           }
     
           #previous {
-            left: 0;
+            left: 10px;
           }
     
           #next {
-            right: 0;
+            right: 10px;
           }
     
           .title {
             position: absolute;
             #background-color: rgba(333, 0, 0, 0.1);
-            top: 85%;
+            top: 200px;
             width:100%;
             height: 40px;
             line-height: 40px;
@@ -92,6 +91,37 @@ class ImageSlider extends LitElement {
           .dots li.dot--active {
             background-color: white;
           }
+
+          .material-icons {
+            font-family: 'Material Icons', sans-serif;
+            font-size: 24px;
+            line-height: 24px;
+            font-weight: normal;
+            font-style: normal;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+          }
+          .info {
+            top:10px;
+            position: absolute;
+            right:0px;
+            font-size: 32px;
+            filter: invert(0.73);
+            cursor: pointer;
+          }
+          .blink {
+            animation: blink 0.5s linear alternate infinite;
+          }
+          @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0; }
+          }
         `;
   }
 
@@ -101,8 +131,8 @@ class ImageSlider extends LitElement {
     this.index = 0;
     this.lastIdx = -1;
     this.images = [
-      ['python', 'Python 助教', '../coms/python_logo.png', '320px'],
-      ['wbit', '控制 Web:Bit v2開發板', '../coms/wbitv2.png', '320px'],
+      ['python', 'Python 助教', '../coms/python_logo.png', '320px','https://md.webduino.io/XDR7n6FSRt6h9vy2RvX0pw?view'],
+      ['wbit', '控制 Web:Bit v2開發板', '../coms/wbitv2.png', '320px','https://md.webduino.io/Rwzas6JrQKyM0XHRwQtRyQ?view'],
       //['kebbi','../coms/kebbi.png', '320px'],
     ];
     this.actor = this.images[this.index][0];
@@ -154,15 +184,29 @@ class ImageSlider extends LitElement {
     this.next = this.shadowRoot.getElementById('next');
     this.previous = this.shadowRoot.getElementById('previous');
     this.descript = this.shadowRoot.getElementById('title');
+    this.info = this.shadowRoot.getElementById('info');
     var self = this;
+    setTimeout(function () {
+      self.info.classList.remove('blink');
+    }, 1000);
     setTimeout(function () {
       self.switchImg();
     }, 10);
   }
 
+  blinkInfo() {
+    this.info.classList.add('blink');
+    var self = this;
+    setTimeout(function () {
+      self.info.classList.remove('blink');
+    }, 1000);
+  }
+
   render() {
     return html`
       <div class="container">
+        <span id="info" class="material-icons info blink"
+        @click=${() => this.openInfo()}>info</span>
         <span id="previous" @click=${() => this.switchImg(--this.index)}>＜</span>
         <span id="next" @click=${() => this.switchImg(++this.index)}>＞</span>
         <span id="title" class="title"></span>
@@ -171,6 +215,11 @@ class ImageSlider extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  openInfo(){
+    var url = this.images[this.index][4];
+    window.open(url);
   }
 
   select(callback) {
@@ -199,6 +248,7 @@ class ImageSlider extends LitElement {
       const imgWidth = this.shadowRoot.querySelector('.slider img').clientWidth;
       const recomputedWidth = this.index * imgWidth;
       this.shadowRoot.querySelector('.slider').scrollTo({ left: recomputedWidth, behavior: 'smooth' });
+      this.blinkInfo();
     }
   }
 }
