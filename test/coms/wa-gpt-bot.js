@@ -101,7 +101,6 @@ class ChatGPTBot extends LitElement {
       setTimeout(function () {
         textarea.value = '';
       }, 10);
-
       return;
     }
     ChatGPTBot.shift_enter_Key = false;
