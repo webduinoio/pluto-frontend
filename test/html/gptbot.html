@@ -134,6 +134,9 @@
                 if (info['actor'] == 'wbit') deploy.setEnable(true);
                 var code = parent.editor.getCode();
                 code = code.replace('from webduino import WebBit','from webduino.webbit import WebBit');
+                code = code.replace('from Webbit import Webbit','from webduino.webbit import WebBit');
+                code = code.replace('webbit = Webbit()','webbit = WebBit()');
+                
                 parent.editor.setCode(code);
             }
             //*/
