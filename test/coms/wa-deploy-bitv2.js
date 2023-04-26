@@ -20,7 +20,7 @@ export class DeployBitV2 extends LitElement {
             padding: 5px;
             border: none;
             border-radius: 5px;
-            background-color: #ee3c71;
+            background-color: #e28471;
             color: #fff;
             cursor: pointer;
         }
@@ -70,7 +70,7 @@ export class DeployBitV2 extends LitElement {
 
     render() {
         return html`
-            <button id='usb' class='btn'>
+            <button id='usb' class='btn'  disabled>
             <svg viewBox="-2 0 24 24">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
