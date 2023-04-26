@@ -10,7 +10,7 @@
     <script src="../js/repl.js" type="text/javascript"></script>
     <!-- Google Font Material Symbol -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap">
-    
+
     <script type="module" src="../coms/wa-select-prompt.js"></script>
     <script type="module" src="../coms/wa-voice.js"></script>
     <script type="module" src="../coms/wa-deploy-bitv2.js"></script>
@@ -52,7 +52,7 @@
 </head>
 
 <body>
-    
+
     <div id="gptbot-content">
         <div class="quiz-panel">
             <wa-carousel id="carousel"></wa-carousel>
@@ -69,6 +69,28 @@
     </div>
 
     <script>
+        class Cookie {
+            constructor(months) {
+                this.expires = new Date();
+                this.expires.setMonth(this.expires.getMonth() + months);
+            }
+
+            set(key, value) {
+                document.cookie = `${key}=${value};expires=${this.expires.toUTCString()}`;
+            }
+
+            get(key) {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(key + '=')) {
+                        return cookie.substring(key.length + 1);
+                    }
+                }
+                return '';
+            }
+        }
+
         var isCode = false;
         var codeType = ['python', 'flow'];
         var _codeType = -1;
@@ -77,6 +99,9 @@
         const textarea = document.getElementById('show');
         const voice = document.getElementById('voice');
         const carousel = document.getElementById('carousel');
+        const cookie = new Cookie(2);
+
+
 
         function voiceToTextarea(str) {
             gpt.prompt(str);
@@ -151,7 +176,12 @@
 
         function parseURL(str) {
             if (str.indexOf('#') < 0) {
-                str = "";
+                str = cookie.get('userId');
+                str = str == '' ? 'guest' : str;
+                if (parent.location.href.indexOf('?') > 0) {
+                    var data = parent.location.href.split('?');
+                    parent.location.href = data[0] + '#' + str + '?' + data[1];
+                }
             }
             var result = { 'prompt': '', 'actor': 'python' };
             var userId = '';
@@ -164,6 +194,7 @@
                 } else {
                     userId = str.slice(hashIndex + 1);
                 }
+                cookie.set('userId', userId);
             } else {
                 if (questionIndex !== -1) {
                     userId = 'guest';
