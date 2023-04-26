@@ -120,7 +120,7 @@ export class Output extends LitElement {
     }
 
     show(msg) {
-        msg = msg.replace(' ', '&nbsp;');
+        msg = msg.replaceAll(' ', '&nbsp;');
         this.output.innerHTML = this.output.innerHTML + ("<p>" + msg + "</p>");
         this.output.data = this.output.data + msg + "\n";
     }
