@@ -136,7 +136,8 @@
                 code = code.replace('from webduino import WebBit','from webduino.webbit import WebBit');
                 code = code.replace('from Webbit import Webbit','from webduino.webbit import WebBit');
                 code = code.replace('webbit = Webbit()','webbit = WebBit()');
-                
+                code = code.replace('wbit.no_tone(0)','');
+                code = code.replace('wbit.tone(0,','wbit.tone(');
                 parent.editor.setCode(code);
             }
             //*/
