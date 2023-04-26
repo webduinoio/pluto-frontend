@@ -132,8 +132,9 @@
                 parent.flow.done();
                 var info = parseURL(parent.location.href);
                 if (info['actor'] == 'wbit') deploy.setEnable(true);
-                //var code = parent.editor.getCode();
-                //parent.editor.setCode(code);
+                var code = parent.editor.getCode();
+                code = code.replace('from webduino import WebBit','from webduino.webbit import WebBit');
+                parent.editor.setCode(code);
             }
             //*/
         }
