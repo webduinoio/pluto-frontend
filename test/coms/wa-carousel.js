@@ -22,24 +22,24 @@ class ImageSlider extends LitElement {
           #previous,
           #next {
             position: absolute;
-            top: 200px;
-            width: 40px;
-            height: 40px;
-            line-height: 40px;
+            top: 202px;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
             text-align: center;
             font-size: 30px;
             color: rgba(0, 0, 0, 0.5);
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: #ddd;
             cursor: pointer;
             z-index:5;
           }
     
           #previous {
-            left: 10px;
+            left: 0px;
           }
     
           #next {
-            right: 10px;
+            right: 0px;
           }
     
           .title {
@@ -108,11 +108,11 @@ class ImageSlider extends LitElement {
             -webkit-font-smoothing: antialiased;
           }
           .info {
-            top:10px;
+            top:36px;
             position: absolute;
             right:0px;
-            font-size: 32px;
-            filter: invert(0.73);
+            font-size: 24px;
+            filter: invert(0.8);
             cursor: pointer;
           }
           .blink {
@@ -132,7 +132,7 @@ class ImageSlider extends LitElement {
     this.lastIdx = -1;
     this.images = [
       ['python', 'Python 助教', '../coms/python_logo.png', '320px','https://md.webduino.io/XDR7n6FSRt6h9vy2RvX0pw?view'],
-      ['wbit', '控制 Web:Bit v2開發板', '../coms/wbitv2.png', '320px','https://md.webduino.io/Rwzas6JrQKyM0XHRwQtRyQ?view'],
+      ['wbit', '控制 Web:Bit v2 開發板', '../coms/wbitv2.png', '320px','https://md.webduino.io/Rwzas6JrQKyM0XHRwQtRyQ?view'],
       //['kebbi','../coms/kebbi.png', '320px'],
     ];
     this.actor = this.images[this.index][0];
@@ -207,8 +207,10 @@ class ImageSlider extends LitElement {
       <div class="container">
         <span id="info" class="material-icons info blink"
         @click=${() => this.openInfo()}>info</span>
-        <span id="previous" @click=${() => this.switchImg(--this.index)}>＜</span>
-        <span id="next" @click=${() => this.switchImg(++this.index)}>＞</span>
+        <span id="previous" @click=${() => this.switchImg(--this.index)}>
+        <span class="material-icons prev">chevron_left</span></span>
+        <span id="next" @click=${() => this.switchImg(++this.index)}>
+        <span class="material-icons next">chevron_right</span></span>
         <span id="title" class="title"></span>
         <div id="slider" class="slider">
           ${this.images.map((image) => html`<img src=${image[2]} />`)}

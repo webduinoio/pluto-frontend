@@ -44,9 +44,12 @@ class WAFlowchart extends LitElement {
           position: absolute;
           bottom: 10px;
           font-size: 20px;
-          background-color: white;
           height:32px;
           width:32px;
+          color:#a2a2a2;
+          background-color: transparent;
+          border: none;
+          outline: none;          
           border: none;
           cursor: pointer;
         }
@@ -54,12 +57,12 @@ class WAFlowchart extends LitElement {
           right: 10px;
           bottom: 50px;
           z-index: 5;
-          border:1px #ccc solid;
+          border:1px #a2a2a2 solid;
         }
          #zoom-out {
           right: 10px;
           z-index: 5;
-          border:1px #ccc solid;
+          border:1px #a2a2a2 solid;
         }
       `;
   }

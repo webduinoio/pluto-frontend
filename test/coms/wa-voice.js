@@ -21,7 +21,7 @@ class SpeechRecognition extends LitElement {
         padding: 5px;
         border: none;
         border-radius: 5px;
-        background-color: #2ecc71;
+        background-color: #cccc32;
         color: #fff;
         cursor: pointer;
       }

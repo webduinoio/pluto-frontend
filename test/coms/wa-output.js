@@ -48,17 +48,32 @@ export class Output extends LitElement {
         background-color: #303030;
         overflow: scroll;
     }
-    svg {
-        fill: #eee;
-        width: 24px;
-        height: 24px;
-    }
     #clear {
         transition: transform 0.3s ease-out;
+        font-size: 28px;
+        top: 4px;
+        right:4px;
+        position: relative;
+        float: right;        
     }      
     #clear:hover {
         transform: rotate(45deg);
-    }    
+    }
+    .material-icons {
+            font-family: 'Material Icons', sans-serif;
+            font-size: 24px;
+            line-height: 24px;
+            font-weight: normal;
+            font-style: normal;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+          }    
   `];
 
     async addInput(cb) {
@@ -140,10 +155,7 @@ export class Output extends LitElement {
     render() {
         return html`
     <div id='output-title'>Python 終端輸出
-        <svg id='clear' viewBox="0 0 24 24" width="24" height="24" style='float:right;padding:4px'>
-            <path d="M19.28 4.68a10 10 0 0 0-14.2 1.42l1.41 1.41a8 8 0 0 1 11.32-1.13L16 7h6V1l-1.42 1.42z"/>
-            <path d="M4.7 19.28a10 10 0 0 0 14.2-1.42l-1.41-1.41a8 8 0 0 1-11.31 1.13L8 17H2v6l1.42-1.42z"/>
-        </svg>    
+        <span id='clear' class="material-icons refresh">refresh</span>
     </div>
     <div id="output-console"><slot></slot></div>
 `;
