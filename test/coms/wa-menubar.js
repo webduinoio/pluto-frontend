@@ -95,7 +95,7 @@ export class MenuBar extends LitElement {
         return html`
         <div id='menubar'>
         <div style='float:left;padding:4px;position:absolute'>
-            <img width='36' height='36' src='https://webbit.webduino.io/blockly/media/logo3.png'>
+            <img height='36' src='./coms/webduino_logo.svg'>
         </div>
         <div style="padding-top: 10px;">
             <div class="toolMenu">
