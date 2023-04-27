@@ -118,7 +118,11 @@
             wholeMsg += msg;
             if (msg == '') return;
             try {
-                setCode(msg);
+                var isCode = setCode(msg);
+                if (!isCode && (msg == '```' || msg == '}```')) {
+                    msg = '&nbsp;&nbsp;&nbsp;完成';
+                }
+                //console.log(isCode, msg);
             } catch (e) { }
             if (!isCode) {
                 var cnt = gpt.read();
@@ -171,7 +175,7 @@
                 }
                 genCode = '';
                 isCode = false;
-                return;
+                return isCode;
             }
             if (code.indexOf('```') == 0) {
                 if (code.length > 3) {
@@ -179,11 +183,12 @@
                 }
                 _codeType = ++_codeType;
                 isCode = true;
-                return;
+                return isCode;
             }
-            if (!isCode) return;
+            if (!isCode) return isCode;
             genCode = genCode + code + '\n';
             setGenCode(genCode);
+            return isCode
         }
 
         function parseURL(str) {
