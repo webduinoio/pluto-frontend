@@ -28,7 +28,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-
         }
 
         .chat-panel {
@@ -133,11 +132,11 @@
                 var info = parseURL(parent.location.href);
                 if (info['actor'] == 'wbit') deploy.setEnable(true);
                 var code = parent.editor.getCode();
-                code = code.replace('from webduino import WebBit','from webduino.webbit import WebBit');
-                code = code.replace('from Webbit import Webbit','from webduino.webbit import WebBit');
-                code = code.replace('webbit = Webbit()','webbit = WebBit()');
-                code = code.replace('wbit.no_tone(0)','');
-                code = code.replace('wbit.tone(0,','wbit.tone(');
+                code = code.replace('from webduino import WebBit', 'from webduino.webbit import WebBit');
+                code = code.replace('from Webbit import Webbit', 'from webduino.webbit import WebBit');
+                code = code.replace('webbit = Webbit()', 'webbit = WebBit()');
+                code = code.replace('wbit.no_tone(0)', '');
+                code = code.replace('wbit.tone(0,', 'wbit.tone(');
                 parent.editor.setCode(code);
             }
             //*/
@@ -164,12 +163,20 @@
         }
 
         function setCode(code) {
-            if (code.indexOf('```') == 0 && isCode) {
-                isCode = false;
+            if (code.indexOf('```') >= 0 && isCode) {
+                var pos = code.indexOf('```');
+                if (pos > 0) {
+                    genCode = genCode + code.substring(0, pos) + '\n';
+                    setGenCode(genCode);
+                }
                 genCode = '';
+                isCode = false;
                 return;
             }
             if (code.indexOf('```') == 0) {
+                if (code.length > 3) {
+                    genCode = genCode + code.replace('```python', '').replace('```', '');
+                }
                 _codeType = ++_codeType;
                 isCode = true;
                 return;
