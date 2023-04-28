@@ -91,7 +91,7 @@ class SpeechRecognition extends LitElement {
         id="toggle-btn"
         class=${this.isRecording && !this.recognition ? '' : 'disabled'}
         @click=${this.handleToggleBtnClick} >
-        <span class="material-icons">mic</span>開始錄音
+        <span class="material-icons" style="width:30px">mic</span>
       </button>
     `;
   }
@@ -126,13 +126,13 @@ class SpeechRecognition extends LitElement {
         this.result = this.result + "\n";
         this.callback(this.result);
       };
-      this.voiceBtn.innerHTML = '<span class="material-icons" style="width:30px">interpreter_mode</span> 錄音中';
+      this.voiceBtn.innerHTML = '<span class="material-icons" style="width:30px">interpreter_mode</span>';
       this.recognition.start();
       this.isRecording = false;
       this.callback(this.result);
     } else {
       this.recognition.stop();
-      this.voiceBtn.innerHTML = '<span class="material-icons" >mic</span>開始錄音';
+      this.voiceBtn.innerHTML = '<span class="material-icons" style="width:30px">mic</span>';
     }
   }
 }
