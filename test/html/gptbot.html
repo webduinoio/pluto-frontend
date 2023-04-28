@@ -119,10 +119,12 @@
             if (msg == '') return;
             try {
                 var isCode = setCode(msg);
-                if (!isCode && (msg == '```' || msg == '}```')) {
-                    msg = '&nbsp;&nbsp;&nbsp;完成';
-                }
-                //console.log(isCode, msg);
+                console.log(isCode, msg);
+                // filter ``` , ```\n , }``` , }```\n
+                if (!isCode &&
+                    ((msg.indexOf('```') == 0) ||
+                        (msg.indexOf('}```') == 0)))
+                    msg = '&nbsp;&nbsp;&nbsp;完成\n';
             } catch (e) { }
             if (!isCode) {
                 var cnt = gpt.read();
@@ -135,6 +137,7 @@
                 parent.flow.done();
                 var info = parseURL(parent.location.href);
                 if (info['actor'] == 'wbit') deploy.setEnable(true);
+                // fix dirty codegen
                 var code = parent.editor.getCode();
                 code = code.replace('from webduino import WebBit', 'from webduino.webbit import WebBit');
                 code = code.replace('from Webbit import Webbit', 'from webduino.webbit import WebBit');
@@ -179,7 +182,11 @@
             }
             if (code.indexOf('```') == 0) {
                 if (code.length > 3) {
-                    genCode = genCode + code.replace('```python', '').replace('```', '');
+                    genCode = genCode + 
+                    code.replace('```dot', '')
+                    .replace('```python', '')
+                    .replace('```graphviz', '')
+                    .replace('```', '');
                 }
                 _codeType = ++_codeType;
                 isCode = true;
@@ -228,7 +235,6 @@
                     result[parts[0]] = decodeURIComponent(parts[1].replace(/\+/g, ' '));
                 }
             }
-
             return result;
         }
 
@@ -259,6 +265,7 @@
                     '?prompt=' + encodeURIComponent(prompt) +
                     '&actor=' + carousel.actor;
                 wholeMsg = '';
+                genCode = '';
                 isCode = false;
                 _codeType = -1; // -1:none , 0:python , 1:flow
                 //console.log("prompt callback:", prompt);
