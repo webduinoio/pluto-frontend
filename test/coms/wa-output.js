@@ -76,8 +76,11 @@ export class Output extends LitElement {
           }    
   `];
 
-    async addInput(cb) {
+    async addInput(msg, cb) {
         var output = this.output;
+        if (typeof (msg) != "undefined") {
+            this.show(msg);
+        }
         var input = document.createElement("input");
         input.type = "text";
         input.placeholder = "輸入文字，按 Enter 結束";
@@ -87,7 +90,7 @@ export class Output extends LitElement {
                 var text = this.value.trim();
                 if (text !== "") {
                     var p = document.createElement("p");
-                    p.textContent = text;
+                    p.textContent += text;
                     output.appendChild(p);
                     cb(text);
                 }

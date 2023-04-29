@@ -80,7 +80,7 @@ export class RunPython extends LitElement {
             var convertCode = imp +
                 //code.replace(/input()\(/g, 'str(await js.window.Main.input()');
                 code.replaceAll(/input\(/g, 'await js.window.Main.input(');
-            console.log("=========\n",convertCode);
+            //console.log("=========\n", convertCode);
             return convertCode;
         }
 
@@ -108,7 +108,7 @@ export class RunPython extends LitElement {
 
         window.Main.input = async function (msg) {
             return new Promise((resolve, reject) => {
-                output.addInput(function (rtnData) {
+                output.addInput(msg, function (rtnData) {
                     resolve(rtnData);
                 })
             });
