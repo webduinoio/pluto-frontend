@@ -89,7 +89,7 @@ class Main {
     eventTrigger(com, action, info) {
         console.log(com, ":", action, ":", info);
         if (com == 'mqtt' && action == 'onFailure') {
-            alert('連線中斷，請重新整理網頁');
+            //alert('連線中斷，請重新整理網頁');
         }
         else if (com == 'carousel' && action == 'setActor') {
             this.coms['gpt'].clear();

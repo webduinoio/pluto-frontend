@@ -19,6 +19,7 @@ class MQTTApp {
         this.pubTopic = topic + '_prompt/' + userId;
         this.respTopic_cb = topic + "_completion/" + this.userId;
         this.respTopic_end = topic + "_completion_end/" + this.userId;
+        this.failure = false;
     }
 
     async init(cb) {
@@ -53,11 +54,12 @@ class MQTTApp {
             if (!this.client.isConnected()) {
                 console.log('Disconnected from MQTT broker, attempting to reconnect...');
                 if (typeof (parent.Main) != "undefined") {
+                    self.failure = true;
                     parent.Main.eventTrigger("mqtt", "onFailure", "");
                 }
                 clearInterval(self.keepAlive);
             }
-        }, 3000);
+        }, 10000);
     }
 
     // MQTT message publish function

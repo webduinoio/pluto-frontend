@@ -182,11 +182,11 @@
             }
             if (code.indexOf('```') == 0) {
                 if (code.length > 3) {
-                    genCode = genCode + 
-                    code.replace('```dot', '')
-                    .replace('```python', '')
-                    .replace('```graphviz', '')
-                    .replace('```', '');
+                    genCode = genCode +
+                        code.replace('```dot', '')
+                            .replace('```python', '')
+                            .replace('```graphviz', '')
+                            .replace('```', '');
                 }
                 _codeType = ++_codeType;
                 isCode = true;
@@ -260,6 +260,9 @@
 
             gpt.promptCallback(function (prompt) {
                 parent.Main.coms['output'].cls();
+                if (parent.Main.coms['mqtt'].failure) {
+                    alert('連線中斷，請重新整理網頁');
+                }
                 parent.location.hash =
                     '#' + info['userId'] +
                     '?prompt=' + encodeURIComponent(prompt) +
