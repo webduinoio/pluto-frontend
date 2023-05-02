@@ -188,6 +188,8 @@ class ChatGPTBot extends LitElement {
     dislikeButton.style.filter = 'grayscale(100%)';
     this.addBtnListener(dislikeButton);
     buttonContainer.appendChild(dislikeButton);
+    this.likeButton = likeButton;
+    this.dislikeButton = dislikeButton;
 
     // Add message text
     const text = document.createElement('div');
@@ -207,14 +209,16 @@ class ChatGPTBot extends LitElement {
     var self = this;
     btn.info = [];
     btn.addEventListener('click', () => {
-      btn.btnClicked = !btn.btnClicked;
-      if (btn.btnClicked) {
+      if (!btn.btnClicked) {
+        if (btn.memo=='like' && this.dislikeButton.style.filter == 'none') return;
+        if (btn.memo=='dislike' && this.likeButton.style.filter == 'none') return;
         btn.style.filter = 'none';
         btn.info = [self.uuid, btn.memo, true];
       } else {
         btn.style.filter = 'grayscale(100%)';
         btn.info = [self.uuid, btn.memo, false];
       }
+      btn.btnClicked = !btn.btnClicked;
       this.mqtt.publish('feedback:' + JSON.stringify(btn.info));
     });
   }
@@ -261,7 +265,7 @@ class ChatGPTBot extends LitElement {
   sendMessage() {
     console.log("sendMessage()");
     const textarea = this.textarea;
-    if(textarea.value.trim()=='') {
+    if (textarea.value.trim() == '') {
       textarea.value = '';
       return;
     }
