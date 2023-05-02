@@ -96,11 +96,7 @@ class ChatGPTBot extends LitElement {
   handleTextareaKeyPress(e) {
     const textarea = e.target;
     const lineHeight = ChatGPTBot.lineHeight;
-    if (textarea.value.trim() == '') {
-      textarea.value = '';
-      return;
-    }
-    if (e.keyCode === 13 && !ChatGPTBot.shift_enter_Key) { // Enter key
+    if (e.keyCode == 13 && !ChatGPTBot.shift_enter_Key) { // Enter key
       this.sendMessage();
       setTimeout(function () {
         textarea.value = '';
@@ -263,7 +259,12 @@ class ChatGPTBot extends LitElement {
   }
 
   sendMessage() {
+    console.log("sendMessage()");
     const textarea = this.textarea;
+    if(textarea.value.trim()=='') {
+      textarea.value = '';
+      return;
+    }
     this.userSay(textarea.value);
     this.promptCallback(textarea.value);
     textarea.value = '';
