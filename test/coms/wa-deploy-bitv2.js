@@ -52,10 +52,15 @@ export class DeployBitV2 extends LitElement {
             await self.repl.usbConnect();
             var code = parent.editor.getCode();
             var writeLen = await self.repl.uploadFile(code);
-            self.msg.innerHTML = writeLen > 0 ? '完成' : '失敗';
-            setTimeout(function () {
-                self.msg.innerHTML = '部署';
-            }, 1500);
+            if (writeLen > 0) {
+                self.msg.innerHTML = '開發板初始化';
+                await new Promise(r => setTimeout(r, 5000));
+                self.msg.innerHTML = '成功';
+            } else {
+                self.msg.innerHTML = '失敗';
+            }
+            await new Promise(r => setTimeout(r, 2000));
+            self.msg.innerHTML = '部署';
         });
     }
 
