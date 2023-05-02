@@ -26,10 +26,15 @@ class SpeechRecognition extends LitElement {
         cursor: pointer;
       }
 
-      #toggle-btn.disabled {
+      #toggle-btn.recording {
         background-color: #fcc;
         cursor: default;
         animation: blink 1s infinite;
+      }
+      
+      #toggle-btn.disabled {
+        background-color: #eee;
+        cursor: default;
       }
       
       @keyframes blink {
@@ -89,7 +94,7 @@ class SpeechRecognition extends LitElement {
     return html`
       <button
         id="toggle-btn"
-        class=${this.isRecording && !this.recognition ? '' : 'disabled'}
+        class=${this.isRecording && !this.recognition ? '' : 'recording'}
         @click=${this.handleToggleBtnClick} >
         <span class="material-icons" style="width:30px">mic</span>
       </button>
@@ -102,6 +107,15 @@ class SpeechRecognition extends LitElement {
       this.voiceBtn.classList.remove('disabled');
     } else {
       this.voiceBtn.classList.add('disabled');
+    }
+  }
+
+  setRecording(enabled) {
+    this.voiceBtn.rec = enabled;
+    if (!enabled) {
+      this.voiceBtn.classList.remove('recording');
+    } else {
+      this.voiceBtn.classList.add('recording');
     }
   }
 
