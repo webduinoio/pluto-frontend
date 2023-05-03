@@ -109,8 +109,8 @@ class ImageSlider extends LitElement {
           }
           .info {
             top:36px;
+            right:40px;
             position: absolute;
-            right:10px;
             font-size: 24px;
             filter: invert(0.8);
             cursor: pointer;
