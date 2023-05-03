@@ -97,11 +97,13 @@ class Main {
             this.coms['gpt'].clear();
             if (info[1] == 'python') {
                 this.coms['deploy'].hide(true);
+                this.coms['deploy'].setEnable(false);
                 this.coms['runPython'].hide(false);
                 this.coms['split-v'].setHideBody(false);
             }
             if (info[1] == 'wbit') {
                 this.coms['deploy'].hide(false);
+                this.coms['deploy'].setEnable(true);
                 this.coms['runPython'].hide(true);
                 this.coms['split-v'].setHideBody(true);
             }
