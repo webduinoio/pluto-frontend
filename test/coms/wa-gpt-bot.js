@@ -93,7 +93,6 @@ class ChatGPTBot extends LitElement {
     textarea.style.height = `${textarea.scrollHeight}px`;
     var calHeight = textarea.scrollHeight - 20;
     textarea.style.marginTop = `-${calHeight}px`;
-    console.log("input...");
   }
 
 
@@ -104,15 +103,26 @@ class ChatGPTBot extends LitElement {
   }
 
   handleTextareaKeyPress(e) {
+    var self = this;
     const textarea = e.target;
     const lineHeight = ChatGPTBot.lineHeight;
     if (e.keyCode == 13 && !ChatGPTBot.shift_enter_Key) { // Enter key
+      // 判斷字串最後是否為換行符號
+      if (textarea.value.endsWith('\n') && !e.shiftKey) {
+        // 刪除字串最後的換行符號
+        textarea.value = textarea.value.slice(0, -1);
+      }
       this.sendMessage();
       setTimeout(function () {
         textarea.value = '';
+        var e = {};
+        e.target = self.textarea;
+        self.handleOnInput(e);
+        textarea.focus();
       }, 10);
       return;
     }
+
     ChatGPTBot.shift_enter_Key = false;
   }
 
