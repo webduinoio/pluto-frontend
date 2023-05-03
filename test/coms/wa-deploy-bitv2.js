@@ -12,17 +12,22 @@ export class DeployBitV2 extends LitElement {
 
     static styles = [css`
         button {
+            display: flex;
+            transition: all 0.5s ease;
             background-color: transparent;
             cursor: pointer;
             color: #eee;
-            float:left;
             border: none;
             font-size: 16px;
-            display: flex;
-            align-items: center; 
-            width:75px;
-            margin-left: -5px;
+            width:90px;
+            margin-left: -15px;
+            margin-top: 0px;
         }
+        
+        button:hover {
+        transform: translateY(-3px);
+        color: #fff;
+        }        
         button[disabled] {
             cursor: pointer;
             color: #777;
@@ -32,11 +37,10 @@ export class DeployBitV2 extends LitElement {
             width: 24px;
             height: 24px;
             display: inline-block;
-            vertical-align: middle;
         }
         #msg {
+            width:60px;
             display: inline-block;
-            vertical-align: middle;
         }
     `];
 
@@ -73,10 +77,10 @@ export class DeployBitV2 extends LitElement {
         this.usbButton.disabled = !enabled;
         if (enabled) {
             this.usbButton.classList.remove('disabled');
-            this.usbSVG.style['fill']='#eee'
+            this.usbSVG.style['fill'] = '#eee'
         } else {
             this.usbButton.classList.add('disabled');
-            this.usbSVG.style['fill']='#777'
+            this.usbSVG.style['fill'] = '#777'
         }
     }
 
@@ -103,8 +107,7 @@ export class DeployBitV2 extends LitElement {
                     </g>
                     </g>
                 </g>
-            </svg>
-            <span id='msg'>部署</span>
+            </svg><span>部署</span>
             </button>
         `;
     }

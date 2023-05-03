@@ -23,7 +23,7 @@ export class MenuBar extends LitElement {
         z-index: 100;
     }
     .toolMenu {
-        width:140px;
+        width:160px;
         float: right;
         box-sizing: border-box;
         font-size: 15px;
@@ -95,7 +95,7 @@ export class MenuBar extends LitElement {
         return html`
         <div id='menubar'>
         <div style='float:left;padding:4px;position:absolute'>
-            <img height='36' src='./coms/webduino_logo.svg'>
+            <img height='36' src='./coms/webduino_logo.svg' style='margin-left:5px'>
         </div>
         <div style="padding-top: 10px;">
             <div class="toolMenu">
