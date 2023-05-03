@@ -39,7 +39,8 @@ export class DeployBitV2 extends LitElement {
             display: inline-block;
         }
         #msg {
-            width:60px;
+            width:40px;
+            margin-left: -5px;
             display: inline-block;
         }
     `];
