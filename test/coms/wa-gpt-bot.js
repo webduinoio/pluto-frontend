@@ -214,10 +214,10 @@ class ChatGPTBot extends LitElement {
         if (btn.memo == 'like' && this.dislikeButton.style.filter == 'none') return;
         if (btn.memo == 'dislike' && this.likeButton.style.filter == 'none') return;
         btn.style.filter = 'none';
-        btn.info = [self.uuid, btn.memo, true];
+        btn.info = [self.lastPrompt, btn.memo, true];
       } else {
         btn.style.filter = 'grayscale(100%)';
-        btn.info = [self.uuid, btn.memo, false];
+        btn.info = [self.lastPrompt, btn.memo, false];
       }
       btn.btnClicked = !btn.btnClicked;
       this.mqtt.publish('feedback:' + JSON.stringify(btn.info));
@@ -270,6 +270,7 @@ class ChatGPTBot extends LitElement {
       textarea.value = '';
       return;
     }
+    this.lastPrompt = textarea.value;
     this.userSay(textarea.value);
     this.promptCallback(textarea.value);
     textarea.value = '';
