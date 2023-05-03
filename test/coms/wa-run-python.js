@@ -64,7 +64,8 @@ export class RunPython extends LitElement {
         const run = this.renderRoot.querySelector("#run");
         const icon = this.renderRoot.querySelector("#icon");
         const output = document.getElementById(this.console);
-
+        this.run = run;
+        
         function stdout_func(msg) {
             output.show(msg);
             output.scrollBottom();
@@ -180,6 +181,14 @@ export class RunPython extends LitElement {
             }
         }
         alert('測試' + (success ? "成功" : "失敗"));
+    }
+
+    hide(state) {
+        if (state) {
+            this.run.style['display'] = 'none';
+        } else {
+            this.run.style['display'] = '';
+        }
     }
 
     render() {

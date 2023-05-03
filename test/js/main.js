@@ -66,6 +66,7 @@ class Main {
             Container.init({
                 'c1': 'drag1', 'c2': 'drag2', 'c3': 'drag3'
             });
+            window.Main.registry("deploy", document.getElementById('deploy'));
         }, 100);
     }
 

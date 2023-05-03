@@ -17,7 +17,7 @@ export class DeployBitV2 extends LitElement {
             justify-content: center;
             font-size: 1em;
             font-weight: bold;
-            padding: 5px;
+            #padding: 5px;
             border: none;
             border-radius: 5px;
             background-color: #e28471;
@@ -70,6 +70,14 @@ export class DeployBitV2 extends LitElement {
             this.usbButton.classList.remove('disabled');
         } else {
             this.usbButton.classList.add('disabled');
+        }
+    }
+
+    hide(state) {
+        if (state) {
+            this.usbButton.style['display'] = 'none';
+        } else {
+            this.usbButton.style['display'] = '';
         }
     }
 
