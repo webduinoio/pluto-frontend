@@ -264,7 +264,7 @@ class ChatGPTBot extends LitElement {
   }
 
   sendMessage() {
-    console.log("sendMessage()");
+    //console.log("sendMessage()");
     const textarea = this.textarea;
     if (textarea.value.trim() == '') {
       textarea.value = '';
