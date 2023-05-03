@@ -13,7 +13,7 @@ class ChatGPTBot extends LitElement {
       #input-area {
         width: 100%;
         position: relative;
-        bottom: 0px;
+        bottom: -28px;
       }
       #input-area Textarea {
         width: 100%;
@@ -67,7 +67,8 @@ class ChatGPTBot extends LitElement {
       <div id="input-area">
         <textarea id='txtarea' placeholder="你想要讓 AI 做什麼 ?" rows="1" 
         @keydown="${this.handleTextareaKeyDown}" 
-        @keypress="${this.handleTextareaKeyPress}"></textarea>
+        @keypress="${this.handleTextareaKeyPress}"
+        @input="${this.handleOnInput}"></textarea>
         <button id="send-button" @click="${this.sendMessage}">
           <img src='../coms/gpt_send.svg' width='24px'>
         </button>
@@ -77,7 +78,6 @@ class ChatGPTBot extends LitElement {
 
   // https://jsbin.com/tihivunope/1/edit?html,output
   firstUpdated() {
-    //*/
     if (typeof (parent.Main) != "undefined") {
       parent.Main.registry("gpt", this);
     }
@@ -86,6 +86,16 @@ class ChatGPTBot extends LitElement {
     ChatGPTBot.lineHeight = parseFloat(this.textareaStyle.lineHeight);
     window.init();
   }
+
+  handleOnInput(e) {
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+    var calHeight = textarea.scrollHeight - 20;
+    textarea.style.marginTop = `-${calHeight}px`;
+    console.log("input...");
+  }
+
 
   handleTextareaKeyDown(e) {
     if (e.keyCode === 13 && e.shiftKey) { // Shift + Enter key
@@ -104,25 +114,6 @@ class ChatGPTBot extends LitElement {
       return;
     }
     ChatGPTBot.shift_enter_Key = false;
-    var nowRow = textarea.value.split('\n').length;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-    const rows = Math.floor(textarea.scrollHeight / lineHeight);
-    const diffRows = rows - parseInt(textarea.getAttribute('rows'));
-    if (nowRow < 5) {
-      if (diffRows > 0) {
-        textarea.style.marginTop = `-${diffRows * lineHeight}px`;
-      } else {
-        textarea.style.marginTop = '';
-      }
-    } else {
-      textarea.style.marginTop = `-${4 * lineHeight}px`;
-    }
-    if (rows > 6) {
-      textarea.style.overflowY = 'scroll';
-    } else {
-      textarea.style.overflowY = 'hidden';
-    }
   }
 
   userSay(message) {
@@ -210,8 +201,8 @@ class ChatGPTBot extends LitElement {
     btn.info = [];
     btn.addEventListener('click', () => {
       if (!btn.btnClicked) {
-        if (btn.memo=='like' && this.dislikeButton.style.filter == 'none') return;
-        if (btn.memo=='dislike' && this.likeButton.style.filter == 'none') return;
+        if (btn.memo == 'like' && this.dislikeButton.style.filter == 'none') return;
+        if (btn.memo == 'dislike' && this.likeButton.style.filter == 'none') return;
         btn.style.filter = 'none';
         btn.info = [self.uuid, btn.memo, true];
       } else {
@@ -272,9 +263,9 @@ class ChatGPTBot extends LitElement {
     this.userSay(textarea.value);
     this.promptCallback(textarea.value);
     textarea.value = '';
-    textarea.rows = 1;
-    textarea.style.height = '44px';
-    textarea.style.marginTop = '';
+    var e = {};
+    e.target = this.textarea;
+    this.handleOnInput(e);
     textarea.focus();
   }
 
@@ -282,7 +273,7 @@ class ChatGPTBot extends LitElement {
     this.textarea.value = msg;
     var e = {};
     e.target = this.textarea;
-    this.handleTextareaKeyPress(e);
+    this.handleOnInput(e);
   }
 
   promptCallback(callback) {
