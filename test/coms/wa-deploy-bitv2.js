@@ -107,7 +107,7 @@ export class DeployBitV2 extends LitElement {
                     </g>
                     </g>
                 </g>
-            </svg><span>部署</span>
+            </svg><span id='msg'>部署</span>
             </button>
         `;
     }
