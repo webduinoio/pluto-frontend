@@ -103,10 +103,36 @@ btnPython.addEventListener('click', async () => {
   progressShow();
   console.log("load files...");
   var fileArr = [
-    ['board/webbitv2/0x1000_bootloader.bin', 0x1000],
-    ['board/webbitv2/0x8000_partition-table.bin', 0x8000],
-    ['board/webbitv2/0x10000_micropython.bin', 0x10000],
-    ['board/webbitv2/0x200000_nvs.bin', 0x200000],
+    ['board/webbitv2/fw_mpy/0x1000_bootloader.bin', 0x1000],
+    ['board/webbitv2/fw_mpy/0x8000_partition-table.bin', 0x8000],
+    ['board/webbitv2/fw_mpy/0x10000_micropython.bin', 0x10000],
+    ['board/webbitv2/fw_mpy/0x200000_nvs.bin', 0x200000],
+  ];
+  console.log("OK!");
+  await burn.flash(fileArr, function (part, percent) {
+    if (part == fileArr.length) {
+      progressSet(percent);
+    }
+  });
+  msg.innerHTML = '燒錄完成';
+  ready2go.style['display'] = '';
+});
+
+
+btnBlockly.addEventListener('click', async () => {
+  msg.innerHTML = 'USB 連線中...';
+  await burn.connect(230400);
+  msg.innerHTML = '清除約需15秒，請稍候...';
+  await burn.erase();
+  msg.innerHTML = '清除完成';
+  msg.innerHTML = '燒錄中，請稍候...';
+  progressShow();
+  console.log("load files...");
+  var fileArr = [
+    ['board/webbitv2/fw_blockly/0x1000_bit_s2_bootloader_qio_80m.bin', 0x1000],
+    ['board/webbitv2/fw_blockly/0x8000_bit_s2_partitions.bin', 0x8000],
+    ['board/webbitv2/fw_blockly/0xe000_bit_s2_boot_app0.bin', 0xe000],
+    ['board/webbitv2/fw_blockly/0x10000_bit_s2_default.bin', 0x10000],
   ];
   console.log("OK!");
   await burn.flash(fileArr, function (part, percent) {
