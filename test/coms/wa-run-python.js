@@ -65,7 +65,7 @@ export class RunPython extends LitElement {
         const icon = this.renderRoot.querySelector("#icon");
         const output = document.getElementById(this.console);
         this.run = run;
-        
+
         function stdout_func(msg) {
             output.show(msg);
             output.scrollBottom();
@@ -116,6 +116,7 @@ export class RunPython extends LitElement {
         }
         this.pyodide = pyodide;
         this.output = output;
+        self.hide(true);
         // Pyodide is now ready to use...
         console.log("pyodide ready !");
         run.removeAttribute('disabled');

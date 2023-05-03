@@ -67,6 +67,7 @@ class Main {
                 'c1': 'drag1', 'c2': 'drag2', 'c3': 'drag3'
             });
             window.Main.registry("deploy", document.getElementById('deploy'));
+            window.Main.registry("runPython", document.getElementById('runPython'));
         }, 100);
     }
 
@@ -95,11 +96,13 @@ class Main {
         else if (com == 'carousel' && action == 'setActor') {
             this.coms['gpt'].clear();
             if (info[1] == 'python') {
-                this.coms['deploy'].setEnable(false);
+                this.coms['deploy'].hide(true);
+                this.coms['runPython'].hide(false);
                 this.coms['split-v'].setHideBody(false);
             }
             if (info[1] == 'wbit') {
-                this.coms['deploy'].setEnable(true);
+                this.coms['deploy'].hide(false);
+                this.coms['runPython'].hide(true);
                 this.coms['split-v'].setHideBody(true);
             }
         }

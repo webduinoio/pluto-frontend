@@ -106,6 +106,7 @@
 
 
         function voiceToTextarea(str) {
+            if(str.trim()=='') return;
             gpt.prompt(str);
         }
 
