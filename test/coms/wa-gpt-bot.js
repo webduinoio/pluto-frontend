@@ -55,6 +55,7 @@ class ChatGPTBot extends LitElement {
     this.loading = false;
     this.loadingTextIndex = 0;
     this.loadingTexts = ['.', '..', '...'];
+    this.wholeMsg = "";
   }
 
   setMQTT(app) {
@@ -214,10 +215,10 @@ class ChatGPTBot extends LitElement {
         if (btn.memo == 'like' && this.dislikeButton.style.filter == 'none') return;
         if (btn.memo == 'dislike' && this.likeButton.style.filter == 'none') return;
         btn.style.filter = 'none';
-        btn.info = [self.lastPrompt, btn.memo, true];
+        btn.info = [self.lastPrompt, self.wholeMsg, btn.memo, true];
       } else {
         btn.style.filter = 'grayscale(100%)';
-        btn.info = [self.lastPrompt, btn.memo, false];
+        btn.info = [self.lastPrompt, self.wholeMsg, btn.memo, false];
       }
       btn.btnClicked = !btn.btnClicked;
       this.mqtt.publish('feedback:' + JSON.stringify(btn.info));

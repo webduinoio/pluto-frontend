@@ -106,7 +106,7 @@
 
 
         function voiceToTextarea(str) {
-            if(str.trim()=='') return;
+            if (str.trim() == '') return;
             gpt.prompt(str);
         }
 
@@ -119,7 +119,7 @@
                 }
             }
             //console.log(isEnd, msg);
-            wholeMsg += msg;
+            wholeMsg = wholeMsg + "\n" + msg;
             if (msg == '') return;
             try {
                 var isCode = setCode(msg);
@@ -138,6 +138,7 @@
             //* enhance code function
             if (isEnd) {
                 gpt.done();
+                gpt.wholeMsg = wholeMsg;
                 parent.flow.done();
                 // fix dirty codegen
                 var code = parent.editor.getCode();
@@ -192,7 +193,7 @@
                 }
                 _codeType = ++_codeType;
                 // when codeGen completed , check deploy btn if necessary
-                if(_codeType==1){
+                if (_codeType == 1) {
                     var info = parseURL(parent.location.href);
                     if (info['actor'] == 'wbit') {
                         parent.Main.coms['deploy'].setEnable(true);
