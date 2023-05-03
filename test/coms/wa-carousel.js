@@ -132,7 +132,8 @@ class ImageSlider extends LitElement {
     this.lastIdx = -1;
     this.images = [
       ['python', 'Python 助教', '../coms/python_logo.png', '320px','https://md.webduino.io/XDR7n6FSRt6h9vy2RvX0pw?view'],
-      ['wbit', '控制 Web:Bit v2', '../coms/wbitv2.png', '320px','https://md.webduino.io/Rwzas6JrQKyM0XHRwQtRyQ?view'],
+      ['wbit', '控制 Web:Bit v2', '../coms/wv2.png', '320px','https://md.webduino.io/Rwzas6JrQKyM0XHRwQtRyQ?view'],
+      ['microbit', '控制 Micro:Bit', '../coms/microbit.png', '320px','https://md.webduino.io/Rwzas6JrQKyM0XHRwQtRyQ?view'],
       //['kebbi','../coms/kebbi.png', '320px'],
     ];
     this.actor = this.images[this.index][0];
