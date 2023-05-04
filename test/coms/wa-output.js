@@ -42,6 +42,7 @@ export class Output extends LitElement {
         height: 10em;
         padding: 0.5em;
         font-size:1.2em;
+        font-family: "Courier New", Courier, monospace;
         height: calc(100% - 52px);
         width: calc(100% - 19px);
         color: #Fefefe;
