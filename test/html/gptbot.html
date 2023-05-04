@@ -236,13 +236,13 @@
                 cookie.set('userId', userId);
             } else {
                 if (questionIndex !== -1) {
-                    userId = 'guest';
+                    userId = '';
                 } else {
                     userId = str;
                 }
             }
 
-            result.userId = userId == '' ? 'guest' : userId;
+            result.userId = userId == '' ? '' : userId;
             if (questionIndex !== -1) {
                 var params = str.slice(questionIndex + 1).split('&');
                 for (var i = 0; i < params.length; i++) {
