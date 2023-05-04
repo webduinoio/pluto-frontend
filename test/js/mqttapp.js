@@ -7,7 +7,9 @@ class MQTTApp {
         this.userId = userId;
         this.client = new Paho.Client('wss://mqtt1.webduino.io/mqtt', userId);
         this.options = {
-            userName: 'webduino', password: 'webduino', keepAliveInterval: 3
+            timeout: 900, keepAliveInterval: 30,
+            reconnect: true,
+            userName: 'webduino', password: 'webduino'
         };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
@@ -50,7 +52,7 @@ class MQTTApp {
         this.client.onMessageArrived = this.onMessageArrived.bind(this);
         var self = this;
         // add keepAlive property
-        this.keepAlive = setInterval(() => {
+        this.keepAlive = setInterval(async () => {
             if (!this.client.isConnected()) {
                 console.log('Disconnected from MQTT broker, attempting to reconnect...');
                 if (typeof (parent.Main) != "undefined") {
@@ -58,8 +60,12 @@ class MQTTApp {
                     parent.Main.eventTrigger("mqtt", "onFailure", "");
                 }
                 clearInterval(self.keepAlive);
+                // 重新連接
+                console.log('attempting to reconnect...');
+                await this.connect();
+                console.log('reconnect...done.');
             }
-        }, 10000);
+        }, 3000);
     }
 
     // MQTT message publish function
@@ -86,9 +92,7 @@ class MQTTApp {
     // MQTT message received handler 
     onMessageArrived(message) {
         const topic = message.destinationName;
-        //console.log("topic:", topic);
         const payload = message.payloadString;
-        //console.log(`Received message: ${payload} on topic: ${topic}`);
         if (this.subscriptions[topic] && this.subscriptions[topic].onMessageReceived) {
             this.subscriptions[topic].onMessageReceived(payload);
         }
