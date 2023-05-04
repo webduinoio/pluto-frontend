@@ -211,12 +211,13 @@
         function parseURL(str) {
             if (str.indexOf('#') < 0) {
                 str = cookie.get('userId');
-                //str = str == '' ? 'guest' : str;
-                parent.Main.popup(
-                    "還差一步!",
-                    "填寫表單就能申請體驗囉! <a href='https://webduino.pse.is/gpt_er'>我要申請</a>",
-                    "info", "知道了")
-
+                //str = str == '' ? '' : str;
+                if (str == '') {
+                    parent.Main.popup(
+                        "還差一步!",
+                        "填寫表單就能申請體驗囉! <a href='https://webduino.pse.is/gpt_er'>我要申請</a>",
+                        "info", "知道了")
+                }
                 if (parent.location.href.indexOf('?') > 0) {
                     var data = parent.location.href.split('?');
                     parent.location.href = data[0] + '#' + str + '?' + data[1];
