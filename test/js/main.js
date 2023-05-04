@@ -88,6 +88,15 @@ class Main {
         console.log(" Registry >>> [" + comName + "]");
     }
 
+    popup(title, text, icon, confirmButtonText) {
+        Swal.fire({
+            title: title,
+            html: text,
+            icon: icon,
+            confirmButtonText: confirmButtonText
+        })
+    }
+
     eventTrigger(com, action, info) {
         console.log(com, ":", action, ":", info);
         if (com == 'mqtt' && action == 'onFailure') {
