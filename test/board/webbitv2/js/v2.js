@@ -115,7 +115,7 @@ btnPython.addEventListener('click', async () => {
     }
   });
   msg.innerHTML = '燒錄完成';
-  ready2go.style['display'] = '';
+  pythonReady2go.style['display'] = '';
 });
 
 
@@ -141,5 +141,5 @@ btnBlockly.addEventListener('click', async () => {
     }
   });
   msg.innerHTML = '燒錄完成';
-  ready2go.style['display'] = '';
+  blocklyReady2go.style['display'] = '';
 });

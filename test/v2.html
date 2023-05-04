@@ -10,20 +10,58 @@
     <script src="board/webbitv2/js/utilities.js" defer></script>
     <script src="board/webbitv2/js/esptool.js" defer></script>
     <script src="board/webbitv2/js/v2.js" defer></script>
+    <style>
+        #main {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 480px;
+        }
+
+        #btn {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 480px;
+        }
+
+        #btnPython,
+        #btnBlockly {
+            margin: 0 25px;
+        }
+        #fw{
+            background-color: #eee;
+            width: 300px;
+            margin-left:90px;
+        }
+    </style>
 </head>
 
 <body>
     <div style="padding:10px">
-        <h1>Web:Bit v2 </h1>
-        <button id="btnPython" type="button">燒錄 Micropython</button>
-        <button id="btnBlockly" type="button">燒錄 Blockly</button>
+        <h1 style="margin-left:50px;">Web:Bit v2 韌體更新工具</h1>
+        <div id='main'>
+            <img src="coms/wbitv2.png" width="320px"><br>
+        </div>
+        <div id="btn">
+            <button id="btnPython" type="button">AI協作試用版</button>
+            <button id="btnBlockly" type="button">Web:Bit教育版</button>
+        </div>
         <br><br>
-        <div>訊息：<span id="msg">尚未連線</span></div>
-        <br>
-        <div class="w3-light-grey" style="width:200px;">
+        <div id="fw">訊息：<span id="msg">尚未連線</span></div>
+        <br><br>
+        <div class="w3-light-grey" style="margin-left:140px;width:200px;">
             <div id="myBar" class="w3-container w3-green" style="padding: 0px;width:0%;display:none">0%</div>
         </div>
-        <div id='ready2go' style="display:none"><h3>重新插拔 Web:Bit USB 後，點選 [<a href="https://chat.webduino.io/test/index.html">連結</a>] 開始試用</h3></div>
+        <div id='pythonReady2go' style="display:none">
+            <h3>重新插拔 Web:Bit USB 後，點選 [<a href="https://chat.webduino.io/test/index.html">Webduino - GPT 試用版</a>] 開始試用
+            </h3>
+        </div>
+        <div id='blocklyReady2go' style="display:none">
+            <h3>重新插拔 Web:Bit USB 後，點選 [<a href="https://webbit.webduino.io/">Web:Bit 教育版</a>] 開始使用</h3>
+        </div>
     </div>
     <script>
         function progressShow() {
