@@ -1,20 +1,18 @@
 class MQTTApp {
     constructor(userId) {
-        //*/
         if (typeof (parent.Main) != "undefined") {
             parent.Main.registry("mqtt", this);
         }
         this.userId = userId;
         this.client = new Paho.Client('wss://mqtt1.webduino.io/mqtt', userId);
         this.options = {
-            timeout: 900, keepAliveInterval: 30,
             reconnect: true,
+            timeout: 900, keepAliveInterval: 30,
             userName: 'webduino', password: 'webduino'
         };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
         var topic = "gpt35";
-        //使用測試機
         if (parent.location.href.indexOf('/test/dev') > 0) {
             topic = "dev";
         }
@@ -50,22 +48,6 @@ class MQTTApp {
         });
         await this.onConnectPromise;
         this.client.onMessageArrived = this.onMessageArrived.bind(this);
-        var self = this;
-        // add keepAlive property
-        this.keepAlive = setInterval(async () => {
-            if (!this.client.isConnected()) {
-                console.log('Disconnected from MQTT broker, attempting to reconnect...');
-                if (typeof (parent.Main) != "undefined") {
-                    self.failure = true;
-                    parent.Main.eventTrigger("mqtt", "onFailure", "");
-                }
-                clearInterval(self.keepAlive);
-                // 重新連接
-                console.log('attempting to reconnect...');
-                await this.connect();
-                console.log('reconnect...done.');
-            }
-        }, 3000);
     }
 
     // MQTT message publish function
