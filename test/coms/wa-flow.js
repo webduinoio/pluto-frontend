@@ -25,7 +25,7 @@ class WAFlowchart extends LitElement {
           height: 100%;
           position: relative;
           overflow: hidden;
-
+          caret-color: transparent;
           display: flex; /* 讓 div 變成彈性容器 */
           justify-content: center; /* 水平置中 */
           align-items: center; /* 垂直置中 */
