@@ -9,6 +9,7 @@ class ChatGPTBot extends LitElement {
         width: 100%;
         overflow-y: scroll;
         white-space: pre-line;
+        overflow: hidden;
       }
       #input-area {
         width: 100%;
@@ -25,7 +26,7 @@ class ChatGPTBot extends LitElement {
         box-sizing: border-box;
         resize: none;
         border: 1px solid #ccc;
-        overflow: auto;
+        overflow: hidden;
         max-height: 140px; /* 5行的高度 */
       }
       #input-area button {
