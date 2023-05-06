@@ -6,6 +6,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
     <!-- MQTT -->
     <script src="../js/mqttapp.js"></script>
+    <!-- Flow Enhance -->
+    <script src="../js/fixFlow.js"></script>
     <!-- Google Font Material Symbol -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap">
 
@@ -175,8 +177,6 @@
 
         function tunningFlow(code) {
             let fixCode = code;
- 
-            //
             var pos = fixCode.indexOf('{');
             if (pos >= 0) {
                 fixCode = fixCode.substring(0, pos + 1) +
@@ -184,45 +184,15 @@
                     'node[shape=box, style=filled, fillcolor=lightyellow]\n' +
                     fixCode.substring(pos + 1);
             }
-            fixCode = code;
-            
             let left = code.split('{').length - 1;
             let right = code.split('}').length - 1;
             let add = left - right;
             for (i = 0; i < add; i++) {
                 fixCode += "}"
             }
-            if (left == right) console.log(fixCode);
-
-
             // enhance
-            var enhance = ''
-            let regex = /"[^"]*"/g;
-            //let regex = /[^=]"[^"]*"/g;
-            let matches = fixCode.match(regex);
-            for (var i = 0; i < matches.length; i++) {
-                // 處理 開始,結束
-                matches[i] = matches[i].replace(/"/g, '');
-                if (matches[i] == '開始' || matches[i] == '結束') {
-                    enhance += ('\n"' + matches[i] + '" [shape=oval, style=filled, fillcolor=lightyellow];\n');
-                }
-                if (matches[i].startsWith('計算') ||
-                    matches[i].startsWith('輸入') ||
-                    matches[i].startsWith('輸出')) {
-                    enhance += ('\n"' + matches[i] + '" [shape=parallelogram, style=filled, fillcolor=lightyellow];\n');
-                }
-                if (matches[i].startsWith('判斷')) {
-                    enhance += ('\n"' + matches[i] + '" [shape=diamond, style=filled, fillcolor=lightyellow];\n');
-                }
-            }
-
-            var pos = fixCode.lastIndexOf('}');
-            if (pos > 0) {
-                fixCode = fixCode.substring(0, pos) +
-                    enhance + fixCode.substring(pos);
-            }
-
-            console.log(fixCode);
+            fixCode = ff.convert(fixCode);
+            //console.log(fixCode);
             return fixCode;
         }
 
