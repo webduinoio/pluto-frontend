@@ -18,12 +18,13 @@
     <script type="module" src="../coms/wa-carousel.js"></script>
 
     <style>
-        :root{
-            height:100%;
+        :root {
+            height: 100%;
         }
+
         body {
             margin: 0px;
-            height:100%;
+            height: 100%;
         }
 
         .quiz-panel {
@@ -53,7 +54,7 @@
         }
 
         #gptbot-content {
-            height:100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -166,9 +167,63 @@
                     parent.editor.setCode(code);
                     break;
                 case 1:
-                    parent.flow.setCode(code);
+                    parent.flow.setCode(tunningFlow(code));
+                    //parent.flow.setCode(code);
                     break;
             }
+        }
+
+        function tunningFlow(code) {
+            let fixCode = code;
+ 
+            //
+            var pos = fixCode.indexOf('{');
+            if (pos >= 0) {
+                fixCode = fixCode.substring(0, pos + 1) +
+                    '\nrankdir=TB\n' +
+                    'node[shape=box, style=filled, fillcolor=lightyellow]\n' +
+                    fixCode.substring(pos + 1);
+            }
+            fixCode = code;
+            
+            let left = code.split('{').length - 1;
+            let right = code.split('}').length - 1;
+            let add = left - right;
+            for (i = 0; i < add; i++) {
+                fixCode += "}"
+            }
+            if (left == right) console.log(fixCode);
+
+
+            // enhance
+            var enhance = ''
+            let regex = /"[^"]*"/g;
+            //let regex = /[^=]"[^"]*"/g;
+            let matches = fixCode.match(regex);
+            for (var i = 0; i < matches.length; i++) {
+                // 處理 開始,結束
+                matches[i] = matches[i].replace(/"/g, '');
+                if (matches[i] == '開始' || matches[i] == '結束') {
+                    enhance += ('\n"' + matches[i] + '" [shape=oval, style=filled, fillcolor=lightyellow];\n');
+                }
+                if (matches[i].startsWith('計算') ||
+                    matches[i].startsWith('輸入') ||
+                    matches[i].startsWith('輸出')) {
+                    enhance += ('\n"' + matches[i] + '" [shape=parallelogram, style=filled, fillcolor=lightyellow];\n');
+                }
+                if (matches[i].startsWith('判斷')) {
+                    enhance += ('\n"' + matches[i] + '" [shape=diamond, style=filled, fillcolor=lightyellow];\n');
+                }
+            }
+
+            var pos = fixCode.lastIndexOf('}');
+            if (pos > 0) {
+                fixCode = fixCode.substring(0, pos) +
+                    enhance + fixCode.substring(pos);
+            }
+
+            console.log(fixCode);
+            return fixCode;
         }
 
         function isUrlEncoded(str) {
