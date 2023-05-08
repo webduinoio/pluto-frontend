@@ -16,6 +16,9 @@ class MQTTApp {
         if (parent.location.href.indexOf('/test/dev') > 0) {
             topic = "dev";
         }
+        else if (parent.location.href.indexOf('/test/gpt') > 0) {
+            topic = "gpt";
+        }
         this.pubTopic = topic + '_prompt/' + userId;
         this.respTopic_cb = topic + "_completion/" + this.userId;
         this.respTopic_end = topic + "_completion_end/" + this.userId;
