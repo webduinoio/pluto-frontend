@@ -12,7 +12,7 @@ class MQTTApp {
         };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
-        var topic = "gpt35";
+        var topic = "gpt";
         if (parent.location.href.indexOf('/test/dev') > 0) {
             topic = "dev";
         }
