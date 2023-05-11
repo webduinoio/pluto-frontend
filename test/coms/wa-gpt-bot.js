@@ -292,6 +292,14 @@ class ChatGPTBot extends LitElement {
   promptCallback(callback) {
     this.promptCallback = callback;
   }
+
+  setEnable(enable) {
+    this.textarea.disabled = !enable;
+    if (enable) {
+      this.textarea.focus();
+    }
+
+  }
 }
 
 customElements.define('wa-gpt-bot', ChatGPTBot);
