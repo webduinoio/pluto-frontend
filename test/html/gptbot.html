@@ -302,7 +302,8 @@
             gpt.setMQTT(app);
             gpt.prompt(info['prompt']);
             await app.init(appendToShow);
-
+            gpt.setEnable(true);
+            
             //將事件轉發到 Main
             carousel.select(function (idx, name) {
                 parent.Main.eventTrigger("carousel", "setActor", [idx, name]);
