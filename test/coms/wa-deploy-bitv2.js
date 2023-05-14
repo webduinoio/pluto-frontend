@@ -19,7 +19,7 @@ export class DeployBitV2 extends LitElement {
             color: #eee;
             border: none;
             font-size: 16px;
-            width:90px;
+            width:65px;
             margin-left: -15px;
             margin-top: 0px;
         }
