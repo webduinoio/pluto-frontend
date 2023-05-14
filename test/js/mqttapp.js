@@ -14,7 +14,7 @@ class MQTTApp {
         this.subscriptions = {}; // 存儲訂閱關係的對象
         var topic = "gpt";
         if (parent.location.href.indexOf('/test/dev') > 0) {
-            topic = "dev";
+            topic = "xdev";
         }
         else if (parent.location.href.indexOf('/test/gpt') > 0) {
             topic = "gpt";

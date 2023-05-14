@@ -63,6 +63,7 @@ class FixFlow {
         if (valObj['label'].indexOf("判斷") >= 0 || keyName.indexOf("判斷") >= 0
             || valObj['label'].indexOf("比較") >= 0 || keyName.indexOf("比較") >= 0
             || valObj['label'].indexOf("嗎") >= 0 || keyName.indexOf("嗎") >= 0
+            || valObj['label'].indexOf("是否") >= 0 || keyName.indexOf("是否") >= 0
             || valObj['label'].indexOf("檢查") >= 0 || keyName.indexOf("檢查") >= 0) {
             this._cvt[keyName] = valObj;
             valObj['shape'] = 'diamond';
@@ -78,10 +79,14 @@ class FixFlow {
         return process ? this.toText(obj) : "";
     }
 
-    addEnhance(line) {
+    addEnhance(nodeNames, line) {
         var nodes = line.split('->');
         for (var i in nodes) {
             var nodeName = nodes[i].trim().replace(";", "");
+            if (!nodeName.startsWith('"') && nodeName.indexOf("[") == -1 && nodeName.indexOf("{") == -1) {
+                nodeNames[nodeName] = '';
+                //console.log("nodeName:", nodeName);
+            }
             var nodeValue = '';
             if (nodeName.indexOf("[") >= 0) {
                 nodeValue = nodeName.split("[")[1].trim();
@@ -103,6 +108,7 @@ class FixFlow {
                 //console.log("node:", nodeName, nodeValue);
             }
         }
+        return nodeNames;
     }
 
     combineEnahance(data) {
@@ -123,12 +129,36 @@ class FixFlow {
         return data;
     }
 
+    fixNodeNames(collectFixNodeNames, ndata) {
+        var id2Key = {};
+        var idx = 0;
+        const sortedKeys = Object.keys(collectFixNodeNames).sort((a, b) => b.length - a.length);
+        for (var i in sortedKeys) {
+            var id = '##' + (++idx) + '##';
+            id2Key[id] = sortedKeys[i];
+            ndata = ndata.replaceAll(sortedKeys[i], '"' + id + '"');
+        }
+        //*
+        for (var key in id2Key) {
+            ndata = ndata.replaceAll(key, id2Key[key]);
+        }
+        //*/
+        ndata = ndata.replaceAll('""', '"');
+        return ndata;
+    }
+
     convert(viz) {
         var ndata = viz;
+        var collectFixNodeNames = {};
         var data = viz.split('\n');
         for (var i in data) {
+            if (data[i].trim().startsWith('node[') ||
+                data[i].trim().startsWith('node [')) {
+                ndata = ndata.replaceAll(data[i], '');
+                continue;
+            }
             if (data[i].indexOf("->") > 0) {
-                this.addEnhance(data[i]);
+                this.addEnhance(collectFixNodeNames, data[i]);
                 continue;
             }
             var obj = null;
@@ -140,7 +170,18 @@ class FixFlow {
             }
         }
         ndata = this.combineEnahance(ndata);
+        ndata = this.fixNodeNames(collectFixNodeNames, ndata);
+        ndata = ndata.replace("rankdir=\"LR\";", "");
+        ndata = ndata.replace("rankdir = \"LR\";", "");
         ndata = ndata.replace("rankdir=LR;", "");
+        ndata = ndata.replace("rankdir = LR;", "");
+        //找第一個{
+        var startPos = ndata.indexOf("{");
+        ndata = `digraph {
+rankdir=TB
+node[shape=box, style=filled, fillcolor=lightyellow];
+`+ ndata.substring(startPos + 1);
+        console.log(">>>>>>>>>>>>\n", ndata);
         return ndata;
     }
 }

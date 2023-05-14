@@ -105,8 +105,8 @@
         }
 
         var isCode = false;
-        var codeType = ['python', 'flow'];
-        var _codeType = -1;
+        var _codeType = -1; // 0:flow , 1:python
+        var _codeBlockCount = 0; // code block
         var genCode = '';
         var wholeMsg = '';
         const textarea = document.getElementById('show');
@@ -121,79 +121,110 @@
             gpt.prompt(str);
         }
 
-        function appendToShow(msg, isEnd) {
-            if (isEnd) {
-                var uuid = msg.split('\n\n$UUID$')[1];
-                if (typeof (uuid) != "undefined") {
-                    msg = msg.split('\n\n$UUID$')[0];
-                    gpt.setUUID(uuid);
-                }
-                gpt.setEnable(true);
-            }
-            //console.log(isEnd, msg);
-            wholeMsg = wholeMsg + "\n" + msg;
-            if (msg == '') return;
-            try {
-                var isCode = setCode(msg);
-                //console.log(isCode, msg);
-                // filter ``` , ```\n , }``` , }```\n
-                if (!isCode &&
-                    ((msg.indexOf('```') == 0) ||
-                        (msg.indexOf('}```') == 0)))
-                    msg = '&nbsp;&nbsp;&nbsp;完成\n';
-            } catch (e) { }
-            if (!isCode) {
-                var cnt = gpt.read();
-                cnt = cnt + msg + "<br>";
-                gpt.write(cnt);
-            }
-            //* enhance code function
-            if (isEnd) {
-                gpt.done();
-                gpt.wholeMsg = wholeMsg;
-                parent.flow.done();
-                // fix dirty codegen
-                var code = parent.editor.getCode();
-                code = code.replace('from webduino import WebBit', 'from webduino.webbit import WebBit');
-                code = code.replace('from Webbit import Webbit', 'from webduino.webbit import WebBit');
-                code = code.replace('webbit = Webbit()', 'webbit = WebBit()');
-                code = code.replace('wbit.no_tone(0)', '');
-                code = code.replace('wbit.tone(0,', 'wbit.tone(');
-                parent.editor.setCode(code);
-            }
-            //*/
+        function debug(msg1, msg2) {
+            var msg = msg1 + (!msg2 ? " " : " " + msg2);
+            console.log(msg);
         }
 
-        function setGenCode(code) {
-            switch (_codeType) {
-                case 0: // python
+        function appendToShow(msg, isEnd) {
+            try {
+                if (isEnd) {
+                    var uuid = msg.split('\n\n$UUID$')[1];
+                    if (typeof (uuid) != "undefined") {
+                        msg = msg.split('\n\n$UUID$')[0];
+                        gpt.setUUID(uuid);
+                    }
+                    gpt.setEnable(true);
+                }
+                wholeMsg = wholeMsg + "\n" + msg;
+
+                if (msg == '') return;
+                if (msg.indexOf("```") >= 0) {
+                    isCode = !isCode;
+                    if (isCode == false) msg = '完成\n';
+                }
+                //debug("程式區塊[" + isCode + "]", msg);
+                if (isCode) {
+                    setCode(msg);
+                }
+                else {
+                    genCode = '';
+                    var cnt = gpt.read();
+                    cnt = cnt + msg + "<br>";
+                    gpt.write(cnt);
+                }
+                //* enhance code function
+                if (isEnd) {
+                    var info = parseURL(parent.location.href);
+                    if (info['actor'] == 'wbit') {
+                        parent.Main.coms['deploy'].setEnable(true);
+                    }
+                    gpt.done();
+                    gpt.wholeMsg = wholeMsg;
+                    parent.flow.done();
+                    // fix dirty codegen
+                    var code = parent.editor.getCode();
+                    code = code.replace('from webduino import WebBit', 'from webduino.webbit import WebBit');
+                    code = code.replace('from Webbit import Webbit', 'from webduino.webbit import WebBit');
+                    code = code.replace('webbit = Webbit()', 'webbit = WebBit()');
+                    code = code.replace('wbit.no_tone(0)', '');
+                    code = code.replace('wbit.tone(0,', 'wbit.tone(');
                     parent.editor.setCode(code);
+                }
+            } catch (e) {
+                console.log("[function appendToShow(msg, isEnd)] parse meg error:", e);
+            }
+        }
+
+        // 0: flow , 1:python
+        function detectCodeType(code) {
+            // 如果有明確指定，就直接設定返回
+            if (code.indexOf('```dot') >= 0 ||
+                code.indexOf('```graphviz') >= 0 ||
+                code.indexOf('```flowchart') >= 0 ||
+                code.indexOf('```flow') >= 0
+            ) {
+                return 0;
+            }
+            if (code.indexOf('```python') >= 0) {
+                return 1;
+            }
+            return _codeBlockCount;
+        }
+
+        function setCode(code) {
+            if (code.indexOf("```") == 0) {
+                _codeType = detectCodeType(code);
+                _codeBlockCount++;
+                console.log("codeType:", _codeType);
+                if (code.indexOf("{") == -1) {
+                    return;
+                }
+                code = 'digraph {'
+            }
+            genCode = genCode + code + '\n';
+            switch (_codeType) {
+                case 0:
+                    //parent.flow.setCode(genCode);
+                    parent.flow.setCode(tunningFlow(genCode));
                     break;
-                case 1:
-                    parent.flow.setCode(tunningFlow(code));
-                    //parent.flow.setCode(code);
+                case 1: // python
+                    parent.editor.setCode(genCode);
                     break;
             }
+            return isCode;
         }
 
         function tunningFlow(code) {
             let fixCode = code;
-            var pos = fixCode.indexOf('{');
-            if (pos >= 0) {
-                fixCode = fixCode.substring(0, pos + 1) +
-                    '\nrankdir=TB\n' +
-                    'node[shape=box, style=filled, fillcolor=lightyellow]\n' +
-                    fixCode.substring(pos + 1);
-            }
             let left = code.split('{').length - 1;
             let right = code.split('}').length - 1;
             let add = left - right;
             for (i = 0; i < add; i++) {
-                fixCode += "}"
+                fixCode += "}";
             }
-            // enhance
+            // enhance //*/
             fixCode = ff.convert(fixCode);
-            //console.log(fixCode);
             return fixCode;
         }
 
@@ -204,42 +235,6 @@
             } catch (e) {
                 return false;
             }
-        }
-
-        function setCode(code) {
-            if (code.indexOf('```') >= 0 && isCode) {
-                var pos = code.indexOf('```');
-                if (pos > 0) {
-                    genCode = genCode + code.substring(0, pos) + '\n';
-                    setGenCode(genCode);
-                }
-                genCode = '';
-                isCode = false;
-                return isCode;
-            }
-            if (code.indexOf('```') == 0) {
-                if (code.length > 3) {
-                    genCode = genCode +
-                        code.replace('```dot', '')
-                            .replace('```python', '')
-                            .replace('```graphviz', '')
-                            .replace('```', '');
-                }
-                _codeType = ++_codeType;
-                // when codeGen completed , check deploy btn if necessary
-                if (_codeType == 1) {
-                    var info = parseURL(parent.location.href);
-                    if (info['actor'] == 'wbit') {
-                        parent.Main.coms['deploy'].setEnable(true);
-                    }
-                }
-                isCode = true;
-                return isCode;
-            }
-            if (!isCode) return isCode;
-            genCode = genCode + code + '\n';
-            setGenCode(genCode);
-            return isCode
         }
 
         function parseURL(str) {
@@ -302,14 +297,15 @@
             gpt.setMQTT(app);
             gpt.prompt(info['prompt']);
             await app.init(appendToShow);
-            gpt.setEnable(true);
-            
+
             //將事件轉發到 Main
             carousel.select(function (idx, name) {
                 parent.Main.eventTrigger("carousel", "setActor", [idx, name]);
             });
             carousel.setActor(info['actor'], true);
-
+            setTimeout(function () {
+                gpt.setEnable(true);
+            }, 1000);
             gpt.promptCallback(function (prompt) {
                 parent.Main.coms['output'].cls();
                 if (parent.Main.coms['mqtt'].failure) {
@@ -324,6 +320,7 @@
                 genCode = '';
                 isCode = false;
                 _codeType = -1; // -1:none , 0:python , 1:flow
+                _codeBlockCount = 0;
                 //console.log("prompt callback:", prompt);
                 app.publish(carousel.actor + ":" + prompt);
                 gpt.start(carousel.actor);
