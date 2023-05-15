@@ -1,0 +1,128 @@
+
+```digraph G
+    label=""計算BMI概念流程圖""
+    start[label=""開始""]
+    input[label=""輸入身高與體重""]
+    calculate[label=""計算BMI值""]
+    judge[label=""判斷BMI值是否在健康範圍內""]
+    encourage[label=""鼓勵用戶養成運動習慣""]
+    end[label=""結束""]
+    start->input->calculate->judge->encourage->end
+    judge->end [label=""不健康""]
+    judge->encourage [label=""健康""]
+```
+
+
+2. 概念流程圖
+
+```digraph{
+    ""開始"" -> ""輸入身高與體重""
+    ""輸入身高與體重"" -> ""計算BMI""
+    ""計算BMI"" -> ""顯示BMI數值""
+    ""顯示BMI數值"" -> ""判斷BMI範圍""
+    ""判斷BMI範圍"" -> ""顯示運動鼓勵""
+    ""顯示運動鼓勵"" -> ""結束""
+}```
+
+3. 程式撰寫
+
+2. 流程圖
+```digraph example {
+    開始遊戲 -> 輸入數字
+    輸入數字 -> 判斷大小
+    判斷大小 -> 再次輸入數字
+    再次輸入數字 -> 判斷大小
+    判斷大小 -> 答對
+    答對 -> 開始遊戲
+}```
+
+
+2. 流程圖
+```digraph
+graph [fontname = ""Microsoft Jhenghei""];
+
+Start -> DisplayIntro;
+DisplayIntro -> SetAnswer;
+SetAnswer -> GetGuess;
+GetGuess -> CompareGuess;
+CompareGuess -> ContinueGame;
+ContinueGame -> GetGuess [label=""True""];
+ContinueGame -> EndGame [label=""False""];
+EndGame -> Stop;
+
+{rank=same; Start, DisplayIntro, SetAnswer}
+{rank=same; GetGuess, CompareGuess, ContinueGame}
+```
+
+
+
+
+2. 概念流程圖
+
+```digraph G {
+    node [fontname=""Arial""]
+    subgraph cluster_main {
+        label = ""主程式""
+        node [shape=rectangle]
+        play_song -> play_pitch
+        play_pitch -> wbit.tone
+    }
+}
+```
+
+
+
+2. 概念流程圖
+
+```digraph G
+    label = ""隨機燈光流程""
+
+    start [label=""開始""]
+    initialize [label=""初始化""]
+    loop [label=""無限循環""]
+    choose_color [label=""隨機選擇一個顏色""]
+    choose_light [label=""隨機點亮一顆燈""]
+    show_light [label=""顯示燈光顏色""]
+    delay [label=""暫停 0.01 秒""]
+    end [label=""結束""]
+
+    start -> initialize -> loop -> choose_color -> choose_light -> show_light -> delay -> loop
+    loop -> end [style=dotted]
+```
+
+
+
+2. 概念流程圖
+
+```digraph G 
+    A[開始] -> B[隨機取RGB值]
+    B -> C[隨機亮燈]
+    C -> B 
+```
+
+
+
+概念流程圖:
+
+```digraph G {
+    程式開始 -> 關閉所有燈
+    關閉所有燈 -> 建立隨機種子
+    建立隨機種子 -> 重複執行以下步驟:
+    建立隨機種子 -> 隨機選擇一種顏色
+    隨機選擇一種顏色 -> 建立循環張數i=0,直到i=24:
+    建立循環張數i=0,直到i=24 -> 將每顆燈用隨機選擇的顏色點亮
+    將每顆燈用隨機選擇的顏色點亮 -> 等待0.01秒
+    等待0.01秒 -> 回到建立循環張數i=0,直到i=24
+    回到建立循環張數i=0,直到i=24 -> 等待0.01秒
+    等待0.01秒 -> 回到建立隨機種子
+}
+```
+
+
+
+2. 概念流程圖
+
+```digraph G
+rankdir=LR;
+開始 -> 顯示隨機燈顏色 -> 等待0.01秒 -> 顯示隨機燈顏色 -> 等待0.01秒 -> ... -> 結束;
+``` 
