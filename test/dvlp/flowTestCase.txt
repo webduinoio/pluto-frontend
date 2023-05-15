@@ -1,0 +1,61 @@
+Test #1
+=======
+```dot
+digraph {
+    rankdir=TB;
+    node[shape=box, style=filled, fillcolor=lightyellow];
+    ""開始"" -> ""輸入身高和體重"";
+    ""輸入身高和體重"" -> ""計算BMI值"";
+    ""計算BMI值"" -> ""顯示BMI值"";
+    ""顯示BMI值"" -> ""判斷BMI值範圍"";
+    ""判斷BMI值範圍"" -> ""鼓勵用戶養成運動習慣"";
+    ""鼓勵用戶養成運動習慣"" -> ""結束"";
+    ""結束""[shape=oval];
+}
+```
+
+Test #2
+=======
+
+```digraph G
+rankdir=LR;
+開始 -> 顯示隨機燈顏色 -> 等待0.01秒 -> 顯示隨機燈顏色 -> 等待0.01秒 -> ... -> 結束;
+``` 
+
+
+Test #3
+=======
+```digraph {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+    start [label=""開始""];
+    end [label=""結束""];
+    output [label=""輸出Hello World!""];
+
+    start -> output -> end;
+}```
+
+
+Test #4
+========
+
+```dot
+digraph G {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+    subgraph cluster_1 {
+        label=""產生9x9乘法表"";
+        1 [label=""遍歷1到9的每一個數字""];
+        2 [label=""遍歷1到9的每一個數字""];
+        3 [label=""將i和j相乘，並將結果存儲在變量result中""];
+        4 [label=""使用print()函數輸出結果，並使用end參數指定分隔符為\t""];
+        5 [label=""每一行結束後換行""];
+        1 -> 2;
+        2 -> 3;
+        3 -> 4;
+        4 -> 2 [label=""內部迴圈""];
+        1 -> 5 [label=""外部迴圈""];
+    }
+}
+```
+

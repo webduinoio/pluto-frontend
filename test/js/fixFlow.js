@@ -129,11 +129,22 @@ class FixFlow {
         return data;
     }
 
+    isNumeric(str) {
+        return !isNaN(str);
+    }
+
+    hasChineseCharacters(str) {
+        var pattern = /[\u4e00-\u9fff]/; // 中文字符的 Unicode 範圍
+        return pattern.test(str);
+    }
+
     fixNodeNames(collectFixNodeNames, ndata) {
         var id2Key = {};
         var idx = 0;
         const sortedKeys = Object.keys(collectFixNodeNames).sort((a, b) => b.length - a.length);
         for (var i in sortedKeys) {
+            if (!this.hasChineseCharacters(sortedKeys[i])) continue;
+            if (this.isNumeric(sortedKeys[i])) continue;
             var id = '##' + (++idx) + '##';
             id2Key[id] = sortedKeys[i];
             ndata = ndata.replaceAll(sortedKeys[i], '"' + id + '"');
