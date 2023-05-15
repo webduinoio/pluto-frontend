@@ -56,15 +56,21 @@ print(year)
 */
 
 class Main {
+
     init() {
+        this.coms = {};
         // 改成所有元件ready再初始化,不要用 setTimeout
         setTimeout(function () {
             window.Main.editor = editor;
+            window.flow = document.getElementById('flow');
             Container.init({
                 'c1': 'drag1', 'c2': 'drag2', 'c3': 'drag3'
             });
+            window.Main.registry("deploy", document.getElementById('deploy'));
+            window.Main.registry("runPython", document.getElementById('runPython'));
         }, 100);
     }
+
     ready(name, obj) {
         console.log("Component Ready...", name);
         if (name == 'wa-range') {
@@ -73,6 +79,43 @@ class Main {
                 document.getElementsByClassName("CodeMirror")[0].style['font-size'] = value + 'px';
                 editor.textEditor.codeMirror.refresh();
             });
+        }
+    }
+
+    // mqtt,gpt,voice,deploy,carousel,flow
+    registry(comName, obj) {
+        this.coms[comName] = obj;
+        console.log(" Registry >>> [" + comName + "]");
+    }
+
+    popup(title, text, icon, confirmButtonText) {
+        Swal.fire({
+            title: title,
+            html: text,
+            icon: icon,
+            confirmButtonText: confirmButtonText
+        })
+    }
+
+    eventTrigger(com, action, info) {
+        console.log(com, ":", action, ":", info);
+        if (com == 'mqtt' && action == 'onFailure') {
+            //alert('連線中斷，請重新整理網頁');
+        }
+        else if (com == 'carousel' && action == 'setActor') {
+            this.coms['gpt'].clear();
+            if (info[1] == 'python') {
+                this.coms['deploy'].hide(true);
+                this.coms['deploy'].setEnable(false);
+                this.coms['runPython'].hide(false);
+                this.coms['split-v'].setHideBody(false);
+            }
+            if (info[1] == 'wbit') {
+                this.coms['deploy'].hide(false);
+                this.coms['deploy'].setEnable(true);
+                this.coms['runPython'].hide(true);
+                this.coms['split-v'].setHideBody(true);
+            }
         }
     }
 }

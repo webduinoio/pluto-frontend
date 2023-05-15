@@ -1,14 +1,28 @@
-
 class MQTTApp {
     constructor(userId) {
+        if (typeof (parent.Main) != "undefined") {
+            parent.Main.registry("mqtt", this);
+        }
         this.userId = userId;
         this.client = new Paho.Client('wss://mqtt1.webduino.io/mqtt', userId);
-        this.options = { userName: 'webduino', password: 'webduino' };
+        this.options = {
+            reconnect: true,
+            timeout: 900, keepAliveInterval: 30,
+            userName: 'webduino', password: 'webduino'
+        };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
-        this.pubTopic = 'gpt35_prompt/' + userId;
-        this.respTopic_cb = "gpt35_completion/" + this.userId;
-        this.respTopic_end = "gpt35_completion_end/" + this.userId;
+        var topic = "gpt";
+        if (parent.location.href.indexOf('/test/dev') > 0) {
+            topic = "dev";
+        }
+        else if (parent.location.href.indexOf('/test/gpt') > 0) {
+            topic = "gpt";
+        }
+        this.pubTopic = topic + '_prompt/' + userId;
+        this.respTopic_cb = topic + "_completion/" + this.userId;
+        this.respTopic_end = topic + "_completion_end/" + this.userId;
+        this.failure = false;
     }
 
     async init(cb) {
@@ -63,12 +77,9 @@ class MQTTApp {
     // MQTT message received handler 
     onMessageArrived(message) {
         const topic = message.destinationName;
-        console.log("topic:", topic);
         const payload = message.payloadString;
-        //console.log(`Received message: ${payload} on topic: ${topic}`);
         if (this.subscriptions[topic] && this.subscriptions[topic].onMessageReceived) {
             this.subscriptions[topic].onMessageReceived(payload);
         }
     }
-
 }

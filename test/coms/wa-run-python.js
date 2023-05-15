@@ -64,6 +64,7 @@ export class RunPython extends LitElement {
         const run = this.renderRoot.querySelector("#run");
         const icon = this.renderRoot.querySelector("#icon");
         const output = document.getElementById(this.console);
+        this.run = run;
 
         function stdout_func(msg) {
             output.show(msg);
@@ -80,7 +81,7 @@ export class RunPython extends LitElement {
             var convertCode = imp +
                 //code.replace(/input()\(/g, 'str(await js.window.Main.input()');
                 code.replaceAll(/input\(/g, 'await js.window.Main.input(');
-            console.log("=========\n",convertCode);
+            //console.log("=========\n", convertCode);
             return convertCode;
         }
 
@@ -108,7 +109,7 @@ export class RunPython extends LitElement {
 
         window.Main.input = async function (msg) {
             return new Promise((resolve, reject) => {
-                output.addInput(function (rtnData) {
+                output.addInput(msg, function (rtnData) {
                     resolve(rtnData);
                 })
             });
@@ -180,6 +181,14 @@ export class RunPython extends LitElement {
             }
         }
         alert('測試' + (success ? "成功" : "失敗"));
+    }
+
+    hide(state) {
+        if (state) {
+            this.run.style['display'] = 'none';
+        } else {
+            this.run.style['display'] = '';
+        }
     }
 
     render() {

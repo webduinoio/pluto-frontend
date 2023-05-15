@@ -14,13 +14,14 @@ class MenuTextarea extends LitElement {
         font-size: 1.2em;
         padding: 5px;
         padding-top:0px;
+        width:calc(100% - 10px);
       }
     `;
   }
 
   constructor() {
     super();
-    this.options = [{ text: '選擇範例', value: '' }];
+    this.options = [{ text: '選擇範例', value: '', actor: '' }];
   }
 
   connectedCallback() {
@@ -29,7 +30,6 @@ class MenuTextarea extends LitElement {
       .then(response => response.json())
       .then(data => {
         this.options = this.options.concat(data);
-        console.log(this.options);
         this.requestUpdate();
       })
       .catch(error => {
@@ -40,24 +40,34 @@ class MenuTextarea extends LitElement {
   render() {
     return html`
       <select id="mySelect" @change="${this._handleSelectChange}" class="my-select">
-        ${this.options.map(
-      option =>
-        html`
-              <option value="${encodeURIComponent(option.value)}">
-                ${option.text}
-              </option>
-            `
-    )}
+        ${this.options.map(option => {
+      if (option.text) {
+        return html`<option actor="${encodeURIComponent(option.actor)}" value="${encodeURIComponent(option.value)}">${option.text}</option>`;
+      } else {
+        const category = Object.keys(option)[0];
+        const examples = option[category];
+        return html`
+              <optgroup label="${category}">
+                ${examples.map(example => {
+          return html`<option actor="${encodeURIComponent(example.actor)}" value="${encodeURIComponent(example.value)}">${example.text}</option>`;
+        })}
+              </optgroup>
+            `;
+      }
+    })}
       </select>
     `;
   }
 
   _handleSelectChange(event) {
     const selectedValue = decodeURIComponent(event.target.value);
-    const textarea = document.getElementById('show');
-    if (textarea) {
-      textarea.value = selectedValue + '\n';
-    }
+    const gpt = document.getElementById('gpt');
+    const carousel = document.getElementById('carousel');
+    const selectElement = this.shadowRoot.querySelector('#mySelect');
+    const selectedOption = selectElement.options[event.target.selectedIndex];
+    const actorValue = selectedOption.getAttribute('actor');
+    carousel.setActor(actorValue);
+    gpt.prompt(selectedValue);
   }
 }
 
