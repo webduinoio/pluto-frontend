@@ -143,7 +143,7 @@
                     isCode = !isCode;
                     if (isCode == false) msg = '完成\n';
                 }
-                //debug("程式區塊[" + isCode + "]", msg);
+                debug("程式區塊[" + isCode + "]", msg);
                 if (isCode) {
                     setCode(msg);
                 }
@@ -181,6 +181,7 @@
             // 如果有明確指定，就直接設定返回
             if (code.indexOf('```dot') >= 0 ||
                 code.indexOf('```graphviz') >= 0 ||
+                code.indexOf('```digraph') >= 0 ||
                 code.indexOf('```flowchart') >= 0 ||
                 code.indexOf('```flow') >= 0
             ) {

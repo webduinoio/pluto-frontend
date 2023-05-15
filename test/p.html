@@ -77,102 +77,127 @@
             document.getElementById('left').value = lines.join('\n');
         }
 
-        var codeType = -1;          //0:python,1:flow
-        var strCodeType = '';
-        var inCodeBlock = false;
-        var codeFirstLine = true;
+        class CodeBlock {
+            constructor() {
+                this.reset();
+                this.pyCB = function (code) { console.log("pyCode:\n", code) };
+                this.gpCB = function (code) { console.log("gpCode:\n", code) };
+            }
 
-        var pythonCode = '';
-        var graphvizCode = '';
-        var resp = '';
+            reset() {
+                this.codeType = -1;          //0:python,1:flow
+                this.strCodeType = '';
+                this.inCodeBlock = false;
+                this.codeFirstLine = true;
+                this.pythonCode = '';
+                this.graphvizCode = '';
+                this.fixSign = false;
+            }
 
+            addCallback(pyCB, gpCB) {
+                this.pyCB = pyCB;
+                this.gpCB = gpCB;
+            }
+
+            parseLine(data, isEnd) {
+                var line = data.trim();
+                // not start codeBlock
+                if (!this.inCodeBlock && !line.startsWith('```')) {
+                    return 0;
+                }
+                // end codeBlock
+                if (this.inCodeBlock && line.startsWith("```")) {
+                    if (this.fixSign) {
+                        this.graphvizCode = this.graphvizCode + "}";
+                    }
+                    this.pyCB(this.pythonCode);
+                    this.gpCB(this.graphvizCode);
+                    this.reset();
+                    return 2; // parse done.
+                }
+                // start codeBlock
+                if (!this.inCodeBlock && line.startsWith("```")) {
+                    this.inCodeBlock = true;
+                    this.strCodeType = line.substring(3).trim();
+                    return 1; //parsing...
+                }
+                if (this.strCodeType == 'python') {
+                    this.codeType = 0;
+                }
+                else if (this.strCodeType == 'dot' ||
+                    this.strCodeType == 'flow' ||
+                    this.strCodeType == 'mermaid' ||
+                    this.strCodeType == 'graphviz' ||
+                    this.strCodeType.startsWith('digraph')) {
+                    this.codeType = 1;
+                }
+                if (this.codeType == -1 && this.codeFirstLine) {
+                    if (line.startsWith("#") ||
+                        line.startsWith("import") ||
+                        line.startsWith("for") ||
+                        line.startsWith("print")) {
+                        this.codeType = 0;
+                        this.codeFirstLine = false;
+                    } else if (line.startsWith("digraph")) {
+                        this.codeType = 1;
+                        this.codeFirstLine = false;
+                    }
+                }
+                if (this.codeType == 1 && this.codeFirstLine) {
+                    this.codeFirstLine = false;
+                    // fix: ```digraph{
+                    if (line.indexOf("{" == -1)) {
+                        data = "{\n" + data;
+                        this.fixSign = true;
+                    }
+                }
+                switch (this.codeType) {
+                    case 0:
+                        this.pythonCode = this.pythonCode + (data + "\n");
+                        this.pyCB(this.pythonCode);
+                        break;
+                    case 1:
+                        // fix: }```
+                        if (data.indexOf('```') >= 0) {
+                            this.reset();
+                            data = data.replace('```', '');
+                            break;
+                        }
+                        this.graphvizCode = this.graphvizCode + (data + "\n");
+                        this.gpCB(this.graphvizCode);
+                        break;
+                }
+                return 1;
+            }
+        }
+
+        var codeBlock = new CodeBlock();
         document.getElementById('middle').value = '';
         document.getElementById('right').value = '';
-
+        codeBlock.addCallback(function (pyCode) {
+            document.getElementById('right').value = pyCode;
+        }, function (gpCode) {
+            document.getElementById('middle').value = gpCode;
+        })
 
         async function processCode() {
             var code = document.getElementById('left').value;
             var lines = code.split('\n');
-
             for (var i = 0; i < lines.length - 1; i++) {
-                if (!appendToCodeBlock(lines[i], i == lines.length)) {
-                    resp = resp + (lines[i] + '\n');
-                }
-            }
-            document.getElementById('middle').value = pythonCode;
-            document.getElementById('right').value = graphvizCode ;
-            console.log(resp);
-            resp = '';
-        }
-
-        function appendToCodeBlock(data, isEnd) {
-            var line = data.trim();
-            // not start codeBlock
-            if (!inCodeBlock && !line.startsWith('```')) {
-                return false;
-            }
-            // end codeBlock
-            if (inCodeBlock && line.startsWith("```")) {
-                codeType = -1;
-                strCodeType = '';
-                inCodeBlock = false;
-                codeFirstLine = true;
-                return true;
-            }
-            // start codeBlock
-            if (!inCodeBlock && line.startsWith("```")) {
-                inCodeBlock = true;
-                strCodeType = line.substring(3).trim();
-                return true;
-            }
-            if (strCodeType == 'python') {
-                codeType = 0;
-            }
-            else if (strCodeType == 'dot' ||
-                strCodeType == 'flow' ||
-                strCodeType == 'mermaid' ||
-                strCodeType == 'graphviz' ||
-                strCodeType.startsWith('digraph')) {
-                codeType = 1;
-            }
-            if (codeType == -1 && codeFirstLine) {
-                if (line.startsWith("#") ||
-                    line.startsWith("import") ||
-                    line.startsWith("for") ||
-                    line.startsWith("print")) {
-                    codeType = 0;
-                    codeFirstLine = false;
-                } else if (line.startsWith("digraph")) {
-                    codeType = 1;
-                    codeFirstLine = false;
-                }
-            }
-            if (codeType == 1 && codeFirstLine) {
-                // fix: ```digraph{
-                if (line.indexOf("{" == -1)) {
-                    line = "{\n" + line;
-                }
-            }
-            switch (codeType) {
-                case 0:
-                    pythonCode = pythonCode + (data + "\n");
-                    break;
-                case 1:
-                    // fix: }```
-                    if (data.indexOf('```') >= 0) {
-                        codeType = -1;
-                        inCodeBlock = false;
-                        codeFirstLine = true;
-                        strCodeType = '';
-                        data = data.replace('```', '');
+                console.log(">>>>>>", i);
+                var last = i == lines.length;
+                switch (codeBlock.parseLine(lines[i], last)) {
+                    case 0:
+                        console.log(lines[i]);
                         break;
-                    }
-                    graphvizCode = graphvizCode + (data + "\n");
-                    break;
+                    case 1:
+                        break;
+                    case 2:
+                        await new Promise(r => setTimeout(r, 700));
+                        break;
+                }
             }
-            return true;
         }
-
 
         ((async function () {
             await fetch('./p.txt')
