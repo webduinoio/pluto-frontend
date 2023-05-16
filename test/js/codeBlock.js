@@ -48,10 +48,13 @@ class CodeBlock {
         }
         else if (this.strCodeType == 'dot' ||
             this.strCodeType == 'flow' ||
-            this.strCodeType == 'mermaid' ||
             this.strCodeType == 'graphviz' ||
             this.strCodeType.startsWith('digraph')) {
             this.codeType = 1;
+        }
+        else if (this.strCodeType == 'mermaid') {
+            alert('mermaid parse error !');
+            throw 'mermaid parse error !';
         }
         if (this.codeType == -1 && this.codeFirstLine) {
             if (line.startsWith("#") ||
