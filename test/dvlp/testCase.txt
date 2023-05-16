@@ -38,7 +38,25 @@ Test #3
 
 Test #4
 ========
+```graphviz
+digraph calculation_BMI {
+    A [label="開始"];
+    B [label="讓使用者輸入身高和體重"];
+    C [label="計算BMI數值"];
+    D [label="顯示BMI數值"];
+    E [label="鼓勵用戶養成運動習慣"];
+    F [label="結束"];
 
+    A -> B;
+    B -> C;
+    C -> D;
+    D -> E;
+    E -> F;
+}
+```
+
+Test #5
+========
 ```dot
 digraph G {
     rankdir=LR;

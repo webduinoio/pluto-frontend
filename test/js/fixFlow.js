@@ -147,6 +147,7 @@ class FixFlow {
         var idx = 0;
         const sortedKeys = Object.keys(collectFixNodeNames).sort((a, b) => b.length - a.length);
         for (var i in sortedKeys) {
+            if (sortedKeys[i].length == 1) continue; // 跳過1個字元的key 1,2,3,4 a,b,c,d
             if (!this.hasChineseCharacters(sortedKeys[i])) continue;
             //if (this.isNumeric(sortedKeys[i])) continue;
             var id = '##' + (++idx) + '##';
