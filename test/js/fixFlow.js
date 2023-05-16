@@ -174,7 +174,22 @@ class FixFlow {
                 ndata = ndata.replaceAll(data[i], '');
                 continue;
             }
-            if (data[i].indexOf("->") > 0) {
+            // 優先處理單純狀況
+            // 開始 -> 顯示隨機燈顏色 -> 等待0.01秒 -> 顯示隨機燈顏色 -> 等待0.01秒 -> ... -> 結束;
+            if (data[i].indexOf("->") > 0 &&
+                data[i].indexOf("[") == -1 && data[i].indexOf("=") == -1) {
+                // 使用正規表達式匹配需要的內容
+                var pattern = /[^->]+/g;
+                var matches = data[i].match(pattern);
+                // 將匹配的內容包裹在雙引號中，並用箭頭符號連接它們
+                var result = matches.map(function (match) {
+                    return '"' + match.trim() + '"';
+                }).join(' -> ');
+                result = result.replace(';"', '"');
+                ndata = ndata.replaceAll(data[i], result);
+                continue;
+            }
+            else if (data[i].indexOf("->") > 0 && data[i].indexOf("[") >= 0) {
                 this.addEnhance(collectFixNodeNames, data[i]);
                 continue;
             }

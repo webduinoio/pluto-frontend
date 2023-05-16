@@ -14,7 +14,9 @@ digraph {
 }
 ```
 
-Test #2
+Test #2 
+- 故意沒有左右括號
+- ... 也會造成 parse 問題
 =======
 
 ```digraph G
@@ -77,5 +79,19 @@ digraph G {
 }
 ```
 
-
+Test #6
+========
+```graphviz
+digraph {
+  node [fontname="微軟正黑體"]
+  edge [fontname="微軟正黑體"]
+  
+  輸入 [label="輸入\n身高(cm)和體重(kg)"]
+  計算 [label="計算\nBMI數值"]
+  顯示 [label="顯示\nBMI數值"]
+  鼓勵 [label="鼓勵\n養成運動習慣"]
+  
+  輸入 -> 計算 -> 顯示 -> 鼓勵
+}
+```
 
