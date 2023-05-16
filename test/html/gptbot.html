@@ -8,6 +8,7 @@
     <script src="../js/mqttapp.js"></script>
     <!-- Flow Enhance -->
     <script src="../js/fixFlow.js"></script>
+    <script src="../js/codeBlock.js"></script>
     <!-- Google Font Material Symbol -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap">
 
@@ -74,9 +75,6 @@
             <div class="menuBar">
                 <wa-voice id='voice' class='menuBtn' callback="voiceToTextarea"></wa-voice>
                 <wa-gpt-btn id="sendBtn" class='menuBtn' callback="send"></wa-gpt-btn>
-                <!--
-                <wa-deploy-bitv2 id="deploy" class='menuBtn'></wa-deploy-bitv2>
-                -->
             </div>
         </div>
     </div>
@@ -114,8 +112,6 @@
         const carousel = document.getElementById('carousel');
         const cookie = new Cookie(2);
 
-
-
         function voiceToTextarea(str) {
             if (str.trim() == '') return;
             gpt.prompt(str);
@@ -139,19 +135,20 @@
                 wholeMsg = wholeMsg + "\n" + msg;
 
                 if (msg == '') return;
-                if (msg.indexOf("```") >= 0) {
-                    isCode = !isCode;
-                    if (isCode == false) msg = '完成\n';
-                }
-                debug("程式區塊[" + isCode + "]", msg);
-                if (isCode) {
-                    setCode(msg);
-                }
-                else {
-                    genCode = '';
-                    var cnt = gpt.read();
-                    cnt = cnt + msg + "<br>";
-                    gpt.write(cnt);
+
+                ////////
+                switch (codeBlock.parseLine(msg, isEnd)) {
+                    case 0:
+                        genCode = '';
+                        var cnt = gpt.read();
+                        cnt = cnt + msg + "<br>";
+                        gpt.write(cnt);
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        //removeTestCase(i);
+                        //return;
                 }
                 //* enhance code function
                 if (isEnd) {
@@ -174,59 +171,6 @@
             } catch (e) {
                 console.log("[function appendToShow(msg, isEnd)] parse meg error:", e);
             }
-        }
-
-        // 0: flow , 1:python
-        function detectCodeType(code) {
-            // 如果有明確指定，就直接設定返回
-            if (code.indexOf('```dot') >= 0 ||
-                code.indexOf('```graphviz') >= 0 ||
-                code.indexOf('```digraph') >= 0 ||
-                code.indexOf('```flowchart') >= 0 ||
-                code.indexOf('```flow') >= 0
-            ) {
-                return 0;
-            }
-            if (code.indexOf('```python') >= 0) {
-                return 1;
-            }
-            return _codeBlockCount;
-        }
-
-        function setCode(code) {
-            if (code.indexOf("```") == 0) {
-                _codeType = detectCodeType(code);
-                _codeBlockCount++;
-                console.log("codeType:", _codeType);
-                if (code.indexOf("{") == -1) {
-                    return;
-                }
-                code = 'digraph {'
-            }
-            genCode = genCode + code + '\n';
-            switch (_codeType) {
-                case 0:
-                    //parent.flow.setCode(genCode);
-                    parent.flow.setCode(tunningFlow(genCode));
-                    break;
-                case 1: // python
-                    parent.editor.setCode(genCode);
-                    break;
-            }
-            return isCode;
-        }
-
-        function tunningFlow(code) {
-            let fixCode = code;
-            let left = code.split('{').length - 1;
-            let right = code.split('}').length - 1;
-            let add = left - right;
-            for (i = 0; i < add; i++) {
-                fixCode += "}";
-            }
-            // enhance //*/
-            fixCode = ff.convert(fixCode);
-            return fixCode;
         }
 
         function isUrlEncoded(str) {
@@ -298,7 +242,15 @@
             gpt.setMQTT(app);
             gpt.prompt(info['prompt']);
             await app.init(appendToShow);
-
+            codeBlock.addCallback(
+                function (pyCode) {
+                    parent.editor.setCode(pyCode);
+                }, function (gpCode) {
+                    if (gpCode != '') {
+                        parent.flow.setCode(gpCode);
+                    }
+                });
+            parent.editor.setCode("");
             //將事件轉發到 Main
             carousel.select(function (idx, name) {
                 parent.Main.eventTrigger("carousel", "setActor", [idx, name]);

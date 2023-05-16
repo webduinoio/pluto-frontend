@@ -33,7 +33,7 @@ class CodeBlock {
                 this.graphvizCode = this.graphvizCode + "}";
             }
             this.pyCB(this.pythonCode);
-            this.gpCB(this.graphvizCode);
+            this.gpCB(ff.convert(this.graphvizCode));
             this.reset();
             return 2; // parse done.
         }
@@ -86,14 +86,16 @@ class CodeBlock {
                 if (data.indexOf('```') >= 0) {
                     this.graphvizCode = this.graphvizCode + "}";
                     this.pyCB(this.pythonCode);
-                    this.gpCB(this.graphvizCode);
+                    this.gpCB(ff.convert(this.graphvizCode));
                     this.reset();
                     return 2; //end
                 }
                 this.graphvizCode = this.graphvizCode + (data + "\n");
-                this.gpCB(this.graphvizCode);
+                this.gpCB(ff.convert(this.graphvizCode));
                 break;
         }
         return 1;
     }
 }
+
+var codeBlock = new CodeBlock();

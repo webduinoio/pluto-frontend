@@ -192,11 +192,10 @@ class FixFlow {
 rankdir=TB
 node[shape=box, style=filled, fillcolor=lightyellow];
 `+ ndata.substring(startPos + 1);
-        console.log(">>>>>>>>>>>>\n", ndata);
+        //console.log(">>>>>>>>>>>>\n", ndata);
         return ndata;
     }
 }
 
 var ff = new FixFlow();
 //console.log(ff.convert(viz));
-
