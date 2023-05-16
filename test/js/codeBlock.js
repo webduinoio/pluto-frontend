@@ -1,4 +1,3 @@
-
 class CodeBlock {
     constructor() {
         this.reset();
@@ -32,8 +31,8 @@ class CodeBlock {
             if (this.fixSign) {
                 this.graphvizCode = this.graphvizCode + "}";
             }
-            this.pyCB(this.pythonCode);
-            this.gpCB(ff.convert(this.graphvizCode));
+            this.pyCB(this.pythonCode, true);
+            this.gpCB(ff.convert(this.graphvizCode), true);
             this.reset();
             return 2; // parse done.
         }
@@ -79,19 +78,18 @@ class CodeBlock {
         switch (this.codeType) {
             case 0: // Python
                 this.pythonCode = this.pythonCode + (data + "\n");
-                this.pyCB(this.pythonCode);
+                this.pyCB(this.pythonCode, false);
                 break;
             case 1: // Graphviz
                 // fix: }```
                 if (data.indexOf('```') >= 0) {
                     this.graphvizCode = this.graphvizCode + "}";
-                    this.pyCB(this.pythonCode);
-                    this.gpCB(ff.convert(this.graphvizCode));
+                    this.gpCB(ff.convert(this.graphvizCode), true);
                     this.reset();
                     return 2; //end
                 }
                 this.graphvizCode = this.graphvizCode + (data + "\n");
-                this.gpCB(ff.convert(this.graphvizCode));
+                this.gpCB(ff.convert(this.graphvizCode), false);
                 break;
         }
         return 1;

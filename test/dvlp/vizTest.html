@@ -62,9 +62,17 @@
 
     <script>
         var idx = 0;
-        document.addEventListener('keydown', function (event) {
+        document.addEventListener('keydown', async function (event) {
             if (event.key === '1') {
-                processCode();
+                flow.clear();
+                document.getElementById('middle').value = '';
+                //*
+                while (true) {
+                    if (await processCode() == 1) {
+                        break;
+                    }
+                }
+                //*/
             }
             if (event.key === '2') {
                 render();
@@ -76,10 +84,18 @@
         codeBlock.addCallback(function (pyCode) {
 
         }, function (gpCode) {
-            if (gpCode != '') {
-                gpCode = ff.convert(gpCode);
-                document.getElementById('middle').value = gpCode;
-                flow.setCode(gpCode);
+            if (gpCode.length > 80) {
+                let fixCode = gpCode;
+                let left = fixCode.split('{').length - 1;
+                let right = fixCode.split('}').length - 1;
+                let add = left - right;
+                for (i = 0; i < add; i++) {
+                    fixCode += "}";
+                }
+
+
+                document.getElementById('middle').value = fixCode;
+                flow.setCode(fixCode);
             }
         })
 
@@ -98,6 +114,7 @@
         async function processCode() {
             var code = document.getElementById('left').value;
             var lines = code.split('\n');
+            var codeType = -1; // 0:python , 1:flow
             for (var i = 0; i < lines.length - 1; i++) {
                 var last = i == lines.length;
                 switch (codeBlock.parseLine(lines[i], last)) {
@@ -105,12 +122,16 @@
                         console.log(lines[i]);
                         break;
                     case 1:
+                        if (codeBlock.codeType != -1) {
+                            codeType = codeBlock.codeType;
+                        }
                         break;
                     case 2:
                         removeTestCase(i);
-                        return;
+                        return codeType;
                 }
             }
+            return 0;
         }
 
         ((async function () {

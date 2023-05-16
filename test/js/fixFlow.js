@@ -20,6 +20,7 @@ class FixFlow {
         // 利用正規表達式擷取節點名稱和屬性字串
         //const matches = q.match(/"*(\w+)"*\s*\[(.+)\]/);
         const matches = q.match(/"*([\w\u4e00-\u9fa5]+)"*\s*\[(.+)\]/);
+
         if (matches == null) return [null, null];
         const nodeName = matches[1];
         var hasSpace = q.indexOf(nodeName + " ") >= 0 ? ' ' : '';
@@ -44,6 +45,7 @@ class FixFlow {
     cvt(obj) {
         const keyName = Object.keys(obj)[0];
         const valObj = obj[keyName];
+        //console.log("valObj['label']:", valObj['label'], " ,keyName:", keyName);
         var process = false;
         if (typeof valObj['label'] == 'undefined') {
             //console.log("cvt:", keyName, valObj);
@@ -83,12 +85,13 @@ class FixFlow {
         var nodes = line.split('->');
         for (var i in nodes) {
             var nodeName = nodes[i].trim().replace(";", "");
-            if (!nodeName.startsWith('"') && nodeName.indexOf("[") == -1 && nodeName.indexOf("{") == -1) {
+            if (!nodeName.startsWith('"') && nodeName.indexOf("{") == -1
+                && (nodeName.indexOf("[") == -1 ||
+                    (nodeName.indexOf("[") >= 0 && nodeName.indexOf("=") == -1))) {
                 nodeNames[nodeName] = '';
-                //console.log("nodeName:", nodeName);
             }
             var nodeValue = '';
-            if (nodeName.indexOf("[") >= 0) {
+            if (nodeName.indexOf("[") >= 0 && nodeName.indexOf("=") > 0) {
                 nodeValue = nodeName.split("[")[1].trim();
                 nodeName = nodeName.split("[")[0].trim();
             }
@@ -111,18 +114,17 @@ class FixFlow {
         return nodeNames;
     }
 
-    combineEnahance(data) {
+    // shape enhance
+    combineEnhance(data) {
         var lines = "\n";
         for (var key in this._enhance) {
-            //console.log(">enhance>>>", key, this._enhance[key]);
             var obj = {};
             obj[key] = { "shape": "" };
             lines += "\n" + this.cvt(obj);
         }
         var pos = data.lastIndexOf("}");
-        data = data.substring(0, pos) +
-            lines + "\n" + data.substring(pos);
-
+        data = data.substring(0, pos) + lines + "\n" + data.substring(pos);
+        //console.log(">>>>>>>>>>>>>>>\n", data);
         //reset enhance
         this._enhance = {};
         this._cvt = {};
@@ -134,7 +136,9 @@ class FixFlow {
     }
 
     hasChineseCharacters(str) {
-        var pattern = /[\u4e00-\u9fff]/; // 中文字符的 Unicode 範圍
+        //        var pattern = /[\u4e00-\u9fff]/; // 中文字符的 Unicode 範圍
+        //        var pattern = /[\u4e00-\u9fff]|[a-zA-Z0-9]/; // 包含中文字符、英文字母和数字的 Unicode 範圍
+        var pattern = /[\u4e00-\u9fff]|[a-zA-Z0-9._\s]/; // 包含中文字符、英文字母、数字、.、空白字符和下划线的 Unicode 範圍
         return pattern.test(str);
     }
 
@@ -144,7 +148,7 @@ class FixFlow {
         const sortedKeys = Object.keys(collectFixNodeNames).sort((a, b) => b.length - a.length);
         for (var i in sortedKeys) {
             if (!this.hasChineseCharacters(sortedKeys[i])) continue;
-            if (this.isNumeric(sortedKeys[i])) continue;
+            //if (this.isNumeric(sortedKeys[i])) continue;
             var id = '##' + (++idx) + '##';
             id2Key[id] = sortedKeys[i];
             ndata = ndata.replaceAll(sortedKeys[i], '"' + id + '"');
@@ -160,6 +164,7 @@ class FixFlow {
 
     convert(viz) {
         var ndata = viz;
+        ndata = ndata.replaceAll('""', '"');
         var collectFixNodeNames = {};
         var data = viz.split('\n');
         for (var i in data) {
@@ -180,7 +185,7 @@ class FixFlow {
                     ndata = ndata.replace(matchStr, cvtStr);
             }
         }
-        ndata = this.combineEnahance(ndata);
+        ndata = this.combineEnhance(ndata);
         ndata = this.fixNodeNames(collectFixNodeNames, ndata);
         ndata = ndata.replace("rankdir=\"LR\";", "");
         ndata = ndata.replace("rankdir = \"LR\";", "");

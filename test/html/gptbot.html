@@ -133,9 +133,7 @@
                     gpt.setEnable(true);
                 }
                 wholeMsg = wholeMsg + "\n" + msg;
-
                 if (msg == '') return;
-
                 ////////
                 switch (codeBlock.parseLine(msg, isEnd)) {
                     case 0:
@@ -144,11 +142,9 @@
                         cnt = cnt + msg + "<br>";
                         gpt.write(cnt);
                         break;
-                    case 1:
+                    case 1: //parseing
+                    case 2: //end parse
                         break;
-                    case 2:
-                        //removeTestCase(i);
-                        //return;
                 }
                 //* enhance code function
                 if (isEnd) {
@@ -243,11 +239,22 @@
             gpt.prompt(info['prompt']);
             await app.init(appendToShow);
             codeBlock.addCallback(
-                function (pyCode) {
-                    parent.editor.setCode(pyCode);
-                }, function (gpCode) {
-                    if (gpCode != '') {
-                        parent.flow.setCode(gpCode);
+                function (pyCode,isEnd) {
+                    if (pyCode != '') {
+                        parent.editor.setCode(pyCode);
+                    }
+                }, function (gpCode,isEnd) {
+                    //check content available
+                    if (gpCode.length > 80) {
+                        //console.log(">>>>>", gpCode, gpCode.length);
+                        let fixCode = gpCode;
+                        let left = fixCode.split('{').length - 1;
+                        let right = fixCode.split('}').length - 1;
+                        let add = left - right;
+                        for (i = 0; i < add; i++) {
+                            fixCode += "}";
+                        }
+                        parent.flow.setCode(fixCode);
                     }
                 });
             parent.editor.setCode("");
