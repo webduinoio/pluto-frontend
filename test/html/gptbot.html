@@ -11,12 +11,8 @@
     <script src="../js/codeBlock.js"></script>
     <!-- Google Font Material Symbol -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap">
-
     <script type="module" src="../coms/wa-select-prompt.js"></script>
     <script type="module" src="../coms/wa-voice.js"></script>
-    <!--
-    <script type="module" src="../coms/wa-deploy-bitv2.js"></script>
-    -->
     <script type="module" src="../coms/wa-gpt-bot.js"></script>
     <script type="module" src="../coms/wa-carousel.js"></script>
 
@@ -130,24 +126,6 @@
                         msg = msg.split('\n\n$UUID$')[0];
                         gpt.setUUID(uuid);
                     }
-                    gpt.setEnable(true);
-                }
-                wholeMsg = wholeMsg + "\n" + msg;
-                if (msg == '') return;
-                ////////
-                switch (codeBlock.parseLine(msg, isEnd)) {
-                    case 0:
-                        genCode = '';
-                        var cnt = gpt.read();
-                        cnt = cnt + msg + "<br>";
-                        gpt.write(cnt);
-                        break;
-                    case 1: //parseing
-                    case 2: //end parse
-                        break;
-                }
-                //* enhance code function
-                if (isEnd) {
                     var info = parseURL(parent.location.href);
                     if (info['actor'] == 'wbit') {
                         parent.Main.coms['deploy'].setEnable(true);
@@ -163,6 +141,20 @@
                     code = code.replace('wbit.no_tone(0)', '');
                     code = code.replace('wbit.tone(0,', 'wbit.tone(');
                     parent.editor.setCode(code);
+                    gpt.setEnable(true);
+                }
+                if (msg == '') return;
+                wholeMsg = wholeMsg + "\n" + msg;
+                switch (codeBlock.parseLine(msg, isEnd)) {
+                    case 0:
+                        genCode = '';
+                        var cnt = gpt.read();
+                        cnt = cnt + msg + "<br>";
+                        gpt.write(cnt);
+                        break;
+                    case 1: //parseing
+                    case 2: //end parse
+                        break;
                 }
             } catch (e) {
                 console.log("[function appendToShow(msg, isEnd)] parse meg error:", e);
@@ -246,7 +238,6 @@
                 }, function (gpCode, isEnd) {
                     //check content available
                     if (gpCode.length > 80) {
-                        //console.log(">>>>>", gpCode, gpCode.length);
                         let fixCode = gpCode;
                         let left = fixCode.split('{').length - 1;
                         let right = fixCode.split('}').length - 1;
