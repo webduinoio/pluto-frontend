@@ -77,11 +77,20 @@ export class RunPython extends LitElement {
         }
 
         function convertCode(code) {
+            // replace input
+            const pattern = /(?<!_)input\(([^)]*)\)/g;
+            const replacement = 'js.window.Main.input($1)';
+            code = code.replace(pattern, replacement);
+
             var imp = 'import js\nimport asyncio\n';
-            var convertCode = imp +
-                //code.replace(/input()\(/g, 'str(await js.window.Main.input()');
-                code.replaceAll(/input\(/g, 'await js.window.Main.input(');
-            //console.log("=========\n", convertCode);
+            code = code.replace(/import json, sheet/g, 'import json');
+            code = code.replace(/import json,sheet/g, 'import json');
+            code = code.replace(/import random, json, sheet/g, 'import random, json');
+
+            code = code.replace(/import sheet/g, '');
+            var convertCode = imp + code;
+            convertCode = convertCode.replaceAll(/await sheet.select\(/g, 'await js.window.Main.select(');
+            console.log("==============", "\n" + convertCode);
             return convertCode;
         }
 
@@ -117,7 +126,7 @@ export class RunPython extends LitElement {
         this.pyodide = pyodide;
         this.output = output;
         // Pyodide is now ready to use...
-        console.log("pyodide ready !");
+        // console.log("pyodide ready !");
         run.removeAttribute('disabled');
     }
 
