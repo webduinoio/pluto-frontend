@@ -12,17 +12,17 @@ class MQTTApp {
         };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
-        var topic = "gpt";
+        var topic = "@code"; //正式機
+        //根據網頁切換不同 topic
         if (parent.location.href.indexOf('/test/dev') > 0) {
-            topic = "xdev";
+            topic = "dev";
         }
         else if (parent.location.href.indexOf('/test/gpt') > 0) {
             topic = "gpt";
         }
-        topic = "@code";
         this.pubTopic = topic + '_prompt/' + userId;
-        this.respTopic_cb = topic + "_completion/" + this.userId;
-        this.respTopic_end = topic + "_completion_end/" + this.userId;
+        this.respTopic_cb = topic + "_completion/" + userId;
+        this.respTopic_end = topic + "_completion_end/" + userId;
         this.failure = false;
     }
 
@@ -62,6 +62,24 @@ class MQTTApp {
         console.log("Published message: " + msg);
     }
 
+    // MQTT message publish function
+    async publishTopic(topic, msg) {
+        var pubTopic = topic + '_prompt/' + this.userId;
+        //var respTopic_cb = topic + "_completion/" + userId;
+        var respTopic_end = topic + "_completion_end/" + this.userId;
+        var self = this;
+        return new Promise((resolve) => {
+            self.subscribe(respTopic_end, (subMsg) => {
+                self.client.unsubscribe(respTopic_end);
+                delete self.subscriptions[respTopic_end];
+                resolve(subMsg);
+            });
+            var payload = new Paho.Message(msg);
+            payload.destinationName = pubTopic;
+            this.client.send(payload);
+        });
+    }
+
     // MQTT message subscribe function
     subscribe(topic, onMessageReceived) {
         if (!this.subscriptions[topic]) {
@@ -69,7 +87,7 @@ class MQTTApp {
                 onMessageReceived: onMessageReceived
             };
             this.client.subscribe(topic);
-            console.log(`Subscribed to topic: ${topic}`);
+            //console.log(`Subscribed to topic: ${topic}`);
         } else {
             console.warn(`Already subscribed to topic: ${topic}`);
         }
