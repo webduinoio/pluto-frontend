@@ -221,6 +221,7 @@
         const app = new MQTTApp(info['userId'] + "_" + Math.random());
 
         async function init() {
+            parent.Main.registry("app", app);
             parent.Main.registry("gpt", gpt);
             parent.Main.registry("voice", voice);
             //parent.Main.registry("deploy", deploy);

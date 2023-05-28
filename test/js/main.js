@@ -30,6 +30,7 @@ const ignoreToken = (text) => {
     }
     return false;
 };
+
 editor.textEditor.codeMirror.on("change", function (editor, change) {
     if (change.origin == "+input") {
         var text = change.text;
@@ -37,7 +38,6 @@ editor.textEditor.codeMirror.on("change", function (editor, change) {
             setTimeout(function () { editor.execCommand("autocomplete"); }, 700);
     }
 });
-//*/
 
 editor.addChangeListener(function (event) {
     // console.log('Change! Better save:', event.value);
@@ -69,6 +69,14 @@ class Main {
             window.Main.registry("deploy", document.getElementById('deploy'));
             window.Main.registry("runPython", document.getElementById('runPython'));
         }, 100);
+    }
+
+    async select(url, sheetName, question) {
+        var sheetTopic = '@sheet';
+        var mqtt = this.coms['app'];
+        var prompt = "sheet:" + url + " " + sheetName + " " + question;
+        var data = await mqtt.publishTopic(sheetTopic, prompt);
+        return data;
     }
 
     ready(name, obj) {
