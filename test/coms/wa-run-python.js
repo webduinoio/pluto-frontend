@@ -88,6 +88,7 @@ export class RunPython extends LitElement {
             code = code.replace(/import random, json, sheet/g, 'import random, json');
 
             code = code.replace(/import sheet/g, '');
+            code = code.replace(/asyncio.run(main())/g, 'await main()');
             var convertCode = imp + code;
             convertCode = convertCode.replaceAll(/await sheet.select\(/g, 'await js.window.Main.select(');
             console.log("==============", "\n" + convertCode);
