@@ -30,7 +30,6 @@ jobs:
 
       - name: Build Application
         run: |
-          node --version
           export NODE_OPTIONS=--openssl-legacy-provider
           npm run build
 
@@ -44,3 +43,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "ap-northeast-2"
           SOURCE_DIR: "."
+          DEST_DIR: "pro"
