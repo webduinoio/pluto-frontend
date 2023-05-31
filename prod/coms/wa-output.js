@@ -93,8 +93,8 @@ export class Output extends LitElement {
                     var p = document.createElement("p");
                     p.textContent += text;
                     output.appendChild(p);
-                    cb(text);
                 }
+                cb(text);
                 output.removeChild(this);
             }
         });

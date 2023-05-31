@@ -79,14 +79,17 @@ export class RunPython extends LitElement {
         function convertCode(code) {
             // replace input
             const pattern = /(?<!_)input\(([^)]*)\)/g;
-            const replacement = 'js.window.Main.input($1)';
+            const replacement = 'await js.window.Main.input($1)';
             code = code.replace(pattern, replacement);
+            // fix await await
+            code = code.replace(/await await/g, 'await');
 
             var imp = 'import js\nimport asyncio\n';
             code = code.replace(/import json, sheet/g, 'import json');
             code = code.replace(/import json,sheet/g, 'import json');
             code = code.replace(/import random, json, sheet/g, 'import random, json');
             code = code.replace(/import sheet/g, '');
+            //code = code.replace(/= input\(/g, '= await input(');
             
             code = code.replace(/asyncio.run(main())/g, 'await main()');
             var convertCode = imp + code;
