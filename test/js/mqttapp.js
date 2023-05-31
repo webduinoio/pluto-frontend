@@ -12,7 +12,7 @@ class MQTTApp {
         };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
-        var topic = "@code"; //正式機
+        var topic = "code"; //正式機
         //根據網頁切換不同 topic
         if (parent.location.href.indexOf('/test/dev') > 0) {
             topic = "dev";
