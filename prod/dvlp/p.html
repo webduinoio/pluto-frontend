@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        #header {
+            background-color: lightgray;
+            padding: 10px;
+        }
+
+        #content {
+            display: flex;
+            flex: 1;
+        }
+
+        #left {
+            width: 33%;
+            padding: 10px;
+        }
+
+        #middle {
+            width: 33%;
+            padding: 10px;
+        }
+
+        #right {
+            width: 33%;
+            padding: 10px;
+        }
+    </style>
+    <script src="js/codeBlock.js"></script>
+    <script src="js/fixFlow.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="header">
+            <button onclick="processCode()">Go</button>
+        </div>
+        <div id="content">
+            <textarea id="left" style="height: 100%; width: 100%;"></textarea>
+            <textarea id="middle" style="height: 100%; width: 100%;"></textarea>
+            <textarea id="right" style="height: 100%; width: 100%;"></textarea>
+        </div>
+    </div>
+
+
+    <script>
+        var idx = 0;
+        document.addEventListener('keydown', function (event) {
+            if (event.key === '1') {
+                processCode();
+                if (document.getElementById('middle').value == '' &&
+                    document.getElementById('right').value == '') {
+                    alert('error');
+                } else {
+                    removeLines();
+                }
+            }
+        });
+
+
+        var codeBlock = new CodeBlock();
+        document.getElementById('middle').value = '';
+        document.getElementById('right').value = '';
+
+        codeBlock.addCallback(function (pyCode) {
+            document.getElementById('right').value = pyCode;
+        }, function (gpCode) {
+            gpCode = ff.convert(gpCode);
+            document.getElementById('middle').value = gpCode;
+        })
+
+        async function processCode() {
+            var code = document.getElementById('left').value;
+            var lines = code.split('\n');
+            for (var i = 0; i < lines.length - 1; i++) {
+                console.log(">>>>>>", i);
+                var last = i == lines.length;
+                switch (codeBlock.parseLine(lines[i], last)) {
+                    case 0:
+                        console.log(lines[i]);
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        await new Promise(r => setTimeout(r, 700));
+                        break;
+                }
+            }
+        }
+
+        ((async function () {
+            await fetch('./p.txt')
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Error: ' + response.status);
+                    }
+                })
+                .then(function (text) {
+                    document.getElementById('left').value = text;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        })());
+    </script>
+</body>
+
+</html>
