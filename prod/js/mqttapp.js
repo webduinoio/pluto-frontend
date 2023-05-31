@@ -13,13 +13,6 @@ class MQTTApp {
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
         var topic = "@code"; //正式機
-        //根據網頁切換不同 topic
-        if (parent.location.href.indexOf('/test/dev') > 0) {
-            topic = "dev";
-        }
-        else if (parent.location.href.indexOf('/test/gpt') > 0) {
-            topic = "gpt";
-        }
         this.pubTopic = topic + '_prompt/' + userId;
         this.respTopic_cb = topic + "_completion/" + userId;
         this.respTopic_end = topic + "_completion_end/" + userId;
