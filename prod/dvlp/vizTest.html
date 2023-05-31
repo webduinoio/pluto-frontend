@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            display: flex;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        #header {
+            background-color: lightgray;
+            padding: 10px;
+        }
+
+        #content {
+            display: flex;
+            flex: 1;
+        }
+
+        #left {
+            width: 33%;
+            padding: 10px;
+        }
+
+        #middle {
+            width: 33%;
+            padding: 10px;
+        }
+
+        .right {
+            width: 33%;
+            padding: 10px;
+        }
+    </style>
+    <script src="../js/codeBlock.js"></script>
+    <script src="../js/fixFlow.js"></script>
+    <!-- Viz.js -->
+    <script src="https://viz-js.com/bower_components/viz.js/viz.js"></script>
+    <script type="module" src="../coms/wa-flow.js"></script>
+</head>
+
+<body>
+    <div id="container">
+        <div id="header">
+            <button onclick="processCode()">Go</button>
+            <button onclick="render()">Render</button>
+        </div>
+        <div id="content">
+            <textarea id="left" style="height: 100%; width: 100%;"></textarea>
+            <textarea id="middle" style="height: 100%; width: 100%;"></textarea>
+            <wa-flow id="flow" class="right" style="height: 100%; width: 100%;"></wa-flow>
+        </div>
+    </div>
+
+
+    <script>
+        var idx = 0;
+        document.addEventListener('keydown', async function (event) {
+            if (event.key === '1') {
+                flow.clear();
+                document.getElementById('middle').value = '';
+                //*
+                while (true) {
+                    if (await processCode() == 1) {
+                        break;
+                    }
+                }
+                //*/
+            }
+            if (event.key === '2') {
+                render();
+            }
+        });
+
+        var codeBlock = new CodeBlock();
+        document.getElementById('middle').value = '';
+        codeBlock.addCallback(function (pyCode) {
+
+        }, function (gpCode) {
+            if (gpCode.length > 80) {
+                let fixCode = gpCode;
+                let left = fixCode.split('{').length - 1;
+                let right = fixCode.split('}').length - 1;
+                let add = left - right;
+                for (i = 0; i < add; i++) {
+                    fixCode += "}";
+                }
+
+
+                document.getElementById('middle').value = fixCode;
+                flow.setCode(fixCode);
+            }
+        })
+
+        function render() {
+            var code = document.getElementById('middle').value;
+            flow.setCode(code);
+        }
+
+        function removeTestCase(i) {
+            var code = document.getElementById('left').value;
+            var lines = code.split('\n');
+            lines.splice(0, i + 1);
+            document.getElementById('left').value = lines.join('\n');
+        }
+
+        async function processCode() {
+            var code = document.getElementById('left').value;
+            var lines = code.split('\n');
+            var codeType = -1; // 0:python , 1:flow
+            for (var i = 0; i < lines.length - 1; i++) {
+                var last = i == lines.length;
+                switch (codeBlock.parseLine(lines[i], last)) {
+                    case 0:
+                        console.log(lines[i]);
+                        break;
+                    case 1:
+                        if (codeBlock.codeType != -1) {
+                            codeType = codeBlock.codeType;
+                        }
+                        break;
+                    case 2:
+                        removeTestCase(i);
+                        return codeType;
+                }
+            }
+            return 0;
+        }
+
+        ((async function () {
+            await fetch('./testCase.txt')
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Error: ' + response.status);
+                    }
+                })
+                .then(function (text) {
+                    document.getElementById('left').value = text;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        })());
+    </script>
+</body>
+
+</html>
