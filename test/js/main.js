@@ -63,9 +63,6 @@ class Main {
         setTimeout(function () {
             window.Main.editor = editor;
             window.flow = document.getElementById('flow');
-            Container.init({
-                'c1': 'drag1', 'c2': 'drag2', 'c3': 'drag3'
-            });
             window.Main.registry("deploy", document.getElementById('deploy'));
             window.Main.registry("runPython", document.getElementById('runPython'));
         }, 100);
