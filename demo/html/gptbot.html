@@ -144,6 +144,10 @@
                 }
                 if (msg == '') return;
                 wholeMsg = wholeMsg + "\n" + msg;
+                var cnt = gpt.read();
+                cnt = cnt + msg + "<br>";
+                gpt.write(cnt);
+                /*
                 switch (codeBlock.parseLine(msg, isEnd)) {
                     case 0:
                         genCode = '';
@@ -154,7 +158,7 @@
                     case 1: //parseing
                     case 2: //end parse
                         break;
-                }
+                }*/
             } catch (e) {
                 console.log("[function appendToShow(msg, isEnd)] parse meg error:", e);
             }
@@ -262,7 +266,8 @@
             setTimeout(function () {
                 gpt.setEnable(true);
             }, 1000);
-            gpt.promptCallback(function (prompt) {
+            gpt.promptCallback(function (prompt, keepCode) {
+                if (keepCode == null) keepCode = false;
                 parent.Main.coms['output'].cls();
                 if (parent.Main.coms['mqtt'].failure) {
                     alert('連線中斷，請重新整理網頁');
@@ -282,7 +287,7 @@
                 gpt.start(carousel.actor);
                 parent.Main.coms['deploy'].setEnable(false);
                 parent.flow.processing();
-                parent.editor.setCode("");
+                if (!keepCode) parent.editor.setCode("");
             });
         }
     </script>

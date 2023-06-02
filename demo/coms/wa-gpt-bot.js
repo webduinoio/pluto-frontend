@@ -12,6 +12,7 @@ class ChatGPTBot extends LitElement {
         #overflow: hidden;
       }
       #input-area {
+        display:none;
         width: 100%;
         position: relative;
         bottom: -28px;
@@ -73,6 +74,15 @@ class ChatGPTBot extends LitElement {
         @input="${this.handleOnInput}" disabled></textarea>
         <button id="send-button" @click="${this.sendMessage}">
           <img src='../coms/gpt_send.svg' width='24px'>
+        </button>
+      </div>
+      <br>
+      <div style='width:100%; display: flex; justify-content: center;'>
+        <button id="send-button" style="margin:10px;font-size:1.2em" @click="${this.sendQ1Message}">
+          <img src='../coms/gpt_send.svg' width='24px'>講解程式
+        </button>
+        <button id="send-button" style="margin:10px;font-size:1.2em" @click="${this.sendQ2Message}">
+          <img src='../coms/gpt_send.svg' width='24px'>檢查程式問題
         </button>
       </div>
     `;
@@ -265,8 +275,33 @@ class ChatGPTBot extends LitElement {
     sendButton.innerHTML = `<img src='../coms/gpt_send.svg' width='24px'>`;
   }
 
-  sendMessage() {
-    //console.log("sendMessage()");
+  sendQ1Message() {
+    this.textarea.value = '\n講解這個程式碼的功能並在每行後面加上註解'
+    var prompt = parent.editor.getCode();
+    this.sendMessage(' ' + prompt);
+  }
+
+  sendQ2Message() {
+    this.textarea.value = '檢查這個程式碼有沒有執行問題或邏輯問題';
+    var prompt = `你扮演Python解釋器 按照我提供的Python程式 一行一行執行 
+判斷程式執行例外 如果沒有執行例外 判斷程式邏輯問題
+#如果程式有執行例外,按照下面格式輸出
+1.程式執行異常
+[顯示 runtime exception 或 error 完整訊息,異常原因]
+2.程式修改建議
+[說明程式碼修改建議]
+3. 結束
+
+#如果程式有邏輯問題,按照下面格式輸出
+1.邏輯可能問題:
+[說明程式可能的邏輯問題]
+2.程式修改建議:
+[寫出程式碼修改建議]\n`+ parent.editor.getCode();
+    this.sendMessage(' ' + prompt + '\n# 判斷BMI計算公式是否正確\n# 判斷BMI區間是否合理\n');
+  }
+
+  sendMessage(enhance) {
+    if (enhance == null) enhance = '';
     const textarea = this.textarea;
     if (textarea.value.trim() == '') {
       textarea.value = '';
@@ -274,7 +309,7 @@ class ChatGPTBot extends LitElement {
     }
     this.lastPrompt = textarea.value;
     this.userSay(textarea.value);
-    this.promptCallback(textarea.value);
+    this.promptCallback(enhance + textarea.value, true);
     textarea.value = '';
     var e = {};
     e.target = this.textarea;
