@@ -10,6 +10,7 @@ class ChatGPTBot extends LitElement {
         overflow-y: scroll;
         white-space: pre-line;
         #overflow: hidden;
+        #font-size: 20px;
       }
       #input-area {
         display:none;
@@ -78,11 +79,11 @@ class ChatGPTBot extends LitElement {
       </div>
       <br>
       <div style='width:100%; display: flex; justify-content: center;'>
-        <button id="send-button" style="margin:10px;font-size:1.2em" @click="${this.sendQ1Message}">
-          <img src='../coms/gpt_send.svg' width='24px'>講解程式
+        <button id="send-button" style="position: relative; margin: 10px;font-size:1.2em" @click="${this.sendQ1Message}">
+          <img src='../coms/gpt_ref.png' style="position: relative; top: 50%; transform: translateY(-50%); margin-right: 5px;" width='26px'>講解程式
         </button>
         <button id="send-button" style="margin:10px;font-size:1.2em" @click="${this.sendQ2Message}">
-          <img src='../coms/gpt_send.svg' width='24px'>檢查程式問題
+        <img src='../coms/gpt_check.png' style="position: relative; top: 50%; transform: translateY(-50%); margin-right: 5px;" width='24px'>檢查程式
         </button>
       </div>
     `;
@@ -258,7 +259,7 @@ class ChatGPTBot extends LitElement {
     return this.message.innerHTML;
   }
 
-  write(msg) {
+  writeAppend(msg) {
     this.message.innerHTML = msg;
     const chatbox = this.shadowRoot.querySelector('#chatbox');
     chatbox.scrollTop = chatbox.scrollHeight;
@@ -276,12 +277,14 @@ class ChatGPTBot extends LitElement {
   }
 
   sendQ1Message() {
-    this.textarea.value = '\n講解這個程式碼的功能並在每行後面加上註解'
+    this.textarea.value = '\n講解這個程式的功能 根據程式碼推測程式碼的目的是什麼 並在程式碼每行後面加上註解'
     var prompt = parent.editor.getCode();
     this.sendMessage(' ' + prompt);
   }
 
   sendQ2Message() {
+    var questionEnhance = '\n# 判斷BMI計算公式是否正確\n# 判斷BMI區間是否有重疊\n';
+    questionEnhance = '';
     this.textarea.value = '檢查這個程式碼有沒有執行問題或邏輯問題';
     var prompt = `你扮演Python解釋器 按照我提供的Python程式 一行一行執行 
 判斷程式執行例外 如果沒有執行例外 判斷程式邏輯問題
@@ -297,7 +300,7 @@ class ChatGPTBot extends LitElement {
 [說明程式可能的邏輯問題]
 2.程式修改建議:
 [寫出程式碼修改建議]\n`+ parent.editor.getCode();
-    this.sendMessage(' ' + prompt + '\n# 判斷BMI計算公式是否正確\n# 判斷BMI區間是否合理\n');
+    this.sendMessage(' ' + prompt + questionEnhance);
   }
 
   sendMessage(enhance) {

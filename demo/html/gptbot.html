@@ -144,21 +144,26 @@
                 }
                 if (msg == '') return;
                 wholeMsg = wholeMsg + "\n" + msg;
+                //*
                 var cnt = gpt.read();
                 cnt = cnt + msg + "<br>";
-                gpt.write(cnt);
+                gpt.writeAppend(cnt);
+                //*/
                 /*
                 switch (codeBlock.parseLine(msg, isEnd)) {
                     case 0:
-                        genCode = '';
+                        //genCode = '';
                         var cnt = gpt.read();
                         cnt = cnt + msg + "<br>";
                         gpt.write(cnt);
                         break;
-                    case 1: //parseing
-                    case 2: //end parse
+                    case 1: //parsing
+                        console.log("parsing.....", msg);
                         break;
-                }*/
+                    case 2: //end parse
+                        console.log("end parse", msg);
+                        break;
+                }//*/
             } catch (e) {
                 console.log("[function appendToShow(msg, isEnd)] parse meg error:", e);
             }
