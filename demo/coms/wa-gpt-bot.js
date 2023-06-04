@@ -108,7 +108,6 @@ class ChatGPTBot extends LitElement {
     textarea.style.marginTop = `-${calHeight}px`;
   }
 
-
   handleTextareaKeyDown(e) {
     if (e.keyCode === 13 && e.shiftKey) { // Shift + Enter key
       ChatGPTBot.shift_enter_Key = true;
@@ -284,9 +283,10 @@ class ChatGPTBot extends LitElement {
 
   sendQ2Message() {
     var questionEnhance = '\n# 判斷BMI計算公式是否正確\n# 判斷BMI區間是否有重疊\n';
-    questionEnhance = '';
+    //questionEnhance = '';
     this.textarea.value = '檢查這個程式碼有沒有執行問題或邏輯問題';
-    var prompt = `你扮演Python解釋器 按照我提供的Python程式 一行一行執行 
+    var prompt = 
+`你扮演Python解釋器 按照我提供的Python程式 一行一行執行 
 判斷程式執行例外 如果沒有執行例外 判斷程式邏輯問題
 #如果程式有執行例外,按照下面格式輸出
 1.程式執行異常
