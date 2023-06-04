@@ -77,6 +77,14 @@ export class RunPython extends LitElement {
         }
 
         function convertCode(code) {
+            var imp = 'import js\nimport asyncio\n';
+            var convertCode = imp +
+                code.replaceAll(/input\(/g, 'await js.window.Main.input(');
+            console.log("=========\n", convertCode);
+            return convertCode;
+        }
+
+        function convertCode_sheet(code) {
             // replace input
             const pattern = /(?<!_)input\(([^)]*)\)/g;
             const replacement = 'await js.window.Main.input($1)';
@@ -90,7 +98,7 @@ export class RunPython extends LitElement {
             code = code.replace(/import random, json, sheet/g, 'import random, json');
             code = code.replace(/import sheet/g, '');
             //code = code.replace(/= input\(/g, '= await input(');
-            
+
             code = code.replace(/asyncio.run(main())/g, 'await main()');
             var convertCode = imp + code;
             convertCode = convertCode.replaceAll(/await sheet.select\(/g, 'await js.window.Main.select(');
