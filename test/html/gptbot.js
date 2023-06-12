@@ -40,7 +40,7 @@ function actorGPT35(msg, isEnd) {
             gpt.setEnable(true);
         }
         if (msg == '') return;
-        wholeMsg = wholeMsg + "\n" + msg;
+        wholeMsg = wholeMsg + "<br>" + msg;
         switch (codeBlock.parseLine(msg, isEnd)) {
             case 0:
                 genCode = '';
