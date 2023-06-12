@@ -1,0 +1,38 @@
+:root {
+    height: 100%;
+}
+
+body {
+    margin: 0px;
+    height: 100%;
+}
+
+.quiz-panel {
+    height: calc(240px);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-panel {
+    margin: 5px;
+    height: calc(70vh - 130px);
+    background-color: #eee;
+}
+
+.menuBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 46px;
+}
+
+.menuBtn {
+    float: left;
+    margin: 5px;
+}
+
+#gptbot-content {
+    height: 100%;
+}
