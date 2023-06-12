@@ -7,6 +7,7 @@ const cookie = new Cookie(2);
 const textarea = document.getElementById('show');
 const voice = document.getElementById('voice');
 const carousel = document.getElementById('carousel');
+const md2html = parent.document.getElementById('md2html');
 var info = parseURL(parent.location.href);
 const app = new MQTTApp(info['userId'] + "_" + Math.random());
 
@@ -16,6 +17,47 @@ function voiceToTextarea(str) {
 }
 
 function appendToShow(msg, isEnd) {
+    var nowActorName = carousel.getActorName();
+    if (nowActorName == 'gpt35') {
+        actorGPT35(msg, isEnd);
+    } else {
+        actorDefault(msg, isEnd);
+    }
+}
+
+function actorGPT35(msg, isEnd) {
+    try {
+        console.log(isEnd, wholeMsg);
+        if (isEnd) {
+            var uuid = msg.split('\n\n$UUID$')[1];
+            if (typeof (uuid) != "undefined") {
+                msg = msg.split('\n\n$UUID$')[0];
+                gpt.setUUID(uuid);
+            }
+            gpt.done();
+            gpt.wholeMsg = wholeMsg;
+            md2html.setText(wholeMsg);
+            gpt.setEnable(true);
+        }
+        if (msg == '') return;
+        wholeMsg = wholeMsg + "\n" + msg;
+        switch (codeBlock.parseLine(msg, isEnd)) {
+            case 0:
+                genCode = '';
+                var cnt = gpt.read();
+                cnt = cnt + msg + "<br>";
+                gpt.write(cnt);
+                break;
+            case 1: //parseing
+            case 2: //end parse
+                break;
+        }
+    } catch (e) {
+        console.log("[function appendToShow(msg, isEnd)] parse meg error:", e);
+    }
+}
+
+function actorDefault(msg, isEnd) {
     try {
         if (isEnd) {
             var uuid = msg.split('\n\n$UUID$')[1];
