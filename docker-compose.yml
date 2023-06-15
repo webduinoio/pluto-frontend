@@ -1,0 +1,23 @@
+version: "3.9"
+
+x-default: &default
+  restart: always
+  tty: true
+  stdin_open: true
+
+services:
+  web:
+    <<: *default
+    image: py-stg.egame.kh.edu.tw/pluto-frontend:latest
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - 8080:80
+    container_name: pluto-frontend
+    hostname: pluto-frontend
+
+networks:
+  default:
+    name: pluto_net
+    driver: bridge
