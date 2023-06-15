@@ -44,7 +44,13 @@ editor.addChangeListener(function (event) {
     // lint custom ref: https://juejin.cn/post/7127282061211074573
 });
 
+function div_display(divId, show) {
+    var div = document.getElementById(divId);
 
+    if (div) {
+        div.style.display = show ? 'block' : 'none';
+    }
+}
 
 // set python code
 /*
@@ -110,14 +116,34 @@ class Main {
         else if (com == 'carousel' && action == 'setActor') {
             this.coms['gpt'].clear();
             if (info[1] == 'python') {
+                div_display('content-md', false);
+                div_display('content-code', true);
                 this.coms['deploy'].hide(true);
                 this.coms['deploy'].setEnable(false);
                 this.coms['runPython'].hide(false);
                 this.coms['split-v'].setHideBody(false);
             }
-            if (info[1] == 'wbit') {
+            else if (info[1] == 'wbit') {
+                div_display('content-md', false);
+                div_display('content-code', true);
                 this.coms['deploy'].hide(false);
                 this.coms['deploy'].setEnable(true);
+                this.coms['runPython'].hide(true);
+                this.coms['split-v'].setHideBody(true);
+            }
+            else if (info[1] == 'mbit') {
+                div_display('content-md', false);
+                div_display('content-code', true);
+                this.coms['deploy'].hide(true);
+                this.coms['runPython'].hide(true);
+                this.coms['deploy'].setEnable(false);
+                this.coms['split-v'].setHideBody(true);
+            }
+            else if (info[1] == 'gpt35') {
+                div_display('content-md', true);
+                div_display('content-code', false);
+                this.coms['deploy'].hide(true);
+                this.coms['deploy'].setEnable(false);
                 this.coms['runPython'].hide(true);
                 this.coms['split-v'].setHideBody(true);
             }
