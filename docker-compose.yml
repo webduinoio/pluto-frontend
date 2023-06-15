@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: dockerfile
     ports:
-      - 8080:80
+      - 80:80
     container_name: pluto-frontend
     hostname: pluto-frontend
 
