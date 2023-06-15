@@ -14,14 +14,6 @@ export class MenuBar extends LitElement {
     }
 
     static styles = [css`
-    #menubar {
-        top: 5px;
-        height: 40px;
-        color: #fff;
-        text-decoration: none;
-        background: #058;
-        z-index: 100;
-    }
     .toolMenu {
         width:145px;
         float: right;
@@ -61,8 +53,48 @@ export class MenuBar extends LitElement {
   `];
 
     firstUpdated() {
+        var themesStyle = {
+            'default': {
+                'titleBar': {
+                    'top': '5px',
+                    'height': '40px',
+                    'color': '#fff',
+                    'text-decoration': 'none',
+                    'background': '#058',
+                    'z-index': '100'
+                },
+                'logo': `<div style='float:left;padding:4px;position:absolute'>
+<img id='logo' height='36' src='/webduino_logo.svg' style='margin-left:5px'>
+</div>`
+            },
+            'egame': {
+                'titleBar': {
+                    'top': '5px',
+                    'height': '40px',
+                    'color': '#fff',
+                    'text-decoration': 'none',
+                    'background': '#ffd83b',
+                    'z-index': '100'
+                },
+                'logo': `<div style='float:left;padding:0px;position:absolute'>
+<img id='logo' height='40' src='/egame.png' style='margin-left:0px'>
+</div>`
+            }
+        }
         var self = this;
         let button = this.renderRoot.querySelector("#button");
+        let menubar = this.renderRoot.querySelector("#menubar");
+        // set theme
+        var theme = this.getAttribute('theme');
+        if (theme == null) theme = 'default';
+        var themeStyle = themesStyle[theme]['titleBar'];
+        for (var key in themeStyle) {
+            menubar.style[key] = themeStyle[key];
+        }
+        // insert logoHtml to menubar
+        var logoHtml = themesStyle[theme]['logo'];
+        menubar.innerHTML = logoHtml + menubar.innerHTML;
+        // set button
         button.addEventListener("click", function () {
             self.changeMode();
         });
@@ -94,9 +126,6 @@ export class MenuBar extends LitElement {
     render() {
         return html`
         <div id='menubar'>
-        <div style='float:left;padding:4px;position:absolute'>
-            <img height='36' src='./coms/webduino_logo.svg' style='margin-left:5px'>
-        </div>
         <div style="padding-top: 10px;">
             <div class="toolMenu">
             <div id="button" class='btn'>
