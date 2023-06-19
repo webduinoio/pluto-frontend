@@ -42,7 +42,7 @@ class CodeBlock {
             this.strCodeType = line.substring(3).trim();
             return 1; //parsing...
         }
-        if (this.strCodeType == 'python') {
+        if (this.strCodeType == 'python'||this.strCodeType == 'javascript') {
             this.codeType = 0;
         }
         else if (this.strCodeType == 'dot' ||
