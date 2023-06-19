@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from './components/HelloWorld.vue';
 </script>
 
 <template>
@@ -12,6 +12,8 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  <v-icon icon="mdi-home" />
+  <v-icon icon="mdi-shield-home" />
 </template>
 
 <style scoped>
