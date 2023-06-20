@@ -24,9 +24,11 @@ const count = ref(0);
   <button @click="count++">{{ count }}</button>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+$test: 2;
+
 header {
-  line-height: 1.5;
+  line-height: $test;
   max-height: 100vh;
 }
 
