@@ -42,4 +42,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  test: {
+    // https://vitest.dev/guide/#configuring-vitest
+    globals: true,
+    environment: 'jsdom',
+    deps: {
+      inline: ['vuetify'],
+    },
+  },
 });
