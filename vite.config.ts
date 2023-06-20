@@ -5,6 +5,7 @@ import AutoImport from 'unplugin-auto-import/vite';
 import { defineConfig } from 'vite';
 import { createHtmlPlugin } from 'vite-plugin-html';
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
+import svgLoader from 'vite-svg-loader';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,6 +14,7 @@ export default defineConfig({
       template: { transformAssetUrls },
     }),
     vuetify(),
+    svgLoader({ defaultImport: 'component' }),
     AutoImport({
       include: [
         /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
