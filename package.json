@@ -15,6 +15,7 @@
     "@mdi/font": "^7.2.96",
     "@types/node": "^20.3.1",
     "@vitejs/plugin-vue": "^4.1.0",
+    "sass": "^1.63.4",
     "typescript": "^5.0.2",
     "unplugin-auto-import": "^0.16.4",
     "vite": "^4.3.9",

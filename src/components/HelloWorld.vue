@@ -29,8 +29,15 @@ const count = ref(0);
   <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+$test: 40px;
 .read-the-docs {
   color: #888;
+}
+
+.card {
+  p {
+    font-size: $test;
+  }
 }
 </style>
