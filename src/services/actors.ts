@@ -3,7 +3,7 @@
  */
 
 // import { user } from '@/hooks/useUser';
-// import type { ServiceProblem } from '@/types';
+import type { ServiceActor } from '@/types';
 import axios from 'axios';
 
 let instance: any;
@@ -29,17 +29,35 @@ function createInstance(value: any) {
 // TODO: 待調整
 instance = createInstance('');
 
-// /**
-//  * 新增角色
-//  * @param data 角色資料
-//  */
-// export function createQuestion(data: ServiceProblem) {
-//   const config = {
-//     method: 'post',
-//     data,
-//   };
-//   return instance('/questions', config);
-// }
+/**
+ * 新增角色
+ *
+ * code: 執行結果代碼
+ * 0: 成功
+ * 4: 網址錯誤
+ * 6: 名稱重複
+ *
+ * @param data 角色資料
+ */
+export function createActor(data: ServiceActor) {
+  const config = {
+    method: 'post',
+    data,
+  };
+  // TODO: 待調整
+  // return instance('/', config);
+  // alert(JSON.stringify(data, null, 2));
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      return resolve({
+        data: {
+          code: 4,
+        },
+      });
+    }, 300);
+  });
+}
 
 /**
  * 取得角色清單

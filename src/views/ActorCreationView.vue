@@ -1,6 +1,10 @@
 <script lang="ts" setup>
+import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { createActor } from '@/services';
 import { useField, useForm } from 'vee-validate';
 
+const router = useRouter();
+const { fire, showLoading, hideLoading } = useSweetAlert();
 const { resetForm, handleSubmit } = useForm({
   initialValues: {
     name: '',
@@ -21,10 +25,44 @@ const url = useField('url', undefined, {
 });
 
 // TODO: 待調整
-const onSubmit = handleSubmit((values) => {
-  alert(JSON.stringify(values, null, 2));
+const onSubmit = handleSubmit(async (values) => {
+  showLoading();
+  const {
+    data: { code },
+  } = await createActor(values);
+
+  hideLoading();
+
+  if (code === 4) {
+    await fire({
+      title: '發生錯誤',
+      icon: 'error',
+      text: '網址不正確',
+    });
+    return;
+  }
+
+  if (code === 6) {
+    await fire({
+      title: '發生錯誤',
+      icon: 'error',
+      text: '名稱重複',
+    });
+    return;
+  }
+
   resetForm();
+  await fire({
+    title: '更新完成',
+    icon: 'success',
+    timer: 2000,
+    showConfirmButton: false,
+  });
+  router.push({ name: 'Home' });
 });
+
+const snackbar = ref(false);
+const text = ref(`更新完成`);
 </script>
 
 <template>
