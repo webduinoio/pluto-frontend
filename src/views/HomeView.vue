@@ -1,29 +1,22 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
+import { getActors } from '@/services';
+import type { Actor } from '@/types';
+import { set } from '@vueuse/core';
 
 const router = useRouter();
 
 // TODO: 待調整
-const data = ref([
-  {
-    createdBy: 1,
-    description: '測試用1',
-    id: 3,
-    image: 'https://photo.webduino.io/chat/cover.webp',
-    name: '小書僮2',
-    temperature: 0,
-    url: 'https://google.com',
-  },
-  {
-    createdBy: 1,
-    description: '測試用2',
-    id: 4,
-    image: 'https://photo.webduino.io/chat/cover.webp',
-    name: '小書僮2',
-    temperature: 0,
-    url: 'https://google.com',
-  },
-]);
+const data = ref<Actor[]>([]);
+
+onMounted(async () => {
+  try {
+    const { data: value } = await getActors();
+    set(data, value.list || []);
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 // TODO: 待調整
 const onEdit = (id: number) => {
