@@ -46,4 +46,9 @@ export default createVuetify({
   theme: {
     defaultTheme: 'light',
   },
+  defaults: {
+    VBtn: {
+      rounded: true,
+    },
+  },
 });
