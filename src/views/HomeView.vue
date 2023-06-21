@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
 
+const router = useRouter();
+
 // TODO: 待調整
 const data = ref([
   {
@@ -39,7 +41,9 @@ const onOpen = (id: number) => {
     <v-responsive max-width="1024">
       <div class="d-flex justify-space-between my-15">
         <div class="text-h4">我的小書僮</div>
-        <v-btn color="teal" prepend-icon="mdi-plus">新增小書僮</v-btn>
+        <v-btn color="teal" prepend-icon="mdi-plus" @click="router.push({ name: 'ActorCreation' })"
+          >新增小書僮</v-btn
+        >
       </div>
       <v-row class="mx-auto">
         <TheActor
