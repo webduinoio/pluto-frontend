@@ -64,7 +64,7 @@ export class MenuBar extends LitElement {
                     'z-index': '100'
                 },
                 'logo': `<div style='float:left;padding:4px;position:absolute'>
-<img id='logo' height='36' src='/webduino_logo.svg' style='margin-left:5px'>
+<img id='logo' height='36' src='../webduino_logo.svg' style='margin-left:5px'>
 </div>`
             },
             'egame': {

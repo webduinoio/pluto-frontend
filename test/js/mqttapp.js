@@ -12,7 +12,7 @@ class MQTTApp {
         };
         this.onConnectPromise = null;
         this.subscriptions = {}; // 存儲訂閱關係的對象
-        var topic = "code@chat"; //正式機
+        var topic = "code@chat-test"; // 測試機
         this.pubTopic = topic + '_prompt/' + userId;
         this.respTopic_cb = topic + "_completion/" + userId;
         this.respTopic_end = topic + "_completion_end/" + userId;
