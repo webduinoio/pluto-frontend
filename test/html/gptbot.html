@@ -34,6 +34,16 @@
         </div>
     </div>
 </body>
+
+<script src="./oauth.js"></script>
+<script>
+    (async () => {
+        const result = await isLogin();
+        if (!result) {
+            logout();
+        }
+    })();
+</script>
 <script src="./gptbot-lib.js"></script>
 <script src="./gptbot.js"></script>
 
