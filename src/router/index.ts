@@ -20,6 +20,16 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/test',
+      component: LayoutDefault,
+      children: [
+        {
+          path: 'splitpanes',
+          component: () => import('@/testViews/SplitpanesView.vue'),
+        },
+      ],
+    },
   ],
 });
 
