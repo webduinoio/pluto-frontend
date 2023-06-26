@@ -12,18 +12,14 @@
     - [開發](#開發)
     - [打包](#打包)
     - [執行預覽 (打包後)](#執行預覽-打包後)
-  - [網址](#網址)
   - [部署更新時間](#部署更新時間)
-  - [i18n](#i18n)
-  - [Lit Element](#lit-element)
   - [VSCode](#vscode)
   - [Type Support for `.vue` Imports in TS](#type-support-for-vue-imports-in-ts)
 
 ## 環境需求
 
-<!-- - `nodejs 18.14.2`
-- `tailwindcss 3.2.4`
-- `daisyUI 2.51.5` -->
+- `nodejs 18.14.2`
+- `vuetify 3.3.3`
 
 ## 本機開發
 
@@ -45,6 +41,8 @@ npm run dev
 
 ```bash
 npm run build
+
+# 打開網址 http://localhost:4173
 ```
 
 ### 執行預覽 (打包後)
@@ -53,29 +51,16 @@ npm run build
 npm run preview
 ```
 
-## 網址
-
-<!-- - blockMirror：<http://localhost:5173/problems>
-- 教師
-  - 管理畫面：<http://localhost:5173/dashboard>
-- 學生
-  - 題目清單：<http://localhost:5173/main>
-  - 個人資料：<http://localhost:5173/main/user>
-- 測試
-  - i18n：<http://localhost:5173/_test/i18n>
-  - Toast UI Editor：<http://localhost:5173/_test/editor>
-  - CodeMirror 6：<http://localhost:5173/_test/codemirror> -->
-
 ## 部署更新時間
 
-<!-- 檢查部署更新時間，打開網頁開發者工具，html 元素上，可查看 data-time 屬性。 -->
+檢查部署更新時間，打開網頁開發者工具，html 元素上，可查看 data-time 屬性。
 
-## i18n
+<!-- ## i18n -->
 
 <!-- 1. 在 [i18n/index.ts](src/i18n/index.ts) 處理 `vue-i18n`、`lit localization`、`blockly` 的語系設定，並提供 api。
 2. vue-router 呼叫 i18n api，來設定語系。 -->
 
-## Lit Element
+<!-- ## Lit Element -->
 
 <!-- - i18n
   - [官方說明](https://lit.dev/docs/localization/overview/)，選擇 `runtime mode`。
