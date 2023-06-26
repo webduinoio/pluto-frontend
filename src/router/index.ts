@@ -28,6 +28,10 @@ const router = createRouter({
           path: 'splitpanes',
           component: () => import('@/testViews/SplitpanesView.vue'),
         },
+        {
+          path: 'markdown',
+          component: () => import('@/testViews/MarkdownView.vue'),
+        },
       ],
     },
   ],
