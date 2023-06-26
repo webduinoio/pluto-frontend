@@ -44,19 +44,7 @@ export function createActor(data: ServiceActor) {
     method: 'post',
     data,
   };
-  // TODO: 待調整
-  // return instance('/', config);
-  // alert(JSON.stringify(data, null, 2));
-
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      return resolve({
-        data: {
-          code: 4,
-        },
-      });
-    }, 300);
-  });
+  return instance('/', config);
 }
 
 /**
