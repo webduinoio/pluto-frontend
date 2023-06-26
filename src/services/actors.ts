@@ -75,39 +75,13 @@ export function getActors(options?: {
     params: {
       lastIndex: lastIndex || 1,
       count: count || 30,
-      orderBy: 'name',
+      orderBy: 'id',
       orderDirection: 'ASC',
     } as Record<string, string | number>,
   };
   if (orderBy !== undefined) config.params.orderBy = orderBy.toString();
   if (orderDirection !== undefined) config.params.orderDirection = orderDirection;
-  // return instance('/', config);
-  // TODO: mock data
-  return Promise.resolve({
-    data: {
-      lastIndex: 3,
-      list: [
-        {
-          createdBy: 1,
-          description: '',
-          id: 3,
-          image: 'https://photo.webduino.io/chat/cover.webp',
-          name: '小書僮1',
-          temperature: 0,
-          url: 'https://google.com',
-        },
-        {
-          createdBy: 1,
-          description: '測試用2',
-          id: 4,
-          image: 'https://photo.webduino.io/chat/cover.webp',
-          name: '小書僮2',
-          temperature: 0,
-          url: 'https://google.com',
-        },
-      ],
-    },
-  });
+  return instance('/', config);
 }
 
 // /**
