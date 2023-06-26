@@ -1,5 +1,5 @@
+import '@/hooks/useVeeValidate';
 import { createApp } from 'vue';
-
 import App from './App.vue';
 
 // Plugins

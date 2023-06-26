@@ -33,3 +33,5 @@ export interface Actors {
   lastIndex: number;
   list: Actor[];
 }
+
+export interface ServiceActor extends Pick<Actor, 'name' | 'url'> {}
