@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { get, useStorage } from '@vueuse/core';
+import TheMarkdown from '@/components/TheMarkdown.vue';
+import { useMqtt } from '@/hooks/useMqtt';
+import { get, set, useStorage } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
@@ -7,38 +9,51 @@ import 'splitpanes/dist/splitpanes.css';
 const actorOpenID = useStorage('actorOpenID', null, sessionStorage);
 console.log('>>> open id:', get(actorOpenID));
 
-const messages = ref([
-  {
-    type: 'user',
-    message: '123',
-  },
-  {
-    type: 'ai',
-    message: '4444',
-  },
-  {
-    type: 'ai',
-    message: '4444',
-  },
-  {
-    type: 'ai',
-    message: '4444',
-  },
-  {
-    type: 'user',
-    message: '123',
-  },
-]);
+const mqtt = useMqtt('guest_' + Math.random());
+const messages = ref<{ type: string; message: string }[]>([]);
+const actor = '神鵰俠侶';
+const prompt = ref('');
+const msg1 = ref('');
+const msg2 = ref('');
+const uid = ref('');
+const wholeMsg = ref('');
+const markdownValue = ref('');
 
-const text = ref(`123
-  \n
-  222
-  22
-`);
+mqtt.init((msg: string, isEnd: boolean) => {
+  if (isEnd) {
+    // 其中包含 uuid 的部份，在這裡暫時無用
+    const uuid = msg.split('\n\n$UUID$')[1];
+    let newMsg = msg;
+    if (uuid) {
+      newMsg = msg.split('\n\n$UUID$')[0];
+      set(uid, uuid);
+    }
+    set(wholeMsg, get(wholeMsg) + newMsg);
+    set(msg2, newMsg);
+
+    set(markdownValue, newMsg);
+    messages.value.push({
+      type: 'ai',
+      message: get(msg1),
+    });
+  } else {
+    if (!msg) return;
+    // 這裡會需要加換行，由於並非一次就完整送達的關係
+    set(wholeMsg, get(wholeMsg) + '\n' + msg);
+    get(msg1) ? set(msg1, get(msg1) + '\n' + msg) : set(msg1, msg);
+  }
+});
 
 const onSubmit = () => {
-  // TODO: 待實作
-  console.log('>>> ok');
+  set(msg1, '');
+  set(msg2, '');
+  set(uid, '');
+  set(wholeMsg, '');
+  mqtt.publish(`${actor}:${get(prompt)}`);
+  messages.value.push({
+    type: 'user',
+    message: get(prompt),
+  });
 };
 </script>
 
@@ -48,7 +63,7 @@ const onSubmit = () => {
       <div class="d-flex flex-column h-100 left-panel">
         <v-card>
           <v-card-item prepend-icon="mdi-home">
-            <v-card-subtitle class="">問答小書僮</v-card-subtitle>
+            <v-card-subtitle>問答小書僮</v-card-subtitle>
             <v-card-title>神鵰俠侶</v-card-title>
           </v-card-item>
         </v-card>
@@ -75,7 +90,13 @@ const onSubmit = () => {
         </div>
 
         <v-divider></v-divider>
-        <v-textarea class="mt-2 mx-7 flex-grow-0" rows="1" no-resize variant="solo">
+        <v-textarea
+          class="mt-2 mx-7 flex-grow-0"
+          rows="1"
+          no-resize
+          variant="solo"
+          v-model="prompt"
+        >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
           </template>
@@ -83,19 +104,23 @@ const onSubmit = () => {
         <div class="d-flex flex-column align-center">
           <v-btn class="mb-4 text-orange" size="large">
             <template v-slot:prepend>
-              <v-icon
-                icon="mdi-microphone-outline"
-                color="orange"
-                size="x-large"
-                @click="onSubmit"
-              ></v-icon>
+              <v-icon icon="mdi-microphone-outline" color="orange" size="x-large"></v-icon>
             </template>
             試試語音輸入
           </v-btn>
         </div>
       </div>
     </pane>
-    <pane size="80">5</pane>
+    <pane size="80">
+      <div class="h-100 right-panel">
+        <v-card>
+          <v-card-item>
+            <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
+          </v-card-item>
+        </v-card>
+        <TheMarkdown class="mx-8 my-6" :value="markdownValue" />
+      </div>
+    </pane>
   </splitpanes>
 </template>
 
@@ -105,5 +130,10 @@ const onSubmit = () => {
   .flex-grow-1 {
     overflow-y: auto;
   }
+}
+
+.right-panel {
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
 }
 </style>
