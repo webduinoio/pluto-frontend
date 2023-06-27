@@ -32,6 +32,10 @@ const router = createRouter({
           path: 'markdown',
           component: () => import('@/testViews/MarkdownView.vue'),
         },
+        {
+          path: 'mqtt',
+          component: () => import('@/testViews/MqttView.vue'),
+        },
       ],
     },
   ],
