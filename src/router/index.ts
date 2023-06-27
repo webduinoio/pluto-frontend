@@ -18,6 +18,11 @@ const router = createRouter({
           name: 'ActorCreation',
           component: () => import('@/views/ActorCreationView.vue'),
         },
+        {
+          path: 'qa',
+          name: 'StudyBuddyQA',
+          component: () => import('@/views/StudyBuddyQAView.vue'),
+        },
       ],
     },
     {

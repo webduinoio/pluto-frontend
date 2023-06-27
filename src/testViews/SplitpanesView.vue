@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+// https://antoniandre.github.io/splitpanes/
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 </script>
