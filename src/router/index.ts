@@ -23,6 +23,11 @@ const router = createRouter({
           name: 'StudyBuddyQA',
           component: () => import('@/views/StudyBuddyQAView.vue'),
         },
+        {
+          path: 'generate-question',
+          name: 'StudyBuddyQuestion',
+          component: () => import('@/views/StudyBuddyQuestionView.vue'),
+        },
       ],
     },
     {
