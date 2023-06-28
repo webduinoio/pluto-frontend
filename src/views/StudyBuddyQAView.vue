@@ -2,20 +2,18 @@
 import TheMarkdown from '@/components/TheMarkdown.vue';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { getActor } from '@/services';
+import type { Actor } from '@/types/actors';
 import { get, set, useSpeechRecognition, useStorage } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
-
-// TODO: 先暫時處理，後續再加入 pinia
-const actorOpenID = useStorage('actorOpenID', null, sessionStorage);
-console.log('>>> open id:', get(actorOpenID));
 
 // TODO: 暫定中文，後續再調整
 const lang = ref('zh-TW');
 
 const mqtt = useMqtt('guest_' + Math.random());
 const messages = ref<{ type: string; message: string }[]>([]);
-const actor = '神鵰俠侶';
+const actor = ref('');
 const prompt = ref('');
 const msg1 = ref('');
 const msg2 = ref('');
@@ -46,30 +44,17 @@ const stopVoiceInput = () => {
   speech.stop();
 };
 
-mqtt.init((msg: string, isEnd: boolean) => {
-  if (isEnd) {
-    // 其中包含 uuid 的部份，在這裡暫時無用
-    const uuid = msg.split('\n\n$UUID$')[1];
-    let newMsg = msg;
-    if (uuid) {
-      newMsg = msg.split('\n\n$UUID$')[0];
-      set(uid, uuid);
-    }
-    set(wholeMsg, get(wholeMsg) + newMsg);
-    set(msg2, newMsg);
+const loadData = async () => {
+  // TODO: 先暫時處理，後續再加入 pinia
+  const actorOpenID = useStorage('actorOpenID', null, sessionStorage);
 
-    set(markdownValue, newMsg);
-    messages.value.push({
-      type: 'ai',
-      message: get(msg1),
-    });
-  } else {
-    if (!msg) return;
-    // 這裡會需要加換行，由於並非一次就完整送達的關係
-    set(wholeMsg, get(wholeMsg) + '\n' + msg);
-    get(msg1) ? set(msg1, get(msg1) + '\n' + msg) : set(msg1, msg);
+  try {
+    const { data }: { data: Actor } = await getActor(Number(get(actorOpenID)));
+    set(actor, data.name);
+  } catch (err: any) {
+    fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
-});
+};
 
 const onSubmit = () => {
   if (speech.isListening.value) {
@@ -98,6 +83,33 @@ const onVoiceInput = () => {
   }
   startVoiceInput();
 };
+
+loadData();
+
+mqtt.init((msg: string, isEnd: boolean) => {
+  if (isEnd) {
+    // 其中包含 uuid 的部份，在這裡暫時無用
+    const uuid = msg.split('\n\n$UUID$')[1];
+    let newMsg = msg;
+    if (uuid) {
+      newMsg = msg.split('\n\n$UUID$')[0];
+      set(uid, uuid);
+    }
+    set(wholeMsg, get(wholeMsg) + newMsg);
+    set(msg2, newMsg);
+
+    set(markdownValue, newMsg);
+    messages.value.push({
+      type: 'ai',
+      message: get(msg1),
+    });
+  } else {
+    if (!msg) return;
+    // 這裡會需要加換行，由於並非一次就完整送達的關係
+    set(wholeMsg, get(wholeMsg) + '\n' + msg);
+    get(msg1) ? set(msg1, get(msg1) + '\n' + msg) : set(msg1, msg);
+  }
+});
 </script>
 
 <template>
@@ -107,7 +119,7 @@ const onVoiceInput = () => {
         <v-card>
           <v-card-item prepend-icon="mdi-home">
             <v-card-subtitle>問答小書僮</v-card-subtitle>
-            <v-card-title>神鵰俠侶</v-card-title>
+            <v-card-title>{{ actor }}</v-card-title>
           </v-card-item>
         </v-card>
         <v-divider></v-divider>
@@ -125,7 +137,7 @@ const onVoiceInput = () => {
                   <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
                 </v-col>
                 <v-col>
-                  <p class="mb-4" v-html="msg.message.replaceAll('\n', '<br>')"></p>
+                  <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
                 </v-col>
               </v-row>
             </v-container>
