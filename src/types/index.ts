@@ -6,3 +6,8 @@
 // import type { Ref } from 'vue';
 
 export * from './actors';
+
+// TODO: 之後換成 mqtt.js
+declare global {
+  export const Paho: any;
+}

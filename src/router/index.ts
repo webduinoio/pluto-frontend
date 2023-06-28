@@ -18,6 +18,29 @@ const router = createRouter({
           name: 'ActorCreation',
           component: () => import('@/views/ActorCreationView.vue'),
         },
+        {
+          path: 'qa',
+          name: 'StudyBuddyQA',
+          component: () => import('@/views/StudyBuddyQAView.vue'),
+        },
+      ],
+    },
+    {
+      path: '/_test',
+      component: LayoutDefault,
+      children: [
+        {
+          path: 'splitpanes',
+          component: () => import('@/testViews/SplitpanesView.vue'),
+        },
+        {
+          path: 'markdown',
+          component: () => import('@/testViews/MarkdownView.vue'),
+        },
+        {
+          path: 'mqtt',
+          component: () => import('@/testViews/MqttView.vue'),
+        },
       ],
     },
   ],

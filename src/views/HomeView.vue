@@ -2,7 +2,7 @@
 import TheActor from '@/components/TheActor.vue';
 import { getActors } from '@/services';
 import type { Actor } from '@/types';
-import { set } from '@vueuse/core';
+import { set, useStorage } from '@vueuse/core';
 
 const router = useRouter();
 
@@ -25,7 +25,11 @@ const onEdit = (id: number) => {
 
 // TODO: 待調整
 const onOpen = (id: number) => {
-  console.log('onOpen id:', id);
+  // TODO: 先暫時處理，後續再加入 pinia
+  useStorage('actorOpenID', id, sessionStorage);
+  router.push({
+    name: 'StudyBuddyQA',
+  });
 };
 </script>
 
