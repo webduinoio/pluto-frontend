@@ -65,7 +65,7 @@ const onSubmit = () => {
   set(msg2, '');
   set(uid, '');
   set(wholeMsg, '');
-  mqtt.publish(`${actor}:${get(prompt)}`);
+  mqtt.publish(`${get(actor)}:${get(prompt)}`);
   messages.value.push({
     type: 'user',
     message: get(prompt),
