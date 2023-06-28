@@ -1,13 +1,17 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
 import { useMqtt } from '@/hooks/useMqtt';
-import { get, set, useStorage } from '@vueuse/core';
+import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { get, set, useSpeechRecognition, useStorage } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
 // TODO: 先暫時處理，後續再加入 pinia
 const actorOpenID = useStorage('actorOpenID', null, sessionStorage);
 console.log('>>> open id:', get(actorOpenID));
+
+// TODO: 暫定中文，後續再調整
+const lang = ref('zh-TW');
 
 const mqtt = useMqtt('guest_' + Math.random());
 const messages = ref<{ type: string; message: string }[]>([]);
@@ -18,6 +22,29 @@ const msg2 = ref('');
 const uid = ref('');
 const wholeMsg = ref('');
 const markdownValue = ref('');
+const { fire } = useSweetAlert();
+const speech = useSpeechRecognition({
+  lang,
+  continuous: true,
+});
+let _stop: Function | undefined;
+
+const startVoiceInput = () => {
+  const recordPrompt = get(prompt);
+
+  _stop = watch(speech.result, () => {
+    console.log('speech.result >>>', speech.result.value);
+    set(prompt, recordPrompt + speech.result.value);
+  });
+
+  speech.result.value = '';
+  speech.start();
+};
+
+const stopVoiceInput = () => {
+  typeof _stop === 'function' && _stop();
+  speech.stop();
+};
 
 mqtt.init((msg: string, isEnd: boolean) => {
   if (isEnd) {
@@ -45,6 +72,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
 });
 
 const onSubmit = () => {
+  if (speech.isListening.value) {
+    stopVoiceInput();
+  }
+
   set(msg1, '');
   set(msg2, '');
   set(uid, '');
@@ -54,6 +85,18 @@ const onSubmit = () => {
     type: 'user',
     message: get(prompt),
   });
+};
+
+const onVoiceInput = () => {
+  if (!speech.isSupported.value) {
+    fire({ title: '目前環境不支持語音輸入', text: '請更換設備，再試試。' });
+    return;
+  }
+  if (speech.isListening.value) {
+    stopVoiceInput();
+    return;
+  }
+  startVoiceInput();
 };
 </script>
 
@@ -102,9 +145,20 @@ const onSubmit = () => {
           </template>
         </v-textarea>
         <div class="d-flex flex-column align-center">
-          <v-btn class="mb-4 text-orange" size="large">
+          <v-btn class="mb-4 text-orange" size="large" @click="onVoiceInput">
             <template v-slot:prepend>
-              <v-icon icon="mdi-microphone-outline" color="orange" size="x-large"></v-icon>
+              <v-icon
+                :class="{ 'mic-icon-working': speech.isListening.value }"
+                :icon="
+                  speech.isSupported.value
+                    ? speech.isListening.value
+                      ? 'mdi-microphone'
+                      : 'mdi-microphone-outline'
+                    : 'mdi-microphone-off'
+                "
+                color="orange"
+                size="x-large"
+              ></v-icon>
             </template>
             試試語音輸入
           </v-btn>
@@ -135,5 +189,22 @@ const onSubmit = () => {
 .right-panel {
   max-height: calc(100vh - 64px);
   overflow-y: auto;
+}
+
+@keyframes micAnimation {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.mic-icon-working {
+  animation-name: micAnimation;
+  animation-duration: 0.8s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-play-state: running;
 }
 </style>
