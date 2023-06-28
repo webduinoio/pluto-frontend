@@ -11,7 +11,7 @@ class MQTTApp {
 
   constructor(userId: string) {
     this.userId = userId;
-    this.client = new Paho.Client('wss://mqtt1.webduino.io/mqtt', userId);
+    this.client = new Paho.Client('wss://mqtt.webduino.io/mqtt', userId);
     this.options = {
       reconnect: true,
       timeout: 900,
