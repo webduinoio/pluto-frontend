@@ -26,7 +26,7 @@ const router = createRouter({
       ],
     },
     {
-      path: '/test',
+      path: '/_test',
       component: LayoutDefault,
       children: [
         {
