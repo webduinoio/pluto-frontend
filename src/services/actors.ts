@@ -72,16 +72,16 @@ export function getActors(options?: {
   return instance('/', config);
 }
 
-// /**
-//  * 取得單一角色
-//  * @param id
-//  */
-// export function getQuestion(id: number) {
-//   const config = {
-//     method: 'get',
-//   };
-//   return instance(`/questions/${id}`, config);
-// }
+/**
+ * 取得單一角色
+ * @param id
+ */
+export function getActor(id: number) {
+  const config = {
+    method: 'get',
+  };
+  return instance(`/${id}`, config);
+}
 
 // /**
 //  * 更新角色
