@@ -47,6 +47,7 @@
             ).then(() => {
                 logout();
             });
+            return;
         }
 
         const user = await getUser();
@@ -54,14 +55,13 @@
         setCookies("userId", user?.id);
 
         if (!localStorage.getItem("isReadTerm")) {
-            parent.Main.popup(
+            await parent.Main.popup(
                 "歡迎加入！",
                 "您可以免費體驗直到 2023/07/31",
                 "info",
                 "知道了",
-            ).then(() => {
-                localStorage.setItem("isReadTerm", true)
-            });
+            )
+            localStorage.setItem("isReadTerm", true)
         }
     })();
 </script>
