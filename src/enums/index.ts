@@ -12,6 +12,17 @@ export enum LOCALE {
   ZH_HANT = 'zh-hant',
 }
 
+export enum GENERATE_QUESTION_TYPE {
+  CHOICE = 'choice',
+  QA = 'Q&A',
+}
+
+// TODO: 後續需要根據正式機/測試機進行調整
+export enum MQTT_TOPIC {
+  KN = 'kn@chat-staging', // 思維工具
+  CODE = 'code@chat-staging', // 小書僮
+}
+
 // export enum MARKDOWN_TYPE {
 //   NONE = 'none',
 //   MARKDOWN = 'markdown',

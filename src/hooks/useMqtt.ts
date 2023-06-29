@@ -1,3 +1,5 @@
+import { MQTT_TOPIC } from '@/enums';
+
 class MQTTApp {
   userId: string;
   client: any;
@@ -9,7 +11,7 @@ class MQTTApp {
   subscriptions: any;
   failure: boolean;
 
-  constructor(userId: string) {
+  constructor(userId: string, topic: string) {
     this.userId = userId;
     this.client = new Paho.Client('wss://mqtt.webduino.io/mqtt', userId);
     this.options = {
@@ -21,7 +23,6 @@ class MQTTApp {
     };
     this.onConnectPromise = null;
     this.subscriptions = {}; // 存儲訂閱關係的對象
-    const topic = 'kn@chat-staging'; // 測試機
     this.pubTopic = topic + '_prompt/' + userId;
     this.respTopic_cb = topic + '_completion/' + this.userId;
     this.respTopic_end = topic + '_completion_end/' + this.userId;
@@ -88,6 +89,6 @@ class MQTTApp {
   }
 }
 
-export function useMqtt(userId: string) {
-  return new MQTTApp(userId);
+export function useMqtt(userId: string, topic: string = MQTT_TOPIC.KN) {
+  return new MQTTApp(userId, topic);
 }
