@@ -55,7 +55,9 @@ const stopVoiceInput = () => {
 const loadData = async () => {
   try {
     const { data }: { data: { list: Actor[] } } = await getActors();
-    const assistants = data.list.map((actor) => actor.name);
+    const assistants = data.list
+      .filter((actor) => actor.type === ACTOR_TYPE.TUTORIAL)
+      .map((actor) => actor.name);
     assistantList.value.push(...assistants);
   } catch (err: any) {
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
