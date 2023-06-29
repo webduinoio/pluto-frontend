@@ -44,7 +44,7 @@ function randomString(length) {
 
 function parseURL(str) {
     var result = { 'prompt': '', 'actor': 'python' };
-    var userId = cookies.get("userId");
+    var userId = cookie.get("userId");
     var questionIndex = str.indexOf('?');
 
     result.userId = userId == '' ? '' : userId;
