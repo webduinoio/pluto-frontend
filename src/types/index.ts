@@ -11,3 +11,18 @@ export * from './actors';
 declare global {
   export const Paho: any;
 }
+
+export interface ChoiceType {
+  type: 'choice';
+  title: string;
+  choices: string[];
+  ans_idx: number;
+  comment: string;
+}
+
+export interface QAType {
+  type: 'Q&A';
+  title: string;
+  ans: string;
+  comment: string;
+}

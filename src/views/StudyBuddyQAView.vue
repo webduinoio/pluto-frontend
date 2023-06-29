@@ -31,7 +31,6 @@ const startVoiceInput = () => {
   const recordPrompt = get(prompt);
 
   _stop = watch(speech.result, () => {
-    console.log('speech.result >>>', speech.result.value);
     set(prompt, recordPrompt + speech.result.value);
   });
 
