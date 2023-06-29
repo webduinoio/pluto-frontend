@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
-import { GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
+import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { createForm, getActors } from '@/services';
 import type { Actor, ChoiceType, QAType } from '@/types';
-import { get, set, useSpeechRecognition } from '@vueuse/core';
+import { get, set, useClipboard, useSpeechRecognition } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
@@ -34,6 +34,7 @@ const speech = useSpeechRecognition({
 });
 let _stop: Function | undefined;
 const mqttLoading = ref(false);
+const { copy } = useClipboard();
 
 const startVoiceInput = () => {
   const recordPrompt = get(prompt);
@@ -131,7 +132,11 @@ const onExport = async () => {
     if (result.value) {
       Swal.fire({
         title: '產生連結',
-        text: result.value,
+        text: result.value.url,
+        confirmButtonText: '複製',
+        preConfirm() {
+          copy(result.value.url);
+        },
       });
     }
   });
