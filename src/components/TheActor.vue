@@ -17,7 +17,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'edit', id: number): void;
-  (e: 'open', id: number): void;
+  (e: 'open', data: Actor): void;
 }>();
 </script>
 
@@ -34,9 +34,7 @@ const emit = defineEmits<{
     </v-card-text>
     <v-card-actions class="d-flex justify-end">
       <v-btn variant="outlined" @click="emit('edit', props.data.id)"> 編輯 </v-btn>
-      <v-btn variant="flat" color="indigo-darken-3" @click="emit('open', props.data.id)">
-        開啟
-      </v-btn>
+      <v-btn variant="flat" color="indigo-darken-3" @click="emit('open', props.data)"> 開啟 </v-btn>
     </v-card-actions>
   </v-card>
 </template>

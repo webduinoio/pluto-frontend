@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
+import { ACTOR_TYPE } from '@/enums';
 import { getActors } from '@/services';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
@@ -23,12 +24,19 @@ const onEdit = (id: number) => {
   console.log('onEdit id:', id);
 };
 
-const onOpen = (id: number) => {
+const onOpen = (data: Actor) => {
   // TODO: 先暫時處理，後續再加入 pinia
-  sessionStorage.setItem('actorOpenID', id.toString());
-  router.push({
-    name: 'StudyBuddyQA',
-  });
+  sessionStorage.setItem('actorOpenID', data.id.toString());
+
+  if (data.type === ACTOR_TYPE.QUIZ) {
+    router.push({
+      name: 'StudyBuddyQuestion',
+    });
+  } else {
+    router.push({
+      name: 'StudyBuddyQA',
+    });
+  }
 };
 </script>
 

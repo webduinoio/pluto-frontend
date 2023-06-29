@@ -3,6 +3,8 @@
  * ServiceXXXX：更新後端資料使用的格式
  */
 
+import { ACTOR_TYPE } from '@/enums';
+
 // export interface MyClass {
 //   id: number;
 //   createdAt: number;
@@ -30,6 +32,7 @@ export interface Actor {
   image: string;
   prompt: string;
   temperature: number;
+  type: ACTOR_TYPE;
 }
 
 export interface Actors {

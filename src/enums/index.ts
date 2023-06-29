@@ -23,6 +23,14 @@ export enum MQTT_TOPIC {
   CODE = 'code@chat-staging', // 小書僮
 }
 
+export enum ACTOR_TYPE {
+  TUTORIAL = 'tutorial',
+  QUIZ = 'quiz',
+  SHEET = 'sheet',
+  WEBBIT = 'webbit',
+  PYTHON = 'python',
+}
+
 // export enum MARKDOWN_TYPE {
 //   NONE = 'none',
 //   MARKDOWN = 'markdown',
