@@ -3,7 +3,7 @@ import TheMarkdown from '@/components/TheMarkdown.vue';
 import { GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { getActors } from '@/services';
+import { createForm, getActors } from '@/services';
 import type { Actor, ChoiceType, QAType } from '@/types';
 import { get, set, useSpeechRecognition } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
@@ -27,7 +27,7 @@ const assistant = ref('高中歷史');
 const knowledgePoint = ref('日治時期、抗日活動、228事件');
 const numberOfChoiceQuestion = ref(3);
 const numberOfAnswerQuestion = ref(2);
-const { fire } = useSweetAlert();
+const { fire, Swal } = useSweetAlert();
 const speech = useSpeechRecognition({
   lang,
   continuous: true,
@@ -100,8 +100,41 @@ const onVoiceInput = () => {
 };
 
 const onExport = async () => {
-  // TODO: 待實作
-  console.log('>>> export');
+  fire({
+    title: '試卷標題',
+    input: 'text',
+    inputAttributes: {
+      autocapitalize: 'off',
+    },
+    showCancelButton: true,
+    showLoaderOnConfirm: true,
+    confirmButtonText: '確定',
+    cancelButtonText: '取消',
+    reverseButtons: true,
+    preConfirm: (title) => {
+      return createForm({
+        head: {
+          title,
+        },
+        body: mqttMsgRightView.value,
+      })
+        ?.then((resp: any) => {
+          return resp.data;
+        })
+        ?.catch((error) => {
+          console.error(error);
+          Swal.showValidationMessage(`發生錯誤`);
+        });
+    },
+    allowOutsideClick: () => !Swal.isLoading(),
+  }).then((result) => {
+    if (result.value) {
+      Swal.fire({
+        title: '產生連結',
+        text: result.value,
+      });
+    }
+  });
 };
 
 const getChoiceText = (info: ChoiceType, orderNumber: number) => {
@@ -208,7 +241,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-form class="ma-4">
           <v-select
             label="沒靈感嗎？點我選擇範例提示詞"
-            :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+            :items="['待補充']"
             variant="outlined"
             density="comfortable"
             hide-details="auto"
@@ -324,7 +357,14 @@ mqtt.init((msg: string, isEnd: boolean) => {
             </template>
             試試語音輸入
           </v-btn>
-          <v-btn class="mb-4 text-orange ml-4" size="large" @click="onExport"> 匯出試卷 </v-btn>
+          <v-btn
+            class="mb-4 text-orange ml-4"
+            size="large"
+            @click="onExport"
+            :disabled="!mqttMsgRightView.length || mqttLoading"
+          >
+            匯出試卷
+          </v-btn>
         </div>
       </div>
     </pane>
