@@ -10,7 +10,7 @@ const getCookie = (name) => {
 const setCookies = (key, value) => {
     const date = new Date();
     date.setMonth(date.getMonth() + 1);
-    document.cookie = `${key}=${value};expires=${date.toUTCString()}`;
+    document.cookie = `${key}=${value};expires=${date.toUTCString()};path=/`;
 }
 
 const isLogin = async () => {
