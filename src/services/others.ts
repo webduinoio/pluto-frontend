@@ -13,7 +13,16 @@ export function createForm(data: { head: { title: string }; body: (ChoiceType | 
     // Replace SCRIPT_ID with the actual script ID
     const url =
       'https://script.google.com/macros/s/AKfycbzbE2nCEq3aoxohsTVMJ7ZaNJhzgZg1942AEyGyY3z10F2u1PRpq9azMygGqspwR1Z0/exec';
-    return axios.post(url, data);
+
+    const config = {
+      method: 'post',
+      url,
+      data,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    };
+    return axios(config);
   } catch (error) {
     console.error(error);
   }
