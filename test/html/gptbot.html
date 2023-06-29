@@ -51,6 +51,7 @@
 
         const user = await getUser();
         console.log(user);
+        setCookies("userId", user?.id);
 
         if (!localStorage.getItem("isReadTerm")) {
             parent.Main.popup(

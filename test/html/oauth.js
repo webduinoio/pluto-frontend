@@ -7,6 +7,10 @@ const getCookie = (name) => {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+const setCookies = (key, value) => {
+    document.cookie = `${key}=${value};expires=${this.expires.toUTCString()}`;
+}
+
 const isLogin = async () => {
     try {
         const requestOptions = {
@@ -49,5 +53,5 @@ const getUser = async () => {
 
     const response = await fetch(url.toString(), requestOptions);
     const data = await response.json();
-    return data;
+    return data?.data;
 }
