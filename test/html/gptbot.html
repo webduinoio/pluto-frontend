@@ -40,10 +40,10 @@
     (async () => {
         if (!(await isLogin())) {
             parent.Main.popup(
-                "體驗活動已結束",
-                "註冊 Webduino <a href='https://account.webduino.io'>帳號</a> 開始使用！",
+                "還差一步！",
+                "註冊帳號以獲取免費體驗",
                 "info",
-                "知道了",
+                "前往註冊",
             ).then(() => {
                 logout();
             });
@@ -55,8 +55,8 @@
 
         if (!localStorage.getItem("isReadTerm")) {
             parent.Main.popup(
-                "免費試用到 2023/7/31",
-                "更多資訊敬請期待~",
+                "歡迎加入！",
+                "您可以免費體驗直到 2023/07/31",
                 "info",
                 "知道了",
             ).then(() => {
