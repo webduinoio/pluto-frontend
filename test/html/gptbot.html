@@ -55,13 +55,14 @@
         setCookies("userId", user?.id);
 
         if (!localStorage.getItem("isReadTerm")) {
-            await parent.Main.popup(
+            parent.Main.popup(
                 "歡迎加入！",
                 "您可以免費體驗直到 2023/07/31",
                 "info",
                 "知道了",
-            )
-            localStorage.setItem("isReadTerm", true)
+            ).then(() => {
+                localStorage.setItem("isReadTerm", true)
+            });
         }
     })();
 </script>

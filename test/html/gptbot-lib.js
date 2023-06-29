@@ -20,6 +20,14 @@ class Cookie {
     }
 }
 
+function getUserId() {
+    while (true) {
+        const id = cookie.get("userId");
+        if (id) {
+            return id;
+        }
+    }
+};
 
 function isUrlEncoded(str) {
     try {
