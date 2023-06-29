@@ -38,9 +38,29 @@
 <script src="./oauth.js"></script>
 <script>
     (async () => {
-        const result = await isLogin();
-        if (!result) {
-            logout();
+        if (!(await isLogin())) {
+            parent.Main.popup(
+                "體驗活動已結束",
+                "註冊 Webduino <a href='https://account.webduino.io'>帳號</a> 開始使用！",
+                "info",
+                "知道了",
+            ).then(() => {
+                logout();
+            });
+        }
+
+        const user = await getUser();
+        console.log(user);
+
+        if (!localStorage.getItem("isReadTerm")) {
+            parent.Main.popup(
+                "免費試用到 2023/7/31",
+                "更多資訊敬請期待~",
+                "info",
+                "知道了",
+            ).then(() => {
+                localStorage.setItem("isReadTerm", true)
+            });
         }
     })();
 </script>

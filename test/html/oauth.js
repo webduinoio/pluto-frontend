@@ -11,7 +11,8 @@ const isLogin = async () => {
     try {
         const requestOptions = {
             method: 'GET',
-            redirect: 'follow'
+            redirect: 'follow',
+            credentials: 'include'
         };
 
         const url = new URL(`${baseUrl}/api/v1/auth/is-login`);
@@ -33,7 +34,7 @@ const logout = () => {
     url.searchParams.append("grant_type", "authorization_code");
     url.searchParams.append("response_type", "code");
     url.searchParams.append("client_id", oauthClientID);
-    url.searchParams.append("redirect_uri", `${location.origin}/api/v1/auth/callback`);
+    url.searchParams.append("redirect_uri", `https://chat-staging.webduino.io/api/v1/auth/callback`);
 
     parent.location.href = url.toString();
 }
@@ -41,12 +42,12 @@ const logout = () => {
 const getUser = async () => {
     const requestOptions = {
         method: 'GET',
-        redirect: 'follow'
+        credentials: 'include'
     };
 
     const url = new URL(`${baseUrl}/api/v1/user/`);
-    url.searchParams.append("token", getCookie("oauth_access_token"));
 
     const response = await fetch(url.toString(), requestOptions);
     const data = await response.json();
+    return data;
 }

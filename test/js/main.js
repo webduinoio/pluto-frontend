@@ -100,7 +100,7 @@ class Main {
     }
 
     popup(title, text, icon, confirmButtonText) {
-        Swal.fire({
+        return Swal.fire({
             title: title,
             html: text,
             icon: icon,
