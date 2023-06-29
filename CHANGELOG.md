@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 新增小書僮 - ui [#6958](https://redmine.kingkit.codes/issues/6958)
 - 問答小書僮 [#6944](https://redmine.kingkit.codes/issues/6944)
 - 出題小書僮 [#6943](https://redmine.kingkit.codes/issues/6943)
+- 試算表小書僮 [#6945](https://redmine.kingkit.codes/issues/6945)
 
 ### Changed
 
