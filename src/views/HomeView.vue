@@ -24,19 +24,19 @@ const onEdit = (id: number) => {
   console.log('onEdit id:', id);
 };
 
+const getRouterName = (type: ACTOR_TYPE) => {
+  if (type === ACTOR_TYPE.QUIZ) return 'StudyBuddyQuestion';
+  if (type === ACTOR_TYPE.SHEET) return 'StudyBuddyGoogleSheet';
+  return 'StudyBuddyQA';
+};
+
 const onOpen = (data: Actor) => {
   // TODO: 先暫時處理，後續再加入 pinia
   sessionStorage.setItem('actorOpenID', data.id.toString());
 
-  if (data.type === ACTOR_TYPE.QUIZ) {
-    router.push({
-      name: 'StudyBuddyQuestion',
-    });
-  } else {
-    router.push({
-      name: 'StudyBuddyQA',
-    });
-  }
+  router.push({
+    name: getRouterName(data.type),
+  });
 };
 </script>
 

@@ -28,6 +28,11 @@ const router = createRouter({
           name: 'StudyBuddyQuestion',
           component: () => import('@/views/StudyBuddyQuestionView.vue'),
         },
+        {
+          path: 'google-sheet',
+          name: 'StudyBuddyGoogleSheet',
+          component: () => import('@/views/StudyBuddyGoogleSheetView.vue'),
+        },
       ],
     },
     {
