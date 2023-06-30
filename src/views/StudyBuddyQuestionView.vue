@@ -236,7 +236,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
   <splitpanes class="default-theme">
     <pane min-size="20" size="20">
       <div class="d-flex flex-column h-100 left-panel overflow-auto">
-        <v-card min-height="76px">
+        <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
             <v-card-subtitle>伴學小書僮</v-card-subtitle>
             <v-card-title>出題小書僮</v-card-title>
