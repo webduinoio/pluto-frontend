@@ -256,28 +256,30 @@ mqtt.init((msg: string, isEnd: boolean) => {
           ></v-select>
         </v-form>
 
-        <div class="flex-grow-1 ma-2 overflow-y-auto" style="min-height: 100px">
-          <v-sheet
-            border
-            rounded
-            class="text-body-2 mx-auto mt-2"
-            v-for="msg in messages"
-            :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-          >
-            <v-container fluid>
-              <v-row>
-                <v-col cols="auto">
-                  <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                </v-col>
-                <v-col>
-                  <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-sheet>
-        </div>
+        <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
+          <v-container class="pa-2 pt-0">
+            <v-sheet
+              border
+              rounded
+              class="text-body-2 mx-auto mt-2"
+              v-for="msg in messages"
+              :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+            >
+              <v-container fluid>
+                <v-row>
+                  <v-col cols="auto">
+                    <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                  </v-col>
+                  <v-col>
+                    <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-sheet>
+          </v-container>
+        </v-layout>
 
-        <v-divider></v-divider>
+        <v-divider class="mt-2"></v-divider>
 
         <v-sheet class="ma-2 bg-grey-lighten-2">
           <v-form @submit.prevent="onSubmit">
