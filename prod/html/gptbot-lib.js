@@ -20,6 +20,14 @@ class Cookie {
     }
 }
 
+function getUserId() {
+    while (true) {
+        const id = cookie.get("userId");
+        if (id) {
+            return id;
+        }
+    }
+};
 
 function isUrlEncoded(str) {
     try {
@@ -30,41 +38,22 @@ function isUrlEncoded(str) {
     }
 }
 
-function parseURL(str) {
-    if (str.indexOf('#') < 0 || str.indexOf('#?') > 0) {
-        str = cookie.get('userId');
-        //str = str == '' ? '' : str;
-        if (str == '') {
-            parent.Main.popup(
-                "還差一步!",
-                "填寫表單就能申請體驗囉! <a href='https://webduino.pse.is/gpt_er'>我要申請</a>",
-                "info", "知道了")
-            return;
-        }
-        if (parent.location.href.indexOf('?') > 0) {
-            var data = parent.location.href.split('?');
-            parent.location.href = data[0] + '#' + str + '?' + data[1];
-        }
+function randomString(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
     }
-    var result = { 'prompt': '', 'actor': 'python' };
-    var userId = '';
-    var hashIndex = str.indexOf('#');
-    var questionIndex = str.indexOf('?');
+    return result;
+}
 
-    if (hashIndex !== -1) {
-        if (questionIndex !== -1) {
-            userId = str.slice(hashIndex + 1, questionIndex);
-        } else {
-            userId = str.slice(hashIndex + 1);
-        }
-        cookie.set('userId', userId);
-    } else {
-        if (questionIndex !== -1) {
-            userId = '';
-        } else {
-            userId = str;
-        }
-    }
+function parseURL(str) {
+    var result = { 'prompt': '', 'actor': 'python' };
+    var userId = cookie.get("userId");
+    var questionIndex = str.indexOf('?');
 
     result.userId = userId == '' ? '' : userId;
     if (questionIndex !== -1) {
