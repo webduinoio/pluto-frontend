@@ -63,5 +63,6 @@ export function useSweetAlert() {
     confirm,
     showLoading,
     hideLoading,
+    Swal,
   };
 }

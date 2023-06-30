@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
+import { ACTOR_TYPE } from '@/enums';
 import { getActors } from '@/services';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
@@ -23,9 +24,19 @@ const onEdit = (id: number) => {
   console.log('onEdit id:', id);
 };
 
-// TODO: 待調整
-const onOpen = (id: number) => {
-  console.log('onOpen id:', id);
+const onOpen = (data: Actor) => {
+  // TODO: 先暫時處理，後續再加入 pinia
+  sessionStorage.setItem('actorOpenID', data.id.toString());
+
+  if (data.type === ACTOR_TYPE.QUIZ) {
+    router.push({
+      name: 'StudyBuddyQuestion',
+    });
+  } else {
+    router.push({
+      name: 'StudyBuddyQA',
+    });
+  }
 };
 </script>
 
@@ -34,9 +45,9 @@ const onOpen = (id: number) => {
     <v-responsive max-width="1024">
       <div class="d-flex justify-space-between my-15">
         <div class="text-h4">我的小書僮</div>
-        <v-btn color="teal" prepend-icon="mdi-plus" @click="router.push({ name: 'ActorCreation' })"
-          >新增小書僮</v-btn
-        >
+        <v-btn color="teal" prepend-icon="mdi-plus" @click="router.push({ name: 'ActorCreation' })">
+          新增小書僮
+        </v-btn>
       </div>
       <v-row class="mx-auto">
         <TheActor

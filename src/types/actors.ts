@@ -3,6 +3,8 @@
  * ServiceXXXX：更新後端資料使用的格式
  */
 
+import { ACTOR_TYPE } from '@/enums';
+
 // export interface MyClass {
 //   id: number;
 //   createdAt: number;
@@ -20,13 +22,17 @@
 //   extends Omit<MyClass, 'id' | 'createdAt' | 'modifiedAt' | 'createdBy'> {}
 
 export interface Actor {
-  createdBy: number;
-  description: string;
   id: number;
-  image: string;
+  createdAt: number;
+  modifiedAt: number;
+  created_by: number;
   name: string;
-  temperature: number;
+  description: string;
   url: string;
+  image: string;
+  prompt: string;
+  temperature: number;
+  type: ACTOR_TYPE;
 }
 
 export interface Actors {

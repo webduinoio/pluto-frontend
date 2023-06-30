@@ -6,3 +6,23 @@
 // import type { Ref } from 'vue';
 
 export * from './actors';
+
+// TODO: 之後換成 mqtt.js
+declare global {
+  export const Paho: any;
+}
+
+export interface ChoiceType {
+  type: 'choice';
+  title: string;
+  choices: string[];
+  ans_idx: number;
+  comment: string;
+}
+
+export interface QAType {
+  type: 'Q&A';
+  title: string;
+  ans: string;
+  comment: string;
+}
