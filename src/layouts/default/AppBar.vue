@@ -1,7 +1,7 @@
 <script lang="ts" setup></script>
 
 <template>
-  <v-app-bar class="header px-3">
+  <v-app-bar class="header px-3" color="#F1A23A">
     <v-img src="@/assets/logo.webp" :height="48" inline></v-img>
     <v-toolbar-title class="title"> 伴學小書僮 </v-toolbar-title>
     <v-avatar>
@@ -11,10 +11,6 @@
 </template>
 
 <style lang="scss">
-.header {
-  background: linear-gradient(90.29deg, #00ae97 10.12%, #225584 86.63%) !important;
-}
-
 .title {
   color: #fff;
   font-size: 1.875rem !important;
