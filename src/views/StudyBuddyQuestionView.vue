@@ -235,8 +235,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <template>
   <splitpanes class="default-theme">
     <pane min-size="20" size="20">
-      <div class="d-flex flex-column h-100 left-panel">
-        <v-card>
+      <div class="d-flex flex-column h-100 left-panel overflow-auto">
+        <v-card min-height="76px">
           <v-card-item prepend-icon="mdi-home">
             <v-card-subtitle>伴學小書僮</v-card-subtitle>
             <v-card-title>出題小書僮</v-card-title>
@@ -256,7 +256,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           ></v-select>
         </v-form>
 
-        <div class="flex-grow-1 ma-2 overflow-y-auto">
+        <div class="flex-grow-1 ma-2 overflow-y-auto" style="min-height: 100px">
           <v-sheet
             border
             rounded
@@ -333,7 +333,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
         <v-textarea
           class="mt-2 mx-7 flex-grow-0"
-          rows="1"
+          rows="3"
           no-resize
           variant="solo"
           v-model="prompt"
