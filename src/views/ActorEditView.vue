@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 // import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { useMainStore } from '@/stores/main';
+import { set } from '@vueuse/core';
 // import { useField, useForm } from 'vee-validate';
 
 const router = useRouter();
@@ -16,6 +17,81 @@ const onBack = () => {
 
 const tab = ref();
 const tab2 = ref();
+const dialog = ref(false);
+const editedItem = ref({
+  question: 'sheng',
+  answer: 'ok',
+});
+const loading = ref(true);
+const items = ref([
+  {
+    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
+    title: {
+      question: '甄嬛的孩子叫什麼名字？',
+      answer:
+        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
+    },
+  },
+  { type: 'divider' },
+  {
+    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
+    title: {
+      question: '甄嬛的孩子叫什麼名字？',
+      answer:
+        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
+    },
+  },
+  { type: 'divider' },
+  {
+    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
+    title: {
+      question: '甄嬛的孩子叫什麼名字？',
+      answer:
+        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
+    },
+  },
+  { type: 'divider' },
+  {
+    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
+    title: {
+      question: '甄嬛的孩子叫什麼名字？',
+      answer:
+        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
+    },
+  },
+  { type: 'divider' },
+  {
+    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
+    title: {
+      question: '甄嬛的孩子叫什麼名字？',
+      answer:
+        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
+    },
+  },
+  { type: 'divider' },
+  {
+    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
+    title: {
+      question: '甄嬛的孩子叫什麼名字？',
+      answer:
+        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
+    },
+  },
+  { type: 'divider' },
+  {
+    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
+    title: {
+      question: '甄嬛的孩子叫什麼名字？',
+      answer:
+        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
+    },
+  },
+  { type: 'divider' },
+]);
+
+const onCreateClose = () => {
+  set(dialog, false);
+};
 
 // const { fire, showLoading, hideLoading } = useSweetAlert();
 // const { resetForm, handleSubmit } = useForm({
@@ -79,7 +155,7 @@ const tab2 = ref();
 
 <template>
   <v-layout>
-    <v-container class="mb-6">
+    <v-container class="mb-5">
       <v-breadcrumbs :items="[{ title: '返回', disabled: false, href: '#' }]" @click="onBack">
         <template v-slot:prepend>
           <v-icon icon="mdi-chevron-left"></v-icon>
@@ -112,7 +188,7 @@ const tab2 = ref();
           <v-window-item value="dataManager">
             <v-tabs v-model="tab2" class="text-grey" color="black">
               <v-tab class="text-h6" value="file">檔案</v-tab>
-              <!-- <v-tab class="text-h6" value="qa">Q & A</v-tab> -->
+              <v-tab class="text-h6" value="qa">Q & A</v-tab>
             </v-tabs>
 
             <v-window v-model="tab2">
@@ -150,11 +226,142 @@ const tab2 = ref();
                   </v-row>
                 </v-container>
               </v-window-item>
-              <!-- <v-window-item value="qa">
-                <v-card flat>
-                  <v-card-text> 2-2</v-card-text>
-                </v-card>
-              </v-window-item> -->
+              <v-window-item value="qa">
+                <v-container>
+                  <v-toolbar class="bg-grey-lighten-2">
+                    <v-spacer></v-spacer>
+                    <v-responsive max-width="270">
+                      <v-text-field
+                        variant="solo"
+                        label="Search text"
+                        append-inner-icon="mdi-magnify"
+                        density="comfortable"
+                        single-line
+                        hide-details
+                        rounded
+                        flat
+                      ></v-text-field>
+                    </v-responsive>
+                    <v-dialog v-model="dialog" persistent max-width="500px">
+                      <template v-slot:activator="{ props }">
+                        <v-btn
+                          color="orange"
+                          theme="dark"
+                          variant="elevated"
+                          class="ml-2 text-white"
+                          v-bind="props"
+                          size="large"
+                          flat
+                        >
+                          新增 Q & A
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title class="mt-5 mx-5">
+                          <span class="text-h5 font-weight-bold"> 新增 Q & A</span>
+                        </v-card-title>
+
+                        <v-card-text>
+                          <div class="mx-4 text-body-1 text-grey-darken-2">
+                            請輸入 Q & A 後，點擊再次訓練。
+                          </div>
+                          <v-container class="mt-10">
+                            <v-row>
+                              <v-col cols="12">
+                                <v-textarea
+                                  variant="outlined"
+                                  label="Q:"
+                                  rows="3"
+                                  v-model="editedItem.question"
+                                ></v-textarea>
+                              </v-col>
+                              <v-col cols="12">
+                                <v-textarea
+                                  variant="outlined"
+                                  label="A:"
+                                  rows="3"
+                                  v-model="editedItem.answer"
+                                ></v-textarea>
+                              </v-col>
+                            </v-row>
+                          </v-container>
+                        </v-card-text>
+
+                        <v-card-actions class="mb-4">
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            color="orange"
+                            theme="dark"
+                            variant="outlined"
+                            class="text-white"
+                            size="large"
+                            flat
+                            @click="onCreateClose"
+                          >
+                            取消
+                          </v-btn>
+                          <v-btn
+                            color="orange"
+                            theme="dark"
+                            variant="elevated"
+                            class="mr-5 text-white"
+                            size="large"
+                            flat
+                          >
+                            儲存
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                    <!-- <v-dialog v-model="dialogDelete" max-width="500px">
+                      <v-card>
+                        <v-card-title class="text-h5"
+                          >Are you sure you want to delete this item?</v-card-title
+                        >
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
+                            >Cancel</v-btn
+                          >
+                          <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm"
+                            >OK</v-btn
+                          >
+                          <v-spacer></v-spacer>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog> -->
+                  </v-toolbar>
+
+                  <v-list
+                    class="bg-grey-lighten-2"
+                    :items="items"
+                    item-props
+                    lines="two"
+                    max-height="460"
+                  >
+                    <template v-slot:title="{ title }">
+                      <div>Q: {{ title?.question }}</div>
+                      <div class="text-truncate">
+                        A:
+                        {{ title?.answer }}
+                      </div>
+                    </template>
+                    <template v-slot:append>
+                      <v-btn icon="mdi-pencil" variant="text"></v-btn>
+                      <v-btn icon="mdi-trash-can" variant="text"></v-btn>
+                    </template>
+                  </v-list>
+
+                  <v-row align-content="center" class="mt-2">
+                    <v-col cols="12">
+                      <v-btn color="#467974" class="text-white" size="large">再次訓練</v-btn>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-progress-linear indeterminate color="#467974"></v-progress-linear>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-window-item>
             </v-window>
           </v-window-item>
           <!-- <v-window-item value="three"> Three </v-window-item> -->
