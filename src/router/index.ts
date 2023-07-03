@@ -19,6 +19,11 @@ const router = createRouter({
           component: () => import('@/views/ActorCreationView.vue'),
         },
         {
+          path: 'edit',
+          name: 'ActorEdit',
+          component: () => import('@/views/ActorEditView.vue'),
+        },
+        {
           path: 'qa',
           name: 'StudyBuddyQA',
           component: () => import('@/views/StudyBuddyQAView.vue'),

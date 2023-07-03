@@ -21,9 +21,11 @@ onMounted(async () => {
   }
 });
 
-// TODO: 待調整
 const onEdit = (id: number) => {
-  console.log('onEdit id:', id);
+  store.actorEditId = id;
+  router.push({
+    name: 'ActorEdit',
+  });
 };
 
 const onOpen = (data: Actor) => {
