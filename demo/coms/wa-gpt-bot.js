@@ -281,26 +281,29 @@ class ChatGPTBot extends LitElement {
     this.sendMessage(' ' + prompt);
   }
 
+// ## if...else 區間的值是否同時滿足多個 if...else 條件
   sendQ2Message() {
-    var questionEnhance = '\n# 判斷BMI計算公式是否正確\n# 判斷BMI區間是否有重疊\n';
-    //questionEnhance = '';
-    this.textarea.value = '檢查這個程式碼有沒有執行問題或邏輯問題';
-    var prompt = 
-`你扮演Python解釋器 按照我提供的Python程式 一行一行執行 
-判斷程式執行例外 如果沒有執行例外 判斷程式邏輯問題
-#如果程式有執行例外,按照下面格式輸出
+    this.textarea.value = '檢查程式是否有邏輯問題';
+    var prompt =
+      `# 檢查程式是否有邏輯問題
+## 計算 BMI 值 bmi = weight / ((height/100) ** 2)
+
+# 如果程式有邏輯問題,按照下面格式輸出
+1.邏輯可能問題:
+[說明程式可能的邏輯問題]
+2.程式修改建議:
+[寫出程式碼修改建議]
+
+# 如果程式有執行例外,按照下面格式輸出
 1.程式執行異常
 [顯示 runtime exception 或 error 完整訊息,異常原因]
 2.程式修改建議
 [說明程式碼修改建議]
-3. 結束
 
-#如果程式有邏輯問題,按照下面格式輸出
-1.邏輯可能問題:
-[說明程式可能的邏輯問題]
-2.程式修改建議:
-[寫出程式碼修改建議]\n`+ parent.editor.getCode();
-    this.sendMessage(' ' + prompt + questionEnhance);
+提供的Python程式如下
+=======
+`+ parent.editor.getCode();
+    this.sendMessage(' ' + prompt);
   }
 
   sendMessage(enhance) {
