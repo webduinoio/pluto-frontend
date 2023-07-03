@@ -2,10 +2,12 @@
 import TheActor from '@/components/TheActor.vue';
 import { ACTOR_TYPE } from '@/enums';
 import { getActors } from '@/services';
+import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 
 const router = useRouter();
+const store = useMainStore();
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
@@ -25,9 +27,7 @@ const onEdit = (id: number) => {
 };
 
 const onOpen = (data: Actor) => {
-  // TODO: 先暫時處理，後續再加入 pinia
-  sessionStorage.setItem('actorOpenID', data.id.toString());
-
+  store.actorOpenID = data.id;
   if (data.type === ACTOR_TYPE.QUIZ) {
     router.push({
       name: 'StudyBuddyQuestion',
