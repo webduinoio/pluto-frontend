@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-// import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { trainActor } from '@/services';
 import { useMainStore } from '@/stores/main';
 import { set } from '@vueuse/core';
 // import { useField, useForm } from 'vee-validate';
 
 const router = useRouter();
 const store = useMainStore();
-
-console.log('>>> 編輯的 id:', store.actorEditId);
+const { fire } = useSweetAlert();
 
 const onBack = () => {
   router.push({
@@ -23,6 +23,7 @@ const editedItem = ref({
   answer: 'ok',
 });
 const loading = ref(true);
+const training = ref(false);
 const items = ref([
   {
     prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
@@ -91,6 +92,40 @@ const items = ref([
 
 const onCreateClose = () => {
   set(dialog, false);
+};
+
+const onTrain = async () => {
+  try {
+    set(training, true);
+    if (!store?.actorEditData?.id) {
+      await fire({
+        title: '發生錯誤',
+        icon: 'error',
+        text: `資料不存在 id: ${store?.actorEditData?.id}`,
+      });
+      return;
+    }
+    const {
+      data: { code },
+    } = await trainActor(store.actorEditData.id);
+
+    if (code === 1) {
+      await fire({
+        title: '發生錯誤',
+        icon: 'error',
+        text: '伺服器發生錯誤，請詢問管理員進行處理。',
+      });
+      return;
+    }
+  } catch (err: any) {
+    await fire({
+      title: '發生錯誤',
+      icon: 'error',
+      text: err.message,
+    });
+  } finally {
+    set(training, false);
+  }
 };
 
 // const { fire, showLoading, hideLoading } = useSweetAlert();
@@ -213,15 +248,29 @@ const onCreateClose = () => {
                       <div class="text-h6 font-weight-regular">Google 雲端硬碟資料夾</div>
                     </v-col>
                     <v-col>
-                      <v-btn color="orange" variant="outlined" size="large">開啟</v-btn>
+                      <v-btn
+                        color="orange"
+                        variant="outlined"
+                        size="large"
+                        :href="store?.actorEditData?.url"
+                        target="_blank"
+                      >
+                        開啟
+                      </v-btn>
                     </v-col>
                   </v-row>
                   <v-row align-content="center">
                     <v-col cols="12">
-                      <v-btn color="#467974" class="text-white" size="large">再次訓練</v-btn>
+                      <v-btn color="#467974" class="text-white" size="large" @click="onTrain">
+                        再次訓練
+                      </v-btn>
                     </v-col>
                     <v-col cols="6">
-                      <v-progress-linear indeterminate color="#467974"></v-progress-linear>
+                      <v-progress-linear
+                        :active="training"
+                        :indeterminate="training"
+                        color="#467974"
+                      ></v-progress-linear>
                     </v-col>
                   </v-row>
                 </v-container>
@@ -332,23 +381,25 @@ const onCreateClose = () => {
                     </v-dialog> -->
                   </v-toolbar>
 
-                  <v-list
-                    class="bg-grey-lighten-2"
-                    :items="items"
-                    item-props
-                    lines="two"
-                    max-height="460"
-                  >
-                    <template v-slot:title="{ title }">
-                      <div>Q: {{ title?.question }}</div>
-                      <div class="text-truncate">
-                        A:
-                        {{ title?.answer }}
-                      </div>
-                    </template>
-                    <template v-slot:append>
-                      <v-btn icon="mdi-pencil" variant="text"></v-btn>
-                      <v-btn icon="mdi-trash-can" variant="text"></v-btn>
+                  <v-list class="bg-grey-lighten-2" lines="two" max-height="460">
+                    <template v-for="(item, idx) in items">
+                      <v-list-item>
+                        <template v-slot:prepend>
+                          <p>{{ `#${idx + 1}` }}</p>
+                        </template>
+                        <v-list-item-title class="ml-4">
+                          <div>Q: {{ item.title?.question }}</div>
+                          <div class="text-truncate">
+                            A:
+                            {{ item.title?.answer }}
+                          </div>
+                        </v-list-item-title>
+                        <template v-slot:append>
+                          <v-btn icon="mdi-pencil" variant="text"></v-btn>
+                          <v-btn icon="mdi-trash-can" variant="text"></v-btn>
+                        </template>
+                      </v-list-item>
+                      <v-divider></v-divider>
                     </template>
                   </v-list>
 

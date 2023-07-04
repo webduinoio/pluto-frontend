@@ -3,7 +3,7 @@
  */
 
 // import { user } from '@/hooks/useUser';
-import type { ServiceActor } from '@/types';
+import type { ServiceActor, ServiceActorUpdate } from '@/types';
 import axios from 'axios';
 
 let instance: any;
@@ -83,18 +83,18 @@ export function getActor(id: number) {
   return instance(`/${id}`, config);
 }
 
-// /**
-//  * 更新角色
-//  * @param id question id
-//  * @param data question data
-//  */
-// export function updateQuestion(id: number, data: ServiceProblem) {
-//   const config = {
-//     method: 'put',
-//     data,
-//   };
-//   return instance(`/questions/${id}`, config);
-// }
+/**
+ * 更新角色
+ * @param id
+ * @param data
+ */
+export function updateActor(id: number, data: ServiceActorUpdate) {
+  const config = {
+    method: 'put',
+    data,
+  };
+  return instance(`/${id}`, config);
+}
 
 // /**
 //  * 刪除角色
@@ -118,3 +118,14 @@ export function getActor(id: number) {
 //   };
 //   return instance('/questions', config);
 // }
+
+/**
+ * 訓練角色
+ * @param id
+ */
+export function trainActor(id: number) {
+  const config = {
+    method: 'get',
+  };
+  return instance(`/${id}/train`, config);
+}

@@ -21,8 +21,8 @@ onMounted(async () => {
   }
 });
 
-const onEdit = (id: number) => {
-  store.actorEditId = id;
+const onEdit = (data: Actor) => {
+  store.setEditData(data);
   router.push({
     name: 'ActorEdit',
   });
