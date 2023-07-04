@@ -54,10 +54,6 @@ const user = oauth.user;
 </template>
 
 <style lang="scss" scoped>
-.header {
-  background: linear-gradient(90.29deg, #00ae97 10.12%, #225584 86.63%) !important;
-}
-
 .title {
   color: #fff;
   font-size: 1.875rem !important;
