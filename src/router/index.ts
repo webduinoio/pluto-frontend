@@ -1,4 +1,6 @@
 import LayoutDefault from '@/layouts/default/Default.vue';
+import { getUser, logout } from '@/services';
+import { useOAuthStore } from '@/stores/oauth';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -60,5 +62,17 @@ const router = createRouter({
     }
   ],
 });
+
+router.beforeEach(async (to, from) => {
+  try {
+    const oauth = useOAuthStore();
+    const data = await getUser();
+    oauth.$patch({ user: data?.data?.data });
+  } catch (error) {
+    console.error(error);
+    logout();
+  }
+  return true
+})
 
 export default router;
