@@ -3,17 +3,10 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { trainActor } from '@/services';
 import { useMainStore } from '@/stores/main';
 import { set } from '@vueuse/core';
-// import { useField, useForm } from 'vee-validate';
 
 const router = useRouter();
 const store = useMainStore();
 const { fire } = useSweetAlert();
-
-const onBack = () => {
-  router.push({
-    name: 'Home',
-  });
-};
 
 const tab = ref();
 const tab2 = ref();
@@ -22,7 +15,6 @@ const editedItem = ref({
   question: 'sheng',
   answer: 'ok',
 });
-const loading = ref(true);
 const training = ref(false);
 const items = ref([
   {
@@ -33,7 +25,6 @@ const items = ref([
         '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
     },
   },
-  { type: 'divider' },
   {
     prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
     title: {
@@ -42,7 +33,6 @@ const items = ref([
         '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
     },
   },
-  { type: 'divider' },
   {
     prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
     title: {
@@ -51,7 +41,6 @@ const items = ref([
         '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
     },
   },
-  { type: 'divider' },
   {
     prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
     title: {
@@ -60,7 +49,6 @@ const items = ref([
         '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
     },
   },
-  { type: 'divider' },
   {
     prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
     title: {
@@ -69,7 +57,6 @@ const items = ref([
         '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
     },
   },
-  { type: 'divider' },
   {
     prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
     title: {
@@ -78,7 +65,6 @@ const items = ref([
         '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
     },
   },
-  { type: 'divider' },
   {
     prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
     title: {
@@ -87,8 +73,13 @@ const items = ref([
         '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
     },
   },
-  { type: 'divider' },
 ]);
+
+const onBack = () => {
+  router.push({
+    name: 'Home',
+  });
+};
 
 const onCreateClose = () => {
   set(dialog, false);
@@ -127,65 +118,6 @@ const onTrain = async () => {
     set(training, false);
   }
 };
-
-// const { fire, showLoading, hideLoading } = useSweetAlert();
-// const { resetForm, handleSubmit } = useForm({
-//   initialValues: {
-//     name: '',
-//     url: '',
-//   },
-//   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
-//   validationSchema: {
-//     name: 'required',
-//     url: 'required|url',
-//   },
-// });
-
-// const name = useField('name', undefined, {
-//   label: '名稱',
-// });
-// const url = useField('url', undefined, {
-//   label: '網址',
-// });
-
-// const onSubmit = handleSubmit(async (values) => {
-//   showLoading();
-//   const {
-//     data: { code },
-//   } = await createActor(values);
-
-//   hideLoading();
-
-//   if (code === 4) {
-//     await fire({
-//       title: '發生錯誤',
-//       icon: 'error',
-//       text: '網址不正確',
-//     });
-//     return;
-//   }
-
-//   if (code === 6) {
-//     await fire({
-//       title: '發生錯誤',
-//       icon: 'error',
-//       text: '名稱重複',
-//     });
-//     return;
-//   }
-
-//   resetForm();
-//   await fire({
-//     title: '更新完成',
-//     icon: 'success',
-//     timer: 2000,
-//     showConfirmButton: false,
-//   });
-//   router.push({ name: 'Home' });
-// });
-
-// const snackbar = ref(false);
-// const text = ref(`更新完成`);
 </script>
 
 <template>
@@ -205,21 +137,13 @@ const onTrain = async () => {
 
           <template v-slot:extension>
             <v-tabs v-model="tab" class="text-grey" color="black">
-              <!-- <v-tab class="text-h6" value="one">設定</v-tab> -->
               <v-tab class="text-h6" value="dataManager">資料管理</v-tab>
-              <!-- <v-tab class="text-h6" value="three">進階設定</v-tab> -->
             </v-tabs>
           </template>
         </v-toolbar>
         <v-divider :thickness="2" class="divider"></v-divider>
 
         <v-window v-model="tab">
-          <!-- <v-window-item value="one">
-            <v-card flat>
-              <v-card-text> One</v-card-text>
-            </v-card>
-          </v-window-item> -->
-
           <v-window-item value="dataManager">
             <v-tabs v-model="tab2" class="text-grey" color="black">
               <v-tab class="text-h6" value="file">檔案</v-tab>
@@ -415,7 +339,6 @@ const onTrain = async () => {
               </v-window-item>
             </v-window>
           </v-window-item>
-          <!-- <v-window-item value="three"> Three </v-window-item> -->
         </v-window>
       </v-main>
     </v-container>

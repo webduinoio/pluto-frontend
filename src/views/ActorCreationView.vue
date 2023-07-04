@@ -60,9 +60,6 @@ const onSubmit = handleSubmit(async (values) => {
   });
   router.push({ name: 'Home' });
 });
-
-const snackbar = ref(false);
-const text = ref(`更新完成`);
 </script>
 
 <template>
