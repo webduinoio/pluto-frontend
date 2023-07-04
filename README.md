@@ -31,10 +31,12 @@ npm install
 
 ### 開發
 
-```bash
-npm run dev
+為了串接 OAuth，在本地開發時必須也要使用 `https` 才能夠將 cookies 傳送到 OAuth 測試機
 
-# 打開網址 http://localhost:5173
+```bash
+npm run dev:ssl
+
+# 打開網址 https://localhost.webduino.io
 ```
 
 ### 打包
