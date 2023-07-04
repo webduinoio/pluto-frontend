@@ -1,3 +1,4 @@
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'node:url';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -39,6 +40,7 @@ export default defineConfig({
         },
       },
     }),
+    basicSsl(),
   ],
   resolve: {
     alias: {
