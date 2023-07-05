@@ -18,7 +18,7 @@ export const useMainStore = defineStore(
   {
     // @ts-ignore
     persist: {
-      enabled: true,
+      storage: sessionStorage,
     },
   }
 );
