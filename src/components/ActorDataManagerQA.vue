@@ -55,7 +55,7 @@ const onDeleteDataset = async (data: Dataset) => {
   try {
     showLoading();
     if (!data.id) return;
-    await deleteDataset(data.id);
+    await deleteDataset(data.id, data.actorId);
     await loadDataset();
   } catch (err: any) {
     console.error(err);
