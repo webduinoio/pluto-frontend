@@ -33,7 +33,10 @@ const onOpen = () => {
 <template>
   <v-layout>
     <v-container class="mb-5">
-      <v-breadcrumbs :items="[{ title: '返回', disabled: false, href: '#' }]" @click="onBack">
+      <v-breadcrumbs
+        :items="[{ title: '返回', disabled: false, href: '#' }]"
+        @click.stop.prevent="onBack"
+      >
         <template v-slot:prepend>
           <v-icon icon="mdi-chevron-left"></v-icon>
         </template>
