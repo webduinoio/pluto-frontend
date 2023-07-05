@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
-import { ACTOR_TYPE } from '@/enums';
+import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { getActors } from '@/services';
+import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 
 const router = useRouter();
+const store = useMainStore();
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
@@ -19,9 +21,11 @@ onMounted(async () => {
   }
 });
 
-// TODO: 待調整
-const onEdit = (id: number) => {
-  console.log('onEdit id:', id);
+const onEdit = (data: Actor) => {
+  store.setEditData(data);
+  router.push({
+    name: ROUTER_NAME.ACTOR_EDIT,
+  });
 };
 
 const getRouterName = (type: ACTOR_TYPE) => {
@@ -31,12 +35,16 @@ const getRouterName = (type: ACTOR_TYPE) => {
 };
 
 const onOpen = (data: Actor) => {
-  // TODO: 先暫時處理，後續再加入 pinia
-  sessionStorage.setItem('actorOpenID', data.id.toString());
-
-  router.push({
-    name: getRouterName(data.type),
-  });
+  store.actorOpenID = data.id;
+  if (data.type === ACTOR_TYPE.QUIZ) {
+    router.push({
+      name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
+    });
+  } else {
+    router.push({
+      name: ROUTER_NAME.STUDY_BUDDY_QA,
+    });
+  }
 };
 </script>
 
@@ -45,7 +53,11 @@ const onOpen = (data: Actor) => {
     <v-responsive max-width="1024">
       <div class="d-flex justify-space-between my-15">
         <div class="text-h4">我的小書僮</div>
-        <v-btn color="teal" prepend-icon="mdi-plus" @click="router.push({ name: 'ActorCreation' })">
+        <v-btn
+          color="teal"
+          prepend-icon="mdi-plus"
+          @click="router.push({ name: ROUTER_NAME.ACTOR_CREATION })"
+        >
           新增小書僮
         </v-btn>
       </div>
@@ -64,5 +76,3 @@ const onOpen = (data: Actor) => {
     </v-responsive>
   </v-container>
 </template>
-
-<style lang="scss"></style>

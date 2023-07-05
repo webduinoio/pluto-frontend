@@ -41,3 +41,6 @@ export interface Actors {
 }
 
 export interface ServiceActor extends Pick<Actor, 'name' | 'url'> {}
+
+export interface ServiceActorUpdate
+  extends Pick<Actor, 'description' | 'image' | 'prompt' | 'temperature'> {}

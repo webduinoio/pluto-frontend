@@ -1,9 +1,9 @@
 /**
- * 後端，角色 api
+ * 後端，資料集 API
  */
 
 // import { user } from '@/hooks/useUser';
-import type { ServiceActor } from '@/types';
+import type { ServiceDataset } from '@/types/dataset';
 import axios from 'axios';
 
 let instance: any;
@@ -19,7 +19,7 @@ let instance: any;
 // TODO: 之後需再優化
 function createInstance(value: any) {
   return axios.create({
-    baseURL: (import.meta.env.VITE_SERVER_HOST || location.origin) + '/api/v1/actor',
+    baseURL: (import.meta.env.VITE_SERVER_HOST || location.origin) + '/api/v1/dataset',
     headers: {
       Authorization: JSON.stringify(value),
     },
@@ -31,16 +31,11 @@ function createInstance(value: any) {
 instance = createInstance('');
 
 /**
- * 新增角色
+ * 新增資料集
  *
- * code: 執行結果代碼
- * 0: 成功
- * 4: 網址錯誤
- * 6: 名稱重複
- *
- * @param data 角色資料
+ * @param data
  */
-export function createActor(data: ServiceActor) {
+export function createDataset(data: ServiceDataset) {
   const config = {
     method: 'post',
     data,
@@ -49,16 +44,18 @@ export function createActor(data: ServiceActor) {
 }
 
 /**
- * 取得角色清單
+ * 取得資料集清單
  * @param options
  */
-export function getActors(options?: {
+export function getDatasets(options?: {
   lastIndex?: number;
   count?: number;
   orderBy?: string | string[] | undefined;
   orderDirection?: string;
+  search?: string;
+  actorID: number;
 }) {
-  const { lastIndex, count, orderBy, orderDirection } = options || {};
+  const { lastIndex, count, orderBy, orderDirection, actorID, search } = options || {};
   const config = {
     method: 'get',
     params: {
@@ -66,30 +63,32 @@ export function getActors(options?: {
       count: count || 30,
       orderBy: 'id',
       orderDirection: 'ASC',
+      actorID,
     } as Record<string, string | number>,
   };
   if (orderBy !== undefined) config.params.orderBy = orderBy.toString();
   if (orderDirection !== undefined) config.params.orderDirection = orderDirection;
+  if (search !== undefined) config.params.search = search;
   return instance('/', config);
 }
 
-/**
- * 取得單一角色
- * @param id
- */
-export function getActor(id: number) {
-  const config = {
-    method: 'get',
-  };
-  return instance(`/${id}`, config);
-}
+// /**
+//  * 取得單一角色
+//  * @param id
+//  */
+// export function getActor(id: number) {
+//   const config = {
+//     method: 'get',
+//   };
+//   return instance(`/${id}`, config);
+// }
 
 /**
- * 更新角色
+ * 更新資料集
  * @param id
  * @param data
  */
-export function updateActor(id: number, data: any) {
+export function updateDataset(id: number, data: ServiceDataset) {
   const config = {
     method: 'put',
     data,
@@ -97,16 +96,19 @@ export function updateActor(id: number, data: any) {
   return instance(`/${id}`, config);
 }
 
-// /**
-//  * 刪除角色
-//  * @param id
-//  */
-// export function deleteQuestion(id: number) {
-//   const config = {
-//     method: 'delete',
-//   };
-//   return instance(`/questions/${id}`, config);
-// }
+/**
+ * 刪除資料集
+ * @param id
+ */
+export function deleteDataset(id: number, actorID: number) {
+  const config = {
+    method: 'delete',
+    data: {
+      actorID
+    }
+  };
+  return instance(`/${id}`, config);
+}
 
 // /**
 //  * 刪除多筆角色
@@ -119,14 +121,3 @@ export function updateActor(id: number, data: any) {
 //   };
 //   return instance('/questions', config);
 // }
-
-/**
- * 訓練角色
- * @param id
- */
-export function trainActor(id: number) {
-  const config = {
-    method: 'get',
-  };
-  return instance(`/${id}/train`, config);
-}

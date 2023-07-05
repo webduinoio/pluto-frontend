@@ -6,6 +6,7 @@
 // import type { Ref } from 'vue';
 
 export * from './actors';
+export * from './dataset';
 
 // TODO: 之後換成 mqtt.js
 declare global {

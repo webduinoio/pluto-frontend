@@ -3,14 +3,16 @@ import TheMarkdown from '@/components/TheMarkdown.vue';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { getActor } from '@/services';
+import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types/actors';
-import { get, set, useSpeechRecognition, useStorage } from '@vueuse/core';
+import { get, set, useSpeechRecognition } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
 // TODO: 暫定中文，後續再調整
 const lang = ref('zh-TW');
 
+const store = useMainStore();
 const mqtt = useMqtt('guest_' + Math.random());
 const messages = ref<{ type: string; message: string }[]>([]);
 const actor = ref('');
@@ -44,8 +46,7 @@ const stopVoiceInput = () => {
 };
 
 const loadData = async () => {
-  // TODO: 先暫時處理，後續再加入 pinia
-  const actorOpenID = useStorage('actorOpenID', null, sessionStorage);
+  const actorOpenID = store.actorOpenID;
 
   try {
     const { data }: { data: Actor } = await getActor(Number(get(actorOpenID)));
