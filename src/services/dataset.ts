@@ -100,9 +100,12 @@ export function updateDataset(id: number, data: ServiceDataset) {
  * 刪除資料集
  * @param id
  */
-export function deleteDataset(id: number) {
+export function deleteDataset(id: number, actorID: number) {
   const config = {
     method: 'delete',
+    data: {
+      actorID
+    }
   };
   return instance(`/${id}`, config);
 }
