@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { deleteActor } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
 
-const { fire, showLoading, hideLoading } = useSweetAlert();
 const oauth = useOAuthStore();
 const user = oauth.user;
 const props = withDefaults(
@@ -25,24 +22,8 @@ const props = withDefaults(
 const emit = defineEmits<{
   (e: 'edit', data: Actor): void;
   (e: 'open', data: Actor): void;
+  (e: 'delete', id: number): void;
 }>();
-
-const onDelete = async (id: number) => {
-  try {
-    showLoading();
-    await deleteActor(id);
-    hideLoading();
-  } catch (err: any) {
-    console.error(err);
-    fire({
-      title: '刪除小書僮發生錯誤',
-      icon: 'error',
-      text: err.message,
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  }
-};
 </script>
 
 <template>
@@ -62,7 +43,7 @@ const onDelete = async (id: number) => {
             <v-list-item :value="props.data.id" disabled>
               <v-list-item-title>複製分享連結</v-list-item-title>
             </v-list-item>
-            <v-list-item :value="props.data.id" @click="onDelete(props.data.id)">
+            <v-list-item :value="props.data.id" @click="emit('delete', props.data.id)">
               <v-list-item-title>刪除</v-list-item-title>
             </v-list-item>
           </v-list>
