@@ -25,7 +25,7 @@ export interface Actor {
   id: number;
   createdAt: number;
   modifiedAt: number;
-  created_by: number;
+  createdBy: number;
   name: string;
   description: string;
   url: string;
@@ -40,7 +40,7 @@ export interface Actors {
   list: Actor[];
 }
 
-export interface ServiceActor extends Pick<Actor, 'name' | 'url'> {}
+export interface ServiceActor extends Pick<Actor, 'name' | 'url'> { }
 
 export interface ServiceActorUpdate
-  extends Pick<Actor, 'description' | 'image' | 'prompt' | 'temperature'> {}
+  extends Pick<Actor, 'description' | 'image' | 'prompt' | 'temperature'> { }

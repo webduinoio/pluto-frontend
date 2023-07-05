@@ -34,7 +34,7 @@ export async function logout() {
 /**
  * 取得使用者
  */
-export function getUser() {
+export function getOAuthUser() {
   const config = {
     method: 'get',
   };
