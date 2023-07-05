@@ -3,7 +3,7 @@
  */
 
 // import { user } from '@/hooks/useUser';
-import type { ServiceActor, ServiceActorUpdate } from '@/types';
+import type { ServiceActor } from '@/types';
 import axios from 'axios';
 
 let instance: any;
@@ -89,7 +89,7 @@ export function getActor(id: number) {
  * @param id
  * @param data
  */
-export function updateActor(id: number, data: ServiceActorUpdate) {
+export function updateActor(id: number, data: any) {
   const config = {
     method: 'put',
     data,

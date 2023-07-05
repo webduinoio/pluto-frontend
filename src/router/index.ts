@@ -58,7 +58,7 @@ const router = createRouter({
     },
     {
       path: "/:catchAll(.*)",
-      redirect: { name: 'Home' },
+      redirect: { name: ROUTER_NAME.HOME },
     }
   ],
 });
@@ -72,7 +72,7 @@ router.beforeEach(async (to, from) => {
     console.error(error);
     logout();
   }
-  return true
-})
+  return true;
+});
 
 export default router;
