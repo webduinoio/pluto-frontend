@@ -3,7 +3,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { createDataset, updateDataset } from '@/services/dataset';
 import type { Dataset } from '@/types/dataset';
 import { get, set } from '@vueuse/core';
-import { mergeProps } from 'vue';
+import { computed, mergeProps, ref, watch } from 'vue';
 
 const props = withDefaults(
   defineProps<{
@@ -21,9 +21,14 @@ const emit = defineEmits<{
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 
+const form = ref<HTMLFormElement>();
 const dialog = ref(false);
 const question = ref('');
 const answer = ref('');
+const rules = [
+  (v: string) => v.length <= 25 || '最多 300 個字',
+  (v: string) => !!v.length || '欄位不能為空',
+];
 
 const onCreate = async () => {
   try {
@@ -45,6 +50,8 @@ const onCreate = async () => {
     });
   } finally {
     hideLoading();
+    set(question, '');
+    set(answer, '');
   }
 };
 
@@ -68,6 +75,19 @@ const onUpdate = async () => {
     });
   } finally {
     hideLoading();
+    set(question, '');
+    set(answer, '');
+  }
+};
+
+const onSubmit = async () => {
+  if (!form.value) {
+    return;
+  }
+
+  const { valid } = await form.value.validate();
+  if (valid) {
+    props.editItem ? onUpdate() : onCreate();
   }
 };
 
@@ -110,49 +130,65 @@ watch(
   </slot>
   <v-dialog v-model="dialog" persistent max-width="500px">
     <v-card>
-      <v-card-title class="mt-5 mx-5">
-        <span class="text-h5 font-weight-bold">{{ props.title }}</span>
-      </v-card-title>
+      <v-form @submit.prevent="onSubmit" ref="form">
+        <v-card-title class="mt-5 mx-5">
+          <span class="text-h5 font-weight-bold">{{ props.title }}</span>
+        </v-card-title>
 
-      <v-card-text>
-        <div class="mx-4 text-body-1 text-grey-darken-2">請輸入 Q & A 後，點擊再次訓練。</div>
-        <v-container class="mt-10">
-          <v-row>
-            <v-col cols="12">
-              <v-textarea variant="outlined" label="Q:" rows="3" v-model="question"></v-textarea>
-            </v-col>
-            <v-col cols="12">
-              <v-textarea variant="outlined" label="A:" rows="3" v-model="answer"></v-textarea>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
+        <v-card-text>
+          <div class="mx-4 text-body-1 text-grey-darken-2">請輸入 Q & A 後，點擊再次訓練。</div>
+          <v-container class="mt-10">
+            <v-row>
+              <v-col cols="12">
+                <v-textarea
+                  counter
+                  variant="outlined"
+                  label="Q:"
+                  rows="3"
+                  :rules="rules"
+                  v-model="question"
+                ></v-textarea>
+              </v-col>
+              <v-col cols="12">
+                <v-textarea
+                  counter
+                  variant="outlined"
+                  label="A:"
+                  rows="3"
+                  :rules="rules"
+                  v-model="answer"
+                ></v-textarea>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
 
-      <v-card-actions class="mb-4">
-        <v-spacer></v-spacer>
-        <v-btn
-          color="orange"
-          theme="dark"
-          variant="outlined"
-          class="text-white"
-          size="large"
-          flat
-          @click="dialog = false"
-        >
-          取消
-        </v-btn>
-        <v-btn
-          color="orange"
-          theme="dark"
-          variant="elevated"
-          class="mr-5 text-white"
-          size="large"
-          flat
-          @click="props.editItem ? onUpdate() : onCreate()"
-        >
-          儲存
-        </v-btn>
-      </v-card-actions>
+        <v-card-actions class="mb-4">
+          <v-spacer></v-spacer>
+          <v-btn
+            color="orange"
+            theme="dark"
+            variant="outlined"
+            class="text-white"
+            size="large"
+            flat
+            @click="dialog = false"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="orange"
+            theme="dark"
+            variant="elevated"
+            class="mr-5 text-white"
+            size="large"
+            flat
+            type="submit"
+          >
+            儲存
+          </v-btn>
+        </v-card-actions>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>
