@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import TheActorAdvanced from '@/components/TheActorAdvanced.vue';
 import TheActorDataManager from '@/components/TheActorDataManager.vue';
 import TheActorSetting from '@/components/TheActorSetting.vue';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
@@ -52,6 +53,7 @@ const onOpen = () => {
             <v-tabs v-model="tab" class="text-grey" color="black">
               <v-tab class="text-h6" value="setting">設定</v-tab>
               <v-tab class="text-h6" value="dataManager">資料管理</v-tab>
+              <v-tab class="text-h6" value="advanced">進階設定</v-tab>
             </v-tabs>
           </template>
         </v-toolbar>
@@ -60,6 +62,7 @@ const onOpen = () => {
         <v-window v-model="tab">
           <TheActorSetting value="setting" />
           <TheActorDataManager value="dataManager" />
+          <TheActorAdvanced value="advanced" />
         </v-window>
       </v-main>
     </v-container>
