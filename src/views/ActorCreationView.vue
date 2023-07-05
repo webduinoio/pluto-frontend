@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { ROUTER_NAME } from '@/enums';
+import { ERROR_CODE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { createActor } from '@/services';
+import axios from 'axios';
 import { useField, useForm } from 'vee-validate';
-
 const router = useRouter();
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const { resetForm, handleSubmit } = useForm({
@@ -27,39 +27,46 @@ const url = useField('url', undefined, {
 
 // TODO: 待調整
 const onSubmit = handleSubmit(async (values) => {
-  showLoading();
-  const {
-    data: { code },
-  } = await createActor(values);
+  try {
+    showLoading();
+    await createActor(values);
+    hideLoading();
 
-  hideLoading();
-
-  if (code === 4) {
+    resetForm();
     await fire({
-      title: '發生錯誤',
-      icon: 'error',
-      text: '網址不正確',
+      title: '更新完成',
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false,
     });
-    return;
-  }
+    router.push({ name: ROUTER_NAME.HOME });
+  } catch (err: any) {
+    if (axios.isAxiosError(err)) {
+      console.error('error message: ', err.message);
+      hideLoading();
+      const code = err.response?.data.code;
 
-  if (code === 6) {
-    await fire({
-      title: '發生錯誤',
-      icon: 'error',
-      text: '名稱重複',
-    });
-    return;
+      if (code === ERROR_CODE.VALIDATION_ERROR) {
+        fire({
+          title: '發生錯誤',
+          icon: 'error',
+          text: '網址不正確',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else if (code === ERROR_CODE.DUPLICATE_ERROR) {
+        fire({
+          title: '發生錯誤',
+          icon: 'error',
+          text: '名稱重複',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } else {
+      console.error('unexpected error: ', err);
+    }
   }
-
-  resetForm();
-  await fire({
-    title: '更新完成',
-    icon: 'success',
-    timer: 2000,
-    showConfirmButton: false,
-  });
-  router.push({ name: ROUTER_NAME.HOME });
 });
 </script>
 
