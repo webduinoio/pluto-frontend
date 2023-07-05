@@ -1,4 +1,6 @@
 {
+  "editor.tabSize": 2,
+  "editor.indentSize": "tabSize",
   "cSpell.words": [
     "Apim",
     "argvs",
@@ -122,7 +124,9 @@
     "editor.defaultFormatter": "vscode.html-language-features"
   },
   "markdownlint.config": {
-    "MD003": { "style": "setext_with_atx" },
+    "MD003": {
+      "style": "setext_with_atx"
+    },
     "MD036": false
   },
   "[vue]": {
