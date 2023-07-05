@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ROUTER_NAME } from '@/enums';
 import { logout } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
 
@@ -14,7 +15,7 @@ const user = oauth.user;
       src="@/assets/logo.webp"
       :height="48"
       inline
-      @click="router.push({ name: 'Home' })"
+      @click="router.push({ name: ROUTER_NAME.HOME })"
     ></v-img>
     <v-toolbar-title class="title"> 伴學小書僮 </v-toolbar-title>
     <v-menu min-width="200px" rounded open-on-hover>
