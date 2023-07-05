@@ -69,6 +69,7 @@
     "nocheck",
     "notext",
     "Paho",
+    "Persistedstate",
     "pinia",
     "problemset",
     "Pyodide",
