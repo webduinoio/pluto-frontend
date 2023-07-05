@@ -58,7 +58,7 @@ const router = createRouter({
     },
     {
       path: "/:catchAll(.*)",
-      redirect: { name: 'Home' },
+      redirect: { name: ROUTER_NAME.HOME },
     }
   ],
 });
