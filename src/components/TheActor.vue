@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { deleteActor } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
 
+const { fire, showLoading, hideLoading } = useSweetAlert();
 const oauth = useOAuthStore();
 const user = oauth.user;
 const props = withDefaults(
@@ -23,18 +26,58 @@ const emit = defineEmits<{
   (e: 'edit', data: Actor): void;
   (e: 'open', data: Actor): void;
 }>();
+
+const onDelete = async (id: number) => {
+  try {
+    showLoading();
+    await deleteActor(id);
+    hideLoading();
+  } catch (err: any) {
+    console.error(err);
+    fire({
+      title: '刪除小書僮發生錯誤',
+      icon: 'error',
+      text: err.message,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+};
 </script>
 
 <template>
-  <!-- <v-card height="380" width="320" class="ma-2 pa-2"></v-card> -->
   <v-card height="380" width="320" class="d-flex flex-column">
-    <v-card-item>
-      <v-card-title>{{ props.data.name }}</v-card-title>
-    </v-card-item>
+    <v-toolbar color="rgba(0, 0, 0, 0)">
+      <v-toolbar-title class="text-h6">
+        {{ props.data.name }}
+      </v-toolbar-title>
+
+      <template v-slot:append>
+        <v-menu v-if="props.data.createdBy === user?.id" min-width="200px" rounded>
+          <template v-slot:activator="{ props }">
+            <v-btn icon="mdi-dots-vertical" v-bind="props"></v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item :value="props.data.id" disabled>
+              <v-list-item-title>複製分享連結</v-list-item-title>
+            </v-list-item>
+            <v-list-item :value="props.data.id" @click="onDelete(props.data.id)">
+              <v-list-item-title>刪除</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+    </v-toolbar>
 
     <v-card-text class="overflow-auto">
-      <v-img :src="props.data.image" height="200" cover class="text-white"></v-img>
-      <p class="mt-2">{{ props.data.description }}</p>
+      <v-img :src="props.data.image" height="180" cover class="text-white"></v-img>
+      <p class="mt-2 description text-truncate">
+        {{ props.data.description }}
+        <v-tooltip v-if="props.data.description.length > 19" activator="parent" location="top">
+          {{ props.data.description }}
+        </v-tooltip>
+      </p>
     </v-card-text>
     <v-card-actions class="d-flex justify-end">
       <v-btn
@@ -48,3 +91,14 @@ const emit = defineEmits<{
     </v-card-actions>
   </v-card>
 </template>
+
+<style lang="scss" scoped>
+.description {
+  min-height: 20px;
+}
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
