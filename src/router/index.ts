@@ -72,7 +72,7 @@ router.beforeEach(async (to, from) => {
     console.error(error);
     logout();
   }
-  return true
-})
+  return true;
+});
 
 export default router;

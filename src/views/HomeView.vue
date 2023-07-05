@@ -24,7 +24,7 @@ onMounted(async () => {
 const onEdit = (data: Actor) => {
   store.setEditData(data);
   router.push({
-    name: 'ActorEdit',
+    name: ROUTER_NAME.ACTOR_EDIT,
   });
 };
 
@@ -47,7 +47,11 @@ const onOpen = (data: Actor) => {
     <v-responsive max-width="1024">
       <div class="d-flex justify-space-between my-15">
         <div class="text-h4">我的小書僮</div>
-        <v-btn color="teal" prepend-icon="mdi-plus" @click="router.push({ name: 'ActorCreation' })">
+        <v-btn
+          color="teal"
+          prepend-icon="mdi-plus"
+          @click="router.push({ name: ROUTER_NAME.ACTOR_CREATION })"
+        >
           新增小書僮
         </v-btn>
       </div>
