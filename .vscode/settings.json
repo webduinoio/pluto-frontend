@@ -4,6 +4,7 @@
   "cSpell.words": [
     "Apim",
     "argvs",
+    "axios",
     "Baudrate",
     "bbedit",
     "BEFOREDISCONNECT",
@@ -144,5 +145,8 @@
   "markdown.preview.breaks": true,
   "[xml]": {
     "editor.defaultFormatter": "DotJoshJohnson.xml"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "Vue.volar"
   }
 }
