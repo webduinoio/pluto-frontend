@@ -32,7 +32,7 @@ const user = oauth.user;
               <v-icon color="grey" icon="mdi-account-circle" size="x-large"></v-icon>
             </v-avatar>
             <p class="text-caption mt-1">
-              {{ user.email }}
+              {{ user?.email }}
             </p>
             <div class="d-flex flex-column justify-center">
               <v-btn rounded variant="text"> 方案 </v-btn>
