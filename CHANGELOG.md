@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 出題小書僮 [#6943](https://redmine.kingkit.codes/issues/6943)
 - OAuth 登入 [#6936](https://redmine.kingkit.codes/issues/6936)
 - 編輯書僮 - 設定 ui [#6959](https://redmine.kingkit.codes/issues/6959)
+- 編輯書僮 - 進階設定 ui [#6960](https://redmine.kingkit.codes/issues/6960)
 
 ### Changed
 
