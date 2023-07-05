@@ -8,7 +8,7 @@ const user = oauth.user;
 </script>
 
 <template>
-  <v-app-bar class="header px-3">
+  <v-app-bar class="header px-3" color="#F1A23A">
     <v-img
       class="logo"
       src="@/assets/logo.webp"
@@ -17,9 +17,6 @@ const user = oauth.user;
       @click="router.push({ name: 'Home' })"
     ></v-img>
     <v-toolbar-title class="title"> 伴學小書僮 </v-toolbar-title>
-    <!-- <v-avatar>
-      <v-icon color="blue-grey-lighten-4" icon="mdi-account-circle" size="x-large"></v-icon>
-    </v-avatar> -->
     <v-menu min-width="200px" rounded open-on-hover>
       <template v-slot:activator="{ props }">
         <v-btn icon v-bind="props">
