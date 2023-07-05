@@ -3,7 +3,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { getActor, updateActor } from '@/services/actors';
 import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types';
-import { set } from '@vueuse/core';
+import { get, set } from '@vueuse/core';
 import { useField, useForm } from 'vee-validate';
 
 const props = withDefaults(
@@ -21,7 +21,6 @@ const data = ref<Actor>();
 const { handleSubmit, setFieldValue } = useForm({
   initialValues: {
     prompt: '',
-    image: '',
   },
   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
@@ -32,6 +31,8 @@ const { handleSubmit, setFieldValue } = useForm({
 const prompt = useField('prompt', undefined, {
   label: 'Prompt',
 });
+
+const temperature = ref(0);
 
 const loadData = async () => {
   try {
@@ -46,6 +47,7 @@ const loadData = async () => {
 
 const onReset = () => {
   setFieldValue('prompt', data.value?.prompt || '');
+  set(temperature, data.value?.temperature || 0);
 };
 
 const onSubmit = handleSubmit(async (values) => {
@@ -54,6 +56,7 @@ const onSubmit = handleSubmit(async (values) => {
     set(loading, true);
     const form = new FormData();
     form.append('prompt', values.prompt);
+    form.append('temperature', get(temperature) + '');
     await updateActor(store?.actorEditData?.id, form);
   } catch (err: any) {
     console.error(err);
@@ -73,6 +76,7 @@ onMounted(async () => {
   value && set(data, value);
   set(loading, false);
   setFieldValue('prompt', value?.prompt || '');
+  set(temperature, value?.temperature || 0);
 });
 </script>
 
@@ -91,6 +95,17 @@ onMounted(async () => {
                 :error-messages="prompt.errorMessage.value"
                 :disabled="loading"
               ></v-textarea>
+              <div>
+                <div class="text-h6">溫度</div>
+                <v-slider
+                  :min="0"
+                  :max="100"
+                  :step="1"
+                  thumb-label="always"
+                  v-model="temperature"
+                  :disabled="loading"
+                ></v-slider>
+              </div>
               <v-btn
                 color="orange"
                 variant="outlined"
