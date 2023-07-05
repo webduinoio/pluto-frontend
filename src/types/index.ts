@@ -7,6 +7,7 @@
 
 export * from './actors';
 export * from './dataset';
+export * from './user';
 
 // TODO: 之後換成 mqtt.js
 declare global {

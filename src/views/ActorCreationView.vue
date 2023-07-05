@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { createActor } from '@/services';
 import { useField, useForm } from 'vee-validate';
@@ -58,7 +59,7 @@ const onSubmit = handleSubmit(async (values) => {
     timer: 2000,
     showConfirmButton: false,
   });
-  router.push({ name: 'Home' });
+  router.push({ name: ROUTER_NAME.HOME });
 });
 </script>
 

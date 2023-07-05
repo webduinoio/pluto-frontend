@@ -66,8 +66,10 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   try {
     const oauth = useOAuthStore();
-    const data = await getUser();
-    oauth.$patch({ user: data?.data?.data });
+    if (oauth.user === null) {
+      const resp = await getUser();
+      oauth.$patch({ user: resp?.data });
+    }
   } catch (error) {
     console.error(error);
     logout();
