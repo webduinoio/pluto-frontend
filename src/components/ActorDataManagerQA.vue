@@ -153,11 +153,8 @@ onMounted(async () => {
               <p>{{ `#${idx + 1}` }}</p>
             </template>
             <v-list-item-title class="ml-4">
-              <div>Q: {{ item.question }}</div>
-              <div class="text-truncate">
-                A:
-                {{ item.answer }}
-              </div>
+              <div class="text-truncate">Q: {{ item.question }}</div>
+              <div class="text-truncate">A: {{ item.answer }}</div>
             </v-list-item-title>
             <template v-slot:append>
               <DatasetForm title="編輯 Q & A" :edit-item="item" @update="loadDataset">
