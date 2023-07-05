@@ -97,16 +97,16 @@ export function updateActor(id: number, data: any) {
   return instance(`/${id}`, config);
 }
 
-// /**
-//  * 刪除角色
-//  * @param id
-//  */
-// export function deleteQuestion(id: number) {
-//   const config = {
-//     method: 'delete',
-//   };
-//   return instance(`/questions/${id}`, config);
-// }
+/**
+ * 刪除角色
+ * @param id
+ */
+export function deleteActor(id: number) {
+  const config = {
+    method: 'delete',
+  };
+  return instance(`/${id}`, config);
+}
 
 // /**
 //  * 刪除多筆角色

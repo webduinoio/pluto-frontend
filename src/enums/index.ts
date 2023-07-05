@@ -39,6 +39,16 @@ export enum ROUTER_NAME {
   STUDY_BUDDY_QUESTION = 'StudyBuddyQuestion',
 }
 
+export enum ERROR_CODE {
+  NO_ERROR = 0,
+  INTERNAL_SERVER_ERROR = 1,
+  UNAUTHENTICATED_ERROR = 2,
+  UNAUTHORIZED_ERROR = 3,
+  VALIDATION_ERROR = 4,
+  NOT_FOUND_ERROR = 5,
+  DUPLICATE_ERROR = 6,
+}
+
 // export enum MARKDOWN_TYPE {
 //   NONE = 'none',
 //   MARKDOWN = 'markdown',
