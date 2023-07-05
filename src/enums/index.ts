@@ -31,6 +31,14 @@ export enum ACTOR_TYPE {
   PYTHON = 'python',
 }
 
+export enum ROUTER_NAME {
+  HOME = 'home',
+  ACTOR_CREATION = 'ActorCreation',
+  ACTOR_EDIT = 'ActorEdit',
+  STUDY_BUDDY_QA = 'StudyBuddyQA',
+  STUDY_BUDDY_QUESTION = 'StudyBuddyQuestion',
+}
+
 // export enum MARKDOWN_TYPE {
 //   NONE = 'none',
 //   MARKDOWN = 'markdown',

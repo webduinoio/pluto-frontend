@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
-import { ACTOR_TYPE } from '@/enums';
+import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { getActors } from '@/services';
+import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 
 const router = useRouter();
+const store = useMainStore();
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
@@ -19,22 +21,22 @@ onMounted(async () => {
   }
 });
 
-// TODO: 待調整
-const onEdit = (id: number) => {
-  console.log('onEdit id:', id);
+const onEdit = (data: Actor) => {
+  store.setEditData(data);
+  router.push({
+    name: 'ActorEdit',
+  });
 };
 
 const onOpen = (data: Actor) => {
-  // TODO: 先暫時處理，後續再加入 pinia
-  sessionStorage.setItem('actorOpenID', data.id.toString());
-
+  store.actorOpenID = data.id;
   if (data.type === ACTOR_TYPE.QUIZ) {
     router.push({
-      name: 'StudyBuddyQuestion',
+      name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
     });
   } else {
     router.push({
-      name: 'StudyBuddyQA',
+      name: ROUTER_NAME.STUDY_BUDDY_QA,
     });
   }
 };
@@ -64,5 +66,3 @@ const onOpen = (data: Actor) => {
     </v-responsive>
   </v-container>
 </template>
-
-<style lang="scss"></style>
