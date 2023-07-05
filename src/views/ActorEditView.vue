@@ -1,88 +1,84 @@
 <script lang="ts" setup>
+import DatasetForm from '@/components/DatasetForm.vue';
+import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { trainActor } from '@/services';
+import { getDatasets, trainActor } from '@/services';
+import { deleteDataset } from '@/services/dataset';
 import { useMainStore } from '@/stores/main';
-import { set } from '@vueuse/core';
+import type { Dataset } from '@/types';
+import { get, set } from '@vueuse/core';
 
 const router = useRouter();
 const store = useMainStore();
-const { fire } = useSweetAlert();
+const { fire, confirm, showLoading, hideLoading } = useSweetAlert();
 
 const tab = ref();
 const tab2 = ref();
-const dialog = ref(false);
-const editedItem = ref({
-  question: 'sheng',
-  answer: 'ok',
-});
 const training = ref(false);
-const items = ref([
-  {
-    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-    title: {
-      question: '甄嬛的孩子叫什麼名字？',
-      answer:
-        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
-    },
-  },
-  {
-    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-    title: {
-      question: '甄嬛的孩子叫什麼名字？',
-      answer:
-        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
-    },
-  },
-  {
-    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-    title: {
-      question: '甄嬛的孩子叫什麼名字？',
-      answer:
-        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
-    },
-  },
-  {
-    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-    title: {
-      question: '甄嬛的孩子叫什麼名字？',
-      answer:
-        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
-    },
-  },
-  {
-    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-    title: {
-      question: '甄嬛的孩子叫什麼名字？',
-      answer:
-        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
-    },
-  },
-  {
-    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-    title: {
-      question: '甄嬛的孩子叫什麼名字？',
-      answer:
-        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
-    },
-  },
-  {
-    prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-    title: {
-      question: '甄嬛的孩子叫什麼名字？',
-      answer:
-        '甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主。甄嬛的孩子是朧月公主...',
-    },
-  },
-]);
+const datasets = ref<Dataset[]>([]);
+const search = ref('');
+const loading = ref(false);
+
+// TODO: 目前先支援載入 30 筆，後續需再調整
+const loadDataset = async (options = {}) => {
+  try {
+    if (!store?.actorEditData?.id) {
+      return;
+    }
+    const { data: value } = await getDatasets({ actorID: store.actorEditData.id, ...options });
+    set(datasets, value.list || []);
+  } catch (err: any) {
+    console.error(err);
+    await fire({
+      title: '發生錯誤',
+      icon: 'error',
+      text: err.message,
+    });
+  }
+};
 
 const onBack = () => {
   router.push({
-    name: 'Home',
+    name: ROUTER_NAME.HOME,
   });
 };
 
-const onCreateClose = () => {
-  set(dialog, false);
+const onOpen = () => {
+  if (!store?.actorEditData?.id) return;
+  store.actorOpenID = store.actorEditData.id;
+  if (store?.actorEditData?.type === ACTOR_TYPE.QUIZ) {
+    router.push({
+      name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
+    });
+  } else {
+    router.push({
+      name: ROUTER_NAME.STUDY_BUDDY_QA,
+    });
+  }
+};
+
+const onDeleteDataset = async (data: Dataset) => {
+  const isDoIt = await confirm({
+    title: '刪除 Q & A',
+    text: '確定刪除嗎？',
+  });
+  if (!isDoIt) return;
+
+  try {
+    showLoading();
+    if (!data.id) return;
+    await deleteDataset(data.id);
+    await loadDataset();
+  } catch (err: any) {
+    console.error(err);
+    fire({
+      title: '刪除 Q & A 發生錯誤',
+      icon: 'error',
+      text: err.message,
+    });
+  } finally {
+    hideLoading();
+  }
 };
 
 const onTrain = async () => {
@@ -109,6 +105,7 @@ const onTrain = async () => {
       return;
     }
   } catch (err: any) {
+    console.error(err);
     await fire({
       title: '發生錯誤',
       icon: 'error',
@@ -118,6 +115,28 @@ const onTrain = async () => {
     set(training, false);
   }
 };
+
+const onSearch = async () => {
+  set(loading, true);
+  await loadDataset({ search: get(search) });
+  set(loading, false);
+};
+
+onMounted(async () => {
+  try {
+    set(loading, true);
+    if (!store?.actorEditData?.id) {
+      onBack();
+      return;
+    }
+
+    await loadDataset();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    set(loading, false);
+  }
+});
 </script>
 
 <template>
@@ -131,8 +150,8 @@ const onTrain = async () => {
       <v-main>
         <v-toolbar class="bg-grey-lighten-2">
           <v-toolbar-title class="text-h4 font-weight-bold">
-            神鵰俠侶
-            <v-btn icon="mdi-open-in-new" color="grey-darken-1"></v-btn>
+            {{ store?.actorEditData?.name }}
+            <v-btn icon="mdi-open-in-new" color="grey-darken-1" @click="onOpen"></v-btn>
           </v-toolbar-title>
 
           <template v-slot:extension>
@@ -213,114 +232,43 @@ const onTrain = async () => {
                         hide-details
                         rounded
                         flat
+                        v-model="search"
+                        @click:append-inner="onSearch"
+                        :loading="loading"
+                        :disabled="loading"
                       ></v-text-field>
                     </v-responsive>
-                    <v-dialog v-model="dialog" persistent max-width="500px">
-                      <template v-slot:activator="{ props }">
-                        <v-btn
-                          color="orange"
-                          theme="dark"
-                          variant="elevated"
-                          class="ml-2 text-white"
-                          v-bind="props"
-                          size="large"
-                          flat
-                        >
-                          新增 Q & A
-                        </v-btn>
-                      </template>
-                      <v-card>
-                        <v-card-title class="mt-5 mx-5">
-                          <span class="text-h5 font-weight-bold"> 新增 Q & A</span>
-                        </v-card-title>
-
-                        <v-card-text>
-                          <div class="mx-4 text-body-1 text-grey-darken-2">
-                            請輸入 Q & A 後，點擊再次訓練。
-                          </div>
-                          <v-container class="mt-10">
-                            <v-row>
-                              <v-col cols="12">
-                                <v-textarea
-                                  variant="outlined"
-                                  label="Q:"
-                                  rows="3"
-                                  v-model="editedItem.question"
-                                ></v-textarea>
-                              </v-col>
-                              <v-col cols="12">
-                                <v-textarea
-                                  variant="outlined"
-                                  label="A:"
-                                  rows="3"
-                                  v-model="editedItem.answer"
-                                ></v-textarea>
-                              </v-col>
-                            </v-row>
-                          </v-container>
-                        </v-card-text>
-
-                        <v-card-actions class="mb-4">
-                          <v-spacer></v-spacer>
-                          <v-btn
-                            color="orange"
-                            theme="dark"
-                            variant="outlined"
-                            class="text-white"
-                            size="large"
-                            flat
-                            @click="onCreateClose"
-                          >
-                            取消
-                          </v-btn>
-                          <v-btn
-                            color="orange"
-                            theme="dark"
-                            variant="elevated"
-                            class="mr-5 text-white"
-                            size="large"
-                            flat
-                          >
-                            儲存
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                    <!-- <v-dialog v-model="dialogDelete" max-width="500px">
-                      <v-card>
-                        <v-card-title class="text-h5"
-                          >Are you sure you want to delete this item?</v-card-title
-                        >
-                        <v-card-actions>
-                          <v-spacer></v-spacer>
-                          <v-btn color="blue-darken-1" variant="text" @click="closeDelete"
-                            >Cancel</v-btn
-                          >
-                          <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm"
-                            >OK</v-btn
-                          >
-                          <v-spacer></v-spacer>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog> -->
+                    <DatasetForm
+                      title="新增 Q & A"
+                      :actorID="store?.actorEditData?.id"
+                      @create="loadDataset"
+                    />
                   </v-toolbar>
 
                   <v-list class="bg-grey-lighten-2" lines="two" max-height="460">
-                    <template v-for="(item, idx) in items">
+                    <template v-for="(item, idx) in datasets">
                       <v-list-item>
                         <template v-slot:prepend>
                           <p>{{ `#${idx + 1}` }}</p>
                         </template>
                         <v-list-item-title class="ml-4">
-                          <div>Q: {{ item.title?.question }}</div>
+                          <div>Q: {{ item.question }}</div>
                           <div class="text-truncate">
                             A:
-                            {{ item.title?.answer }}
+                            {{ item.answer }}
                           </div>
                         </v-list-item-title>
                         <template v-slot:append>
-                          <v-btn icon="mdi-pencil" variant="text"></v-btn>
-                          <v-btn icon="mdi-trash-can" variant="text"></v-btn>
+                          <DatasetForm title="編輯 Q & A" :edit-item="item" @update="loadDataset">
+                            <template #default="{ props }">
+                              <v-btn icon="mdi-pencil" variant="text" v-bind="props"></v-btn>
+                            </template>
+                          </DatasetForm>
+                          <v-btn
+                            icon="mdi-trash-can"
+                            variant="text"
+                            @click="onDeleteDataset(item)"
+                          ></v-btn>
                         </template>
                       </v-list-item>
                       <v-divider></v-divider>
@@ -329,12 +277,31 @@ const onTrain = async () => {
 
                   <v-row align-content="center" class="mt-2">
                     <v-col cols="12">
-                      <v-btn color="#467974" class="text-white" size="large">再次訓練</v-btn>
+                      <v-btn color="#467974" class="text-white" size="large" @click="onTrain">
+                        再次訓練
+                      </v-btn>
                     </v-col>
                     <v-col cols="6">
-                      <v-progress-linear indeterminate color="#467974"></v-progress-linear>
+                      <v-progress-linear
+                        :active="training"
+                        :indeterminate="training"
+                        color="#467974"
+                      ></v-progress-linear>
                     </v-col>
                   </v-row>
+
+                  <v-overlay
+                    :model-value="loading"
+                    class="align-center justify-center"
+                    persistent
+                    contained
+                  >
+                    <v-progress-circular
+                      color="#467974"
+                      indeterminate
+                      size="40"
+                    ></v-progress-circular>
+                  </v-overlay>
                 </v-container>
               </v-window-item>
             </v-window>
@@ -345,9 +312,15 @@ const onTrain = async () => {
   </v-layout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .divider {
   position: relative;
   top: -2px;
+}
+</style>
+
+<style lang="scss">
+.swal2-container {
+  z-index: 9999 !important;
 }
 </style>

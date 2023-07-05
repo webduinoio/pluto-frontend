@@ -1,3 +1,4 @@
+import { ROUTER_NAME } from '@/enums';
 import LayoutDefault from '@/layouts/default/Default.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -10,27 +11,27 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'Home',
+          name: ROUTER_NAME.HOME,
           component: () => import('@/views/HomeView.vue'),
         },
         {
           path: 'create',
-          name: 'ActorCreation',
+          name: ROUTER_NAME.ACTOR_CREATION,
           component: () => import('@/views/ActorCreationView.vue'),
         },
         {
           path: 'edit',
-          name: 'ActorEdit',
+          name: ROUTER_NAME.ACTOR_EDIT,
           component: () => import('@/views/ActorEditView.vue'),
         },
         {
           path: 'qa',
-          name: 'StudyBuddyQA',
+          name: ROUTER_NAME.STUDY_BUDDY_QA,
           component: () => import('@/views/StudyBuddyQAView.vue'),
         },
         {
           path: 'generate-question',
-          name: 'StudyBuddyQuestion',
+          name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
           component: () => import('@/views/StudyBuddyQuestionView.vue'),
         },
       ],

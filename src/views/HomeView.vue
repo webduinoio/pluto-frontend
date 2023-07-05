@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
-import { ACTOR_TYPE } from '@/enums';
+import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { getActors } from '@/services';
 import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types';
@@ -32,11 +32,11 @@ const onOpen = (data: Actor) => {
   store.actorOpenID = data.id;
   if (data.type === ACTOR_TYPE.QUIZ) {
     router.push({
-      name: 'StudyBuddyQuestion',
+      name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
     });
   } else {
     router.push({
-      name: 'StudyBuddyQA',
+      name: ROUTER_NAME.STUDY_BUDDY_QA,
     });
   }
 };
@@ -66,5 +66,3 @@ const onOpen = (data: Actor) => {
     </v-responsive>
   </v-container>
 </template>
-
-<style lang="scss"></style>
