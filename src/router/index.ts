@@ -52,13 +52,7 @@ const router = createRouter({
     },
     {
       path: "/:catchAll(.*)",
-      component: LayoutDefault,
-      children: [
-        {
-          path: '',
-          redirect: { name: 'Home' },
-        },
-      ],
+      redirect: { name: 'Home' },
     }
   ],
 });
