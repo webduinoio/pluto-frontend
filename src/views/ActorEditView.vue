@@ -19,15 +19,13 @@ const onBack = () => {
 const onOpen = () => {
   if (!store?.actorEditData?.id) return;
   store.actorOpenID = store.actorEditData.id;
-  if (store?.actorEditData?.type === ACTOR_TYPE.QUIZ) {
-    router.push({
-      name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
-    });
-  } else {
-    router.push({
-      name: ROUTER_NAME.STUDY_BUDDY_QA,
-    });
-  }
+  const location = router.resolve({
+    name:
+      store?.actorEditData?.type === ACTOR_TYPE.QUIZ
+        ? ROUTER_NAME.STUDY_BUDDY_QUESTION
+        : ROUTER_NAME.STUDY_BUDDY_QA,
+  });
+  window.open(location.href, '_blank');
 };
 </script>
 
