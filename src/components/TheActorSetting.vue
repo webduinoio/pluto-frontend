@@ -16,15 +16,15 @@ const store = useMainStore();
 const { fire } = useSweetAlert();
 
 // TODO: file 格式的檢查，再研究看看，真不行，就混合 vuetify3 的檢查
-const { resetForm, handleReset, handleSubmit, setFieldValue } = useForm({
+const { handleSubmit, setFieldValue } = useForm({
   initialValues: {
     description: '',
     image: '',
   },
   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
-    description: 'required',
-    // image: 'required|image/jpg|image/png',
+    description: 'required|max:300',
+    // image: 'required|image/jpg|image/png|size:250',
   },
 });
 
@@ -35,11 +35,11 @@ const image = useField('image', undefined, {
   label: '小書僮圖片',
 });
 const loading = ref(false);
-
-const reset = () => {
-  resetForm();
-  setFieldValue('image', '');
-};
+const rules = [
+  (value: any) => {
+    return !value || !value.length || value[0].size < 5000000 || '檔案不能大於 5 MB!';
+  },
+];
 
 const onChange = (event: any) => {
   setFieldValue('image', event.target.files[0]);
@@ -53,7 +53,12 @@ const onSubmit = handleSubmit(async (values) => {
     form.append('description', values.description);
     form.append('image', values.image);
     await updateActor(store?.actorEditData?.id, form);
-    reset();
+    await fire({
+      title: '更新完成',
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false,
+    });
   } catch (err: any) {
     console.error(err);
     fire({
@@ -91,9 +96,18 @@ onMounted(() => {
             accept=".jpg, .png, .jpeg"
             :disabled="loading"
             @change="onChange"
+            :rules="rules"
             :error-messages="image.errorMessage.value"
             clearable
-          ></v-file-input>
+          >
+            <template v-slot:selection="{ fileNames }">
+              <template v-for="fileName in fileNames" :key="fileName">
+                <v-chip size="small" label class="me-2">
+                  {{ fileName }}
+                </v-chip>
+              </template>
+            </template></v-file-input
+          >
           <v-btn
             type="submit"
             color="#467974"
