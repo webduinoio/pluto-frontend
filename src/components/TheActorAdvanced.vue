@@ -25,7 +25,7 @@ const { handleSubmit, setFieldValue } = useForm({
   },
   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
-    prompt: 'required',
+    prompt: 'required|max:1000',
   },
 });
 
