@@ -3,7 +3,6 @@
  * 使用 axios 時，因為 redirect 無法正常轉導，改用 fetch
  */
 
-import axios from 'axios';
 
 const GOOGLE_APP_SCRIPT_URL =
   'https://script.google.com/macros/s/AKfycbxAyOsMjLrBZWqYB2w8v3SamuMCCMVStjVQupXLkZ3zvEVDo228IBrmNJn-45xJX5hX/exec';
@@ -27,7 +26,6 @@ export function getGoogleSheetData(data: Data) {
     method: 'POST',
     headers: myHeaders,
     body: JSON.stringify(data),
-    redirect: 'follow',
   };
 
   return fetch(GOOGLE_APP_SCRIPT_URL, requestOptions)

@@ -12,9 +12,9 @@ import 'splitpanes/dist/splitpanes.css';
 // TODO: 語音暫定中文，後續再調整
 const lang = ref('zh-TW');
 
-const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.KN);
+const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
-const prompt = ref('');
+const prompt = ref('從英文單字表隨機挑三個英文單字,給我英文單字欄位');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
@@ -26,19 +26,21 @@ const speech = useSpeechRecognition({
 });
 let _stop: Function | undefined;
 const mqttLoading = ref(false);
-const sheetUrl = ref('');
-const sheetName = ref('');
+const sheetUrl = ref(
+  'https://docs.google.com/spreadsheets/d/1RMF6girkUK7MFrWBoD8Dx5dE3p6zFsKU6vNcJZ2Bhtg/edit#gid=1781104560'
+);
+const sheetName = ref('英文單字表');
 const sheetValue = ref([]);
 const loadingSheet = ref(false);
 
 const _loadSheetData = async () => {
   try {
-    const { data } = await getGoogleSheetData({
+    const result = await getGoogleSheetData({
       sheetUrl: get(sheetUrl),
       sheetName: get(sheetName),
       type: 'read_table',
     });
-    set(sheetValue, data);
+    set(sheetValue, result?.data);
   } catch (err) {
     console.error(err);
   }
@@ -67,7 +69,7 @@ const stopVoiceInput = () => {
 };
 
 const getPayload = () => {
-  return `${get(sheetUrl)} ${get(sheetName)} ${get(prompt)}`;
+  return `${get(sheetName)} ${get(sheetUrl)} ${get(prompt)}`;
 };
 
 const onSubmit = () => {
@@ -219,6 +221,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                     density="compact"
                     hide-details="auto"
                     v-model="sheetUrl"
+                    clearable
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
@@ -228,6 +231,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                     density="compact"
                     hide-details="auto"
                     v-model="sheetName"
+                    clearable
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -247,13 +251,19 @@ mqtt.init((msg: string, isEnd: boolean) => {
           :disabled="mqttLoading"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
+          clearable
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">
-          <v-btn class="mb-4 text-orange" size="large" @click="onVoiceInput">
+          <v-btn
+            class="mb-4 text-orange"
+            size="large"
+            :disabled="mqttLoading"
+            @click="onVoiceInput"
+          >
             <template v-slot:prepend>
               <v-icon
                 :class="{ 'mic-icon-working': speech.isListening.value }"
