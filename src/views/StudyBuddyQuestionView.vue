@@ -19,9 +19,10 @@ const prompt = ref(
 );
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
-const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
+const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
+const markdownValueTemp = ref(''); // mqtt 更新前的訊息
 const assistantList = ref<string[]>(['高中歷史']);
 const assistant = ref('高中歷史');
 const knowledgePoint = ref('日治時期、抗日活動、228事件');
@@ -35,6 +36,17 @@ const speech = useSpeechRecognition({
 let _stop: Function | undefined;
 const mqttLoading = ref(false);
 const { copy } = useClipboard();
+const ROLE_TYPE = {
+  USER: 'user',
+  AI: 'ai',
+};
+
+const addMessage = (role: string, msg: string) => {
+  messages.value.push({
+    type: role,
+    message: msg,
+  });
+};
 
 const startVoiceInput = () => {
   const recordPrompt = get(prompt);
@@ -81,13 +93,8 @@ const onSubmit = () => {
 
   set(mqttLoading, true);
   mqttMsgLeftView.value.splice(0);
-  mqttMsgRightView.value.splice(0);
-  wholeMsg.value.splice(0);
   mqtt.publish(`${get(actor)}:${getPayload()}`);
-  messages.value.push({
-    type: 'user',
-    message: get(prompt),
-  });
+  addMessage(ROLE_TYPE.USER, get(prompt));
 };
 
 const onVoiceInput = () => {
@@ -181,6 +188,10 @@ const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
   }
 };
 
+/**
+ * 處理 mqtt 訊息
+ * @param msg {string | Object}
+ */
 const handleMsg = (msg: string) => {
   try {
     const uuidReg = /\$UUID\$/gm;
@@ -210,24 +221,26 @@ watch(mqttLoading, (val) => {
 mqtt.init((msg: string, isEnd: boolean) => {
   if (!msg && !isEnd) return;
 
-  wholeMsg.value.push(msg);
   const info = handleMsg(msg);
+
   if (info instanceof Object) {
     if (info.loading) {
       return;
     }
     mqttMsgRightView.value.push(info);
-  } else {
+    mqttMsgRightViewTemp.value.push(info);
+    set(markdownValue, get(markdownValueTemp) + transformMsgToMarkdown(get(mqttMsgRightViewTemp)));
+  }
+
+  if (typeof info === 'string') {
     mqttMsgLeftView.value.push(info);
   }
 
   if (isEnd) {
     set(mqttLoading, false);
-    messages.value.push({
-      type: 'ai',
-      message: mqttMsgLeftView.value.join('\n'),
-    });
-    set(markdownValue, get(markdownValue) + transformMsgToMarkdown(get(mqttMsgRightView)));
+    set(markdownValueTemp, get(markdownValue));
+    addMessage(ROLE_TYPE.AI, get(mqttMsgLeftView).join('\n'));
+    mqttMsgRightViewTemp.value.splice(0);
   }
 });
 </script>
@@ -349,7 +362,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">
-          <v-btn class="mb-4 text-orange" size="large" @click="onVoiceInput">
+          <v-btn
+            class="mb-4 text-orange"
+            size="large"
+            :disabled="mqttLoading"
+            @click="onVoiceInput"
+          >
             <template v-slot:prepend>
               <v-icon
                 :class="{ 'mic-icon-working': speech.isListening.value }"

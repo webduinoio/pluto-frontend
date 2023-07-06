@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
+import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { getActor } from '@/services';
@@ -13,7 +14,7 @@ import 'splitpanes/dist/splitpanes.css';
 const lang = ref('zh-TW');
 
 const store = useMainStore();
-const mqtt = useMqtt('guest_' + Math.random());
+const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.KN);
 const messages = ref<{ type: string; message: string }[]>([]);
 const actor = ref('');
 const prompt = ref('');
@@ -28,6 +29,7 @@ const speech = useSpeechRecognition({
   continuous: true,
 });
 let _stop: Function | undefined;
+const mqttLoading = ref(false);
 
 const startVoiceInput = () => {
   const recordPrompt = get(prompt);
@@ -61,6 +63,7 @@ const onSubmit = () => {
     stopVoiceInput();
   }
 
+  set(mqttLoading, true);
   set(msg1, '');
   set(msg2, '');
   set(uid, '');
@@ -86,8 +89,13 @@ const onVoiceInput = () => {
 
 loadData();
 
+watch(mqttLoading, (val) => {
+  val && set(prompt, '');
+});
+
 mqtt.init((msg: string, isEnd: boolean) => {
   if (isEnd) {
+    set(mqttLoading, false);
     // 其中包含 uuid 的部份，在這裡暫時無用
     const uuid = msg.split('\n\n$UUID$')[1];
     let newMsg = msg;
@@ -151,13 +159,21 @@ mqtt.init((msg: string, isEnd: boolean) => {
           no-resize
           variant="solo"
           v-model="prompt"
+          :disabled="mqttLoading"
+          :hint="mqttLoading ? '等待回覆中...' : ''"
+          :loading="mqttLoading"
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex flex-column align-center">
-          <v-btn class="mb-4 text-orange" size="large" @click="onVoiceInput">
+          <v-btn
+            class="mb-4 text-orange"
+            size="large"
+            :disabled="mqttLoading"
+            @click="onVoiceInput"
+          >
             <template v-slot:prepend>
               <v-icon
                 :class="{ 'mic-icon-working': speech.isListening.value }"
