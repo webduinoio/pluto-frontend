@@ -25,12 +25,12 @@ const { handleSubmit, setFieldValue } = useForm({
   },
   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
-    prompt: 'required',
+    prompt: 'required|max:1000',
   },
 });
 
 const prompt = useField('prompt', undefined, {
-  label: '介紹你的小書僮',
+  label: 'Prompt',
 });
 
 const loadData = async () => {
@@ -55,6 +55,12 @@ const onSubmit = handleSubmit(async (values) => {
     const form = new FormData();
     form.append('prompt', values.prompt);
     await updateActor(store?.actorEditData?.id, form);
+    await fire({
+      title: '更新完成',
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false,
+    });
   } catch (err: any) {
     console.error(err);
     fire({
