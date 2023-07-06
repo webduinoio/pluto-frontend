@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
-import { getActors } from '@/services';
+import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { deleteActor, getActors } from '@/services';
 import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 
+const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
 const store = useMainStore();
 
@@ -40,6 +42,27 @@ const onOpen = (data: Actor) => {
     name: getRouterName(data.type),
   });
 };
+
+const onDelete = async (id: number) => {
+  try {
+    showLoading();
+    await deleteActor(id);
+
+    const { data: value } = await getActors();
+    set(data, value.list || []);
+
+    hideLoading();
+  } catch (err: any) {
+    console.error(err);
+    fire({
+      title: '刪除小書僮發生錯誤',
+      icon: 'error',
+      text: err.message,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+};
 </script>
 
 <template>
@@ -65,6 +88,7 @@ const onOpen = (data: Actor) => {
           :data="item"
           @edit="onEdit"
           @open="onOpen"
+          @delete="onDelete"
         />
       </v-row>
     </v-responsive>
