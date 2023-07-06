@@ -11,8 +11,11 @@ class MQTTApp {
             userName: 'webduino', password: 'webduino'
         };
         this.onConnectPromise = null;
-        this.subscriptions = {}; // 存儲訂閱關係的對象
-        var topic = "code@chat"; //正式機
+        this.subscriptions = {}; // 存儲訂閱關係的對象  
+        var topic = "code@chat"; // prod目錄連結正式機
+        if (location.hostname != "localhost") {
+            topic = "code@" + location.hostname.split(".")[0];
+        }
         this.pubTopic = topic + '_prompt/' + userId;
         this.respTopic_cb = topic + "_completion/" + userId;
         this.respTopic_end = topic + "_completion_end/" + userId;
