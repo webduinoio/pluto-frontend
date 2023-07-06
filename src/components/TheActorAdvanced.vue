@@ -33,6 +33,15 @@ const prompt = useField('prompt', undefined, {
   label: 'Prompt',
 });
 
+const DEFAULT_PROMPT = ` You are a helpful AI assistant. Use the following pieces of context to answer the question at the end.
+If you don't know the answer, just say you don't know. DO NOT try to make up an answer.
+If the question is not related to the context, politely respond that you are tuned to only answer questions that are related to the context.
+{context}
+Question: {question}
+Helpful answer in markdown:
+回答內容小於30字, 用中文回答
+`;
+
 const loadData = async () => {
   try {
     if (!store?.actorEditData?.id) return null;
@@ -45,7 +54,7 @@ const loadData = async () => {
 };
 
 const onReset = () => {
-  setFieldValue('prompt', data.value?.prompt || '');
+  setFieldValue('prompt', DEFAULT_PROMPT);
 };
 
 const onSubmit = handleSubmit(async (values) => {
