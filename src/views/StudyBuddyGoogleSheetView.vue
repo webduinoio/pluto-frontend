@@ -1,34 +1,54 @@
 <script lang="ts" setup>
-import { GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
+import TheSheetTable from '@/components/TheSheetTable.vue';
+import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { createForm } from '@/services';
+import { getGoogleSheetData } from '@/services/googleSheet';
 import type { ChoiceType, QAType } from '@/types';
-import { get, set, useSpeechRecognition } from '@vueuse/core';
+import { get, set, useDebounceFn, useSpeechRecognition } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
-// TODO: 暫定中文，後續再調整
+// TODO: 語音暫定中文，後續再調整
 const lang = ref('zh-TW');
 
-const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
+const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.KN);
 const actor = ref('sheet');
 const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
-const markdownValue = ref(''); // 畫面右方訊息 (處理後)
-const { fire, Swal } = useSweetAlert();
+const { fire } = useSweetAlert();
 const speech = useSpeechRecognition({
   lang,
   continuous: true,
 });
 let _stop: Function | undefined;
 const mqttLoading = ref(false);
-const sheetUrl = ref(
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQYNmM84kGT9jsa2dsZvrNCZCEWZVf6bUStil_SA3PauSGZY3wLrzUtsXVmr4ZKwcnEQ1s_2J-sw7dq/pubhtml?widget=true&amp;headers=false'
-);
+const sheetUrl = ref('');
+const sheetName = ref('');
+const sheetValue = ref([]);
+const loadingSheet = ref(false);
+
+const _loadSheetData = async () => {
+  try {
+    const { data } = await getGoogleSheetData({
+      sheetUrl: get(sheetUrl),
+      sheetName: get(sheetName),
+      type: 'read_table',
+    });
+    set(sheetValue, data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const loadSheetData = useDebounceFn(async () => {
+  set(loadingSheet, true);
+  await _loadSheetData();
+  set(loadingSheet, false);
+}, 1000);
 
 const startVoiceInput = () => {
   const recordPrompt = get(prompt);
@@ -47,13 +67,7 @@ const stopVoiceInput = () => {
 };
 
 const getPayload = () => {
-  // return JSON.stringify({
-  //   assistant: get(assistant),
-  //   topic: get(knowledgePoint),
-  //   c_amt: get(numberOfChoiceQuestion),
-  //   q_amt: get(numberOfAnswerQuestion),
-  //   prompt: get(prompt),
-  // });
+  return `${get(sheetUrl)} ${get(sheetName)} ${get(prompt)}`;
 };
 
 const onSubmit = () => {
@@ -65,7 +79,7 @@ const onSubmit = () => {
   mqttMsgLeftView.value.splice(0);
   mqttMsgRightView.value.splice(0);
   wholeMsg.value.splice(0);
-  mqtt.publish(`${get(actor)}:${getPayload()}`);
+  mqtt.publish(`${get(actor)}: ${getPayload()}`);
   messages.value.push({
     type: 'user',
     message: get(prompt),
@@ -82,81 +96,6 @@ const onVoiceInput = () => {
     return;
   }
   startVoiceInput();
-};
-
-const onExport = async () => {
-  fire({
-    title: '試卷標題',
-    input: 'text',
-    inputAttributes: {
-      autocapitalize: 'off',
-    },
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    confirmButtonText: '確定',
-    cancelButtonText: '取消',
-    reverseButtons: true,
-    preConfirm: (title) => {
-      return createForm({
-        head: {
-          title,
-        },
-        body: mqttMsgRightView.value,
-      })
-        ?.then((resp: any) => {
-          return resp.data;
-        })
-        ?.catch((error) => {
-          console.error(error);
-          Swal.showValidationMessage(`發生錯誤`);
-        });
-    },
-    allowOutsideClick: () => !Swal.isLoading(),
-  }).then((result) => {
-    if (result.value) {
-      Swal.fire({
-        title: '產生連結',
-        text: result.value,
-      });
-    }
-  });
-};
-
-const getChoiceText = (info: ChoiceType, orderNumber: number) => {
-  const answerWords = ['A', 'B', 'C', 'D', 'E'];
-  const { title, ans_idx, choices, comment } = info;
-  return [
-    `題目 ${orderNumber}：`,
-    `問題：${title}`,
-    `選項：`,
-    ...choices.map((choice, idx) => `${answerWords[idx]}) ${choice}`),
-    `答案：${answerWords[ans_idx]}`,
-    `詳解：${comment}`,
-  ].join('<br>');
-};
-
-const getQAText = (info: QAType, orderNumber: number) => {
-  const { title, ans, comment } = info;
-  return [`題目 ${orderNumber}：`, `問題：${title}`, `答案：${ans}`, `詳解：${comment}`].join(
-    '<br>'
-  );
-};
-
-const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
-  try {
-    const choiceQuestions = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.CHOICE)
-      .map((val, idx) => getChoiceText(val as ChoiceType, idx + 1));
-
-    const qa = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.QA)
-      .map((val, idx) => getQAText(val as QAType, idx + 1));
-
-    return [...choiceQuestions, ...qa].join('<br><br>');
-  } catch (err: any) {
-    console.warn(err);
-    return '';
-  }
 };
 
 const handleMsg = (msg: string) => {
@@ -178,6 +117,18 @@ watch(mqttLoading, (val) => {
 });
 
 /**
+ * 處理讀取試算表
+ */
+watch(
+  [sheetUrl, sheetName],
+  ([url, name]) => {
+    url && name && loadSheetData();
+  },
+  { immediate: true }
+);
+
+/**
+ * TODO: 待串接恢復，再調整顯示的內容
  * 思維工具的 mqtt，訊息格式與問答小書僮不一致
  * 訊息格式：
  * 1. json object
@@ -203,7 +154,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       type: 'ai',
       message: mqttMsgLeftView.value.join('\n'),
     });
-    set(markdownValue, get(markdownValue) + transformMsgToMarkdown(get(mqttMsgRightView)));
+    // set(markdownValue, get(markdownValue) + transformMsgToMarkdown(get(mqttMsgRightView)));
   }
 });
 </script>
@@ -276,6 +227,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                     variant="solo"
                     density="compact"
                     hide-details="auto"
+                    v-model="sheetName"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -329,20 +281,20 @@ mqtt.init((msg: string, isEnd: boolean) => {
               試算表內容
             </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn
-              prepend-icon="mdi-refresh"
-              color="grey-darken-1"
-              size="large"
-              @click="markdownValue = ''"
-            >
-              重新整理
-            </v-btn>
+            <v-btn prepend-icon="mdi-refresh" color="grey-darken-1" size="large"> 重新整理 </v-btn>
           </v-app-bar>
-
           <v-main class="d-flex flex-grow-1">
-            <iframe class="flex-grow-1 h-100" :src="sheetUrl"></iframe>
+            <TheSheetTable :value="sheetValue" />
           </v-main>
         </v-layout>
+        <v-overlay
+          :model-value="loadingSheet"
+          class="align-center justify-center"
+          persistent
+          contained
+        >
+          <v-progress-circular color="#467974" indeterminate size="40"></v-progress-circular>
+        </v-overlay>
       </v-card>
     </pane>
   </splitpanes>

@@ -37,6 +37,7 @@ export enum ROUTER_NAME {
   ACTOR_EDIT = 'ActorEdit',
   STUDY_BUDDY_QA = 'StudyBuddyQA',
   STUDY_BUDDY_QUESTION = 'StudyBuddyQuestion',
+  STUDY_BUDDY_GOOGLE_SHEET = 'StudyBuddyGoogleSheet',
 }
 
 // export enum MARKDOWN_TYPE {
