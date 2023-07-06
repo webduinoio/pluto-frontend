@@ -30,7 +30,7 @@ const { handleSubmit, setFieldValue } = useForm({
 });
 
 const prompt = useField('prompt', undefined, {
-  label: '介紹你的小書僮',
+  label: 'Prompt',
 });
 
 const loadData = async () => {
