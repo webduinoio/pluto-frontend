@@ -26,7 +26,7 @@ const dialog = ref(false);
 const question = ref('');
 const answer = ref('');
 const rules = [
-  (v: string) => v.length <= 25 || '最多 300 個字',
+  (v: string) => v.length <= 300 || '最多 300 個字',
   (v: string) => !!v.length || '欄位不能為空',
 ];
 
