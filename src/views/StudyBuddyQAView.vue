@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
+import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { getActor } from '@/services';
@@ -13,7 +14,7 @@ import 'splitpanes/dist/splitpanes.css';
 const lang = ref('zh-TW');
 
 const store = useMainStore();
-const mqtt = useMqtt('guest_' + Math.random());
+const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.KN);
 const messages = ref<{ type: string; message: string }[]>([]);
 const actor = ref('');
 const prompt = ref('');
