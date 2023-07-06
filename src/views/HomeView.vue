@@ -30,17 +30,17 @@ const onEdit = (data: Actor) => {
   });
 };
 
+const getRouterName = (type: ACTOR_TYPE) => {
+  if (type === ACTOR_TYPE.QUIZ) return ROUTER_NAME.STUDY_BUDDY_QUESTION;
+  if (type === ACTOR_TYPE.SHEET) return ROUTER_NAME.STUDY_BUDDY_GOOGLE_SHEET;
+  return ROUTER_NAME.STUDY_BUDDY_QA;
+};
+
 const onOpen = (data: Actor) => {
   store.actorOpenID = data.id;
-  if (data.type === ACTOR_TYPE.QUIZ) {
-    router.push({
-      name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
-    });
-  } else {
-    router.push({
-      name: ROUTER_NAME.STUDY_BUDDY_QA,
-    });
-  }
+  router.push({
+    name: getRouterName(data.type),
+  });
 };
 
 const onDelete = async (id: number) => {

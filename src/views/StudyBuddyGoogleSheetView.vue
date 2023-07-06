@@ -1,52 +1,56 @@
 <script lang="ts" setup>
-import TheMarkdown from '@/components/TheMarkdown.vue';
-import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
+import TheSheetTable from '@/components/TheSheetTable.vue';
+import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { createForm, getActors } from '@/services';
-import type { Actor, ChoiceType, QAType } from '@/types';
-import { get, set, useClipboard, useSpeechRecognition } from '@vueuse/core';
+import { getGoogleSheetData } from '@/services/googleSheet';
+import type { ChoiceType, QAType } from '@/types';
+import { get, set, useDebounceFn, useSpeechRecognition } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
-// TODO: 暫定中文，後續再調整
+// TODO: 語音暫定中文，後續再調整
 const lang = ref('zh-TW');
 
 const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
-const actor = ref('exam');
-const prompt = ref(
-  '你扮演高中歷史老師 答案詳解請根據資料 和學生解釋如何從資料得知答案 避免「下列何者正確」、「哪一個是對的」、「下列何者描述錯誤」這類題目'
-);
+const actor = ref('sheet');
+const prompt = ref('從英文單字表隨機挑三個英文單字,給我英文單字欄位');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
-const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
+const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
-const markdownValue = ref(''); // 畫面右方訊息 (處理後)
-const markdownValueTemp = ref(''); // mqtt 更新前的訊息
-const assistantList = ref<string[]>(['高中歷史']);
-const assistant = ref('高中歷史');
-const knowledgePoint = ref('日治時期、抗日活動、228事件');
-const numberOfChoiceQuestion = ref(3);
-const numberOfAnswerQuestion = ref(2);
-const { fire, Swal } = useSweetAlert();
+const { fire } = useSweetAlert();
 const speech = useSpeechRecognition({
   lang,
   continuous: true,
 });
 let _stop: Function | undefined;
 const mqttLoading = ref(false);
-const { copy } = useClipboard();
-const ROLE_TYPE = {
-  USER: 'user',
-  AI: 'ai',
+const sheetUrl = ref(
+  'https://docs.google.com/spreadsheets/d/1RMF6girkUK7MFrWBoD8Dx5dE3p6zFsKU6vNcJZ2Bhtg/edit#gid=1781104560'
+);
+const sheetName = ref('英文單字表');
+const sheetValue = ref([]);
+const loadingSheet = ref(false);
+
+const _loadSheetData = async () => {
+  try {
+    const result = await getGoogleSheetData({
+      sheetUrl: get(sheetUrl),
+      sheetName: get(sheetName),
+      type: 'read_table',
+    });
+    set(sheetValue, result?.data);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-const addMessage = (role: string, msg: string) => {
-  messages.value.push({
-    type: role,
-    message: msg,
-  });
-};
+const loadSheetData = useDebounceFn(async () => {
+  set(loadingSheet, true);
+  await _loadSheetData();
+  set(loadingSheet, false);
+}, 1000);
 
 const startVoiceInput = () => {
   const recordPrompt = get(prompt);
@@ -64,26 +68,8 @@ const stopVoiceInput = () => {
   speech.stop();
 };
 
-const loadData = async () => {
-  try {
-    const { data }: { data: { list: Actor[] } } = await getActors();
-    const assistants = data.list
-      .filter((actor) => actor.type === ACTOR_TYPE.TUTORIAL)
-      .map((actor) => actor.name);
-    assistantList.value.push(...assistants);
-  } catch (err: any) {
-    fire({ title: '發生錯誤', text: err.message, icon: 'error' });
-  }
-};
-
 const getPayload = () => {
-  return JSON.stringify({
-    assistant: get(assistant),
-    topic: get(knowledgePoint),
-    c_amt: get(numberOfChoiceQuestion),
-    q_amt: get(numberOfAnswerQuestion),
-    prompt: get(prompt),
-  });
+  return `${get(sheetName)} ${get(sheetUrl)} ${get(prompt)}`;
 };
 
 const onSubmit = () => {
@@ -93,8 +79,13 @@ const onSubmit = () => {
 
   set(mqttLoading, true);
   mqttMsgLeftView.value.splice(0);
-  mqtt.publish(`${get(actor)}:${getPayload()}`);
-  addMessage(ROLE_TYPE.USER, get(prompt));
+  mqttMsgRightView.value.splice(0);
+  wholeMsg.value.splice(0);
+  mqtt.publish(`${get(actor)}: ${getPayload()}`);
+  messages.value.push({
+    type: 'user',
+    message: get(prompt),
+  });
 };
 
 const onVoiceInput = () => {
@@ -109,89 +100,6 @@ const onVoiceInput = () => {
   startVoiceInput();
 };
 
-const onExport = async () => {
-  fire({
-    title: '試卷標題',
-    input: 'text',
-    inputAttributes: {
-      autocapitalize: 'off',
-    },
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    confirmButtonText: '確定',
-    cancelButtonText: '取消',
-    reverseButtons: true,
-    preConfirm: (title) => {
-      return createForm({
-        head: {
-          title,
-        },
-        body: mqttMsgRightView.value,
-      })
-        ?.then((resp: any) => {
-          return resp.data;
-        })
-        ?.catch((error) => {
-          console.error(error);
-          Swal.showValidationMessage(`發生錯誤`);
-        });
-    },
-    allowOutsideClick: () => !Swal.isLoading(),
-  }).then((result) => {
-    if (result.value) {
-      Swal.fire({
-        title: '產生連結',
-        text: result.value.url,
-        confirmButtonText: '複製',
-        preConfirm() {
-          copy(result.value.url);
-        },
-      });
-    }
-  });
-};
-
-const getChoiceText = (info: ChoiceType, orderNumber: number) => {
-  const answerWords = ['A', 'B', 'C', 'D', 'E'];
-  const { title, ans_idx, choices, comment } = info;
-  return [
-    `題目 ${orderNumber}：`,
-    `問題：${title}`,
-    `選項：`,
-    ...choices.map((choice, idx) => `${answerWords[idx]}) ${choice}`),
-    `答案：${answerWords[ans_idx]}`,
-    `詳解：${comment}`,
-  ].join('<br>');
-};
-
-const getQAText = (info: QAType, orderNumber: number) => {
-  const { title, ans, comment } = info;
-  return [`題目 ${orderNumber}：`, `問題：${title}`, `答案：${ans}`, `詳解：${comment}`].join(
-    '<br>'
-  );
-};
-
-const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
-  try {
-    const choiceQuestions = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.CHOICE)
-      .map((val, idx) => getChoiceText(val as ChoiceType, idx + 1));
-
-    const qa = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.QA)
-      .map((val, idx) => getQAText(val as QAType, idx + 1));
-
-    return [...choiceQuestions, ...qa].join('<br><br>');
-  } catch (err: any) {
-    console.warn(err);
-    return '';
-  }
-};
-
-/**
- * 處理 mqtt 訊息
- * @param msg {string | Object}
- */
 const handleMsg = (msg: string) => {
   try {
     const uuidReg = /\$UUID\$/gm;
@@ -206,13 +114,23 @@ const handleMsg = (msg: string) => {
   }
 };
 
-loadData();
-
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
 });
 
 /**
+ * 處理讀取試算表
+ */
+watch(
+  [sheetUrl, sheetName],
+  ([url, name]) => {
+    url && name && loadSheetData();
+  },
+  { immediate: true }
+);
+
+/**
+ * TODO: 待串接恢復，再調整顯示的內容
  * 思維工具的 mqtt，訊息格式與問答小書僮不一致
  * 訊息格式：
  * 1. json object
@@ -221,26 +139,24 @@ watch(mqttLoading, (val) => {
 mqtt.init((msg: string, isEnd: boolean) => {
   if (!msg && !isEnd) return;
 
+  wholeMsg.value.push(msg);
   const info = handleMsg(msg);
-
   if (info instanceof Object) {
     if (info.loading) {
       return;
     }
     mqttMsgRightView.value.push(info);
-    mqttMsgRightViewTemp.value.push(info);
-    set(markdownValue, get(markdownValueTemp) + transformMsgToMarkdown(get(mqttMsgRightViewTemp)));
-  }
-
-  if (typeof info === 'string') {
+  } else {
     mqttMsgLeftView.value.push(info);
   }
 
   if (isEnd) {
     set(mqttLoading, false);
-    set(markdownValueTemp, get(markdownValue));
-    addMessage(ROLE_TYPE.AI, get(mqttMsgLeftView).join('\n'));
-    mqttMsgRightViewTemp.value.splice(0);
+    messages.value.push({
+      type: 'ai',
+      message: mqttMsgLeftView.value.join('\n'),
+    });
+    // set(markdownValue, get(markdownValue) + transformMsgToMarkdown(get(mqttMsgRightView)));
   }
 });
 </script>
@@ -248,11 +164,11 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <template>
   <splitpanes class="default-theme">
     <pane min-size="20" size="20">
-      <div class="d-flex flex-column h-100 left-panel overflow-auto">
+      <div class="d-flex flex-column h-100 left-panel">
         <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
             <v-card-subtitle>伴學小書僮</v-card-subtitle>
-            <v-card-title>出題小書僮</v-card-title>
+            <v-card-title>試算表小書僮</v-card-title>
           </v-card-item>
         </v-card>
 
@@ -299,45 +215,24 @@ mqtt.init((msg: string, isEnd: boolean) => {
             <v-container>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-select
-                    label="出題範圍"
-                    :items="assistantList"
+                  <v-text-field
+                    label="試算表連結"
                     variant="solo"
                     density="compact"
                     hide-details="auto"
-                    v-model="assistant"
-                  ></v-select>
+                    v-model="sheetUrl"
+                    clearable
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    label="題目知識點（用空白隔開）"
+                    label="工作表"
                     variant="solo"
                     density="compact"
                     hide-details="auto"
-                    v-model="knowledgePoint"
+                    v-model="sheetName"
+                    clearable
                   ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-select
-                    label="選擇題數量"
-                    :items="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="numberOfChoiceQuestion"
-                  ></v-select>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-select
-                    label="問答題數量"
-                    :items="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="numberOfAnswerQuestion"
-                  ></v-select>
                 </v-col>
               </v-row>
             </v-container>
@@ -348,7 +243,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
         <v-textarea
           class="mt-2 mx-7 flex-grow-0"
-          rows="3"
+          rows="1"
           no-resize
           variant="solo"
           v-model="prompt"
@@ -356,6 +251,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           :disabled="mqttLoading"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
+          clearable
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
@@ -384,30 +280,31 @@ mqtt.init((msg: string, isEnd: boolean) => {
             </template>
             試試語音輸入
           </v-btn>
-          <v-btn
-            class="mb-4 text-orange ml-4"
-            size="large"
-            @click="onExport"
-            :disabled="!mqttMsgRightView.length || mqttLoading"
-          >
-            匯出試卷
-          </v-btn>
         </div>
       </div>
     </pane>
     <pane size="80">
       <v-card class="h-100 overflow-y-auto" max-height="calc(100vh - 64px)">
-        <v-layout>
+        <v-layout class="h-100">
           <v-app-bar>
-            <v-app-bar-title class="text-grey-darken-1 font-weight-bold">題目預覽</v-app-bar-title>
+            <v-app-bar-title class="text-grey-darken-1 font-weight-bold">
+              試算表內容
+            </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn icon="mdi-trash-can-outline" @click="markdownValue = ''"></v-btn>
+            <v-btn prepend-icon="mdi-refresh" color="grey-darken-1" size="large"> 重新整理 </v-btn>
           </v-app-bar>
-
-          <v-main>
-            <TheMarkdown class="mx-8 my-6" :value="markdownValue" />
+          <v-main class="d-flex flex-grow-1">
+            <TheSheetTable :value="sheetValue" />
           </v-main>
         </v-layout>
+        <v-overlay
+          :model-value="loadingSheet"
+          class="align-center justify-center"
+          persistent
+          contained
+        >
+          <v-progress-circular color="#467974" indeterminate size="40"></v-progress-circular>
+        </v-overlay>
       </v-card>
     </pane>
   </splitpanes>

@@ -36,6 +36,11 @@ const router = createRouter({
           name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
           component: () => import('@/views/StudyBuddyQuestionView.vue'),
         },
+        {
+          path: 'google-sheet',
+          name: ROUTER_NAME.STUDY_BUDDY_GOOGLE_SHEET,
+          component: () => import('@/views/StudyBuddyGoogleSheetView.vue'),
+        },
       ],
     },
     {
@@ -57,9 +62,9 @@ const router = createRouter({
       ],
     },
     {
-      path: "/:catchAll(.*)",
+      path: '/:catchAll(.*)',
       redirect: { name: ROUTER_NAME.HOME },
-    }
+    },
   ],
 });
 

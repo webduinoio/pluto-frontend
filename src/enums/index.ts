@@ -19,8 +19,8 @@ export enum GENERATE_QUESTION_TYPE {
 
 // TODO: 後續需要根據正式機/測試機進行調整
 export enum MQTT_TOPIC {
-  KN = 'kn@chat-staging', // 思維工具
-  CODE = 'code@chat-staging', // 小書僮
+  KN = 'kn@chat-staging', // 小書僮
+  CODE = 'code@chat-staging', // 思維工具
 }
 
 export enum ACTOR_TYPE {
@@ -37,6 +37,7 @@ export enum ROUTER_NAME {
   ACTOR_EDIT = 'ActorEdit',
   STUDY_BUDDY_QA = 'StudyBuddyQA',
   STUDY_BUDDY_QUESTION = 'StudyBuddyQuestion',
+  STUDY_BUDDY_GOOGLE_SHEET = 'StudyBuddyGoogleSheet',
 }
 
 export enum ERROR_CODE {

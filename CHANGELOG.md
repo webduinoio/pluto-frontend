@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 編輯書僮 - 資料管理 ui [#6961](https://redmine.kingkit.codes/issues/6961)
 - 問答小書僮 [#6944](https://redmine.kingkit.codes/issues/6944)
 - 出題小書僮 [#6943](https://redmine.kingkit.codes/issues/6943)
+- 試算表小書僮 [#6945](https://redmine.kingkit.codes/issues/6945)
 - OAuth 登入 [#6936](https://redmine.kingkit.codes/issues/6936)
 - 編輯書僮 - 設定 ui [#6959](https://redmine.kingkit.codes/issues/6959)
 - 編輯書僮 - 進階設定 ui [#6960](https://redmine.kingkit.codes/issues/6960)
