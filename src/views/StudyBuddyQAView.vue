@@ -60,6 +60,11 @@ const onSubmit = () => {
   });
 };
 
+const onSubmitByEnter = (evt: any) => {
+  if (evt.shiftKey || evt.isComposing) return;
+  onSubmit();
+};
+
 const onVoiceStart = () => {
   _promptTemp = get(prompt);
   set(isVoiceInputWorking, true);
@@ -171,6 +176,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
           :disabled="mqttLoading || isVoiceInputWorking"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
+          clearable
+          @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
