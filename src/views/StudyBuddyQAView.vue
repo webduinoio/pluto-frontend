@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
+import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
@@ -7,12 +8,9 @@ import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor } from '@/services';
 import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types/actors';
-import { get, set, useSpeechRecognition } from '@vueuse/core';
+import { get, set } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
-
-// TODO: 暫定中文，後續再調整
-const lang = ref('zh-TW');
 
 const store = useMainStore();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
@@ -25,28 +23,18 @@ const uid = ref('');
 const wholeMsg = ref('');
 const markdownValue = ref('');
 const { fire } = useSweetAlert();
-const speech = useSpeechRecognition({
-  lang,
-  continuous: true,
-});
-let _stop: Function | undefined;
 const mqttLoading = ref(false);
-
-const startVoiceInput = () => {
-  const recordPrompt = get(prompt);
-
-  _stop = watch(speech.result, () => {
-    set(prompt, recordPrompt + speech.result.value);
-  });
-
-  speech.result.value = '';
-  speech.start();
-};
-
-const stopVoiceInput = () => {
-  typeof _stop === 'function' && _stop();
-  speech.stop();
-};
+const isVoiceInputWorking = ref(false);
+const hintSelect = ref('');
+const hintItems = ref([
+  { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
+  {
+    title: '比較概念的異同',
+    value: '分析並比較[知識1]和[知識2]的異同，回答包含：\n相同點\n相異點',
+  },
+  { title: '題目解析', value: '[你的題目和選項]\n盡可能詳細解釋為什麼這題答案是[正確選項]' },
+]);
+let _promptTemp: String = '';
 
 const loadData = async () => {
   const actorOpenID = store.actorOpenID;
@@ -60,10 +48,6 @@ const loadData = async () => {
 };
 
 const onSubmit = () => {
-  if (speech.isListening.value) {
-    stopVoiceInput();
-  }
-
   set(mqttLoading, true);
   set(msg1, '');
   set(msg2, '');
@@ -76,22 +60,32 @@ const onSubmit = () => {
   });
 };
 
-const onVoiceInput = () => {
-  if (!speech.isSupported.value) {
-    fire({ title: '目前環境不支持語音輸入', text: '請更換設備，再試試。' });
-    return;
-  }
-  if (speech.isListening.value) {
-    stopVoiceInput();
-    return;
-  }
-  startVoiceInput();
+const onSubmitByEnter = (evt: any) => {
+  if (evt.shiftKey || evt.isComposing) return;
+  onSubmit();
+};
+
+const onVoiceStart = () => {
+  _promptTemp = get(prompt);
+  set(isVoiceInputWorking, true);
+};
+
+const onVoiceStop = () => {
+  set(isVoiceInputWorking, false);
+};
+
+const onVoiceMessage = async (value: string) => {
+  set(prompt, _promptTemp + value);
 };
 
 loadData();
 
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
+});
+
+watch(hintSelect, (val) => {
+  set(prompt, val);
 });
 
 mqtt.init((msg: string, isEnd: boolean) => {
@@ -124,73 +118,78 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <template>
   <splitpanes class="default-theme">
     <pane min-size="20" size="20">
-      <div class="d-flex flex-column h-100 left-panel">
-        <v-card>
+      <div class="d-flex flex-column h-100 left-panel overflow-auto">
+        <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
             <v-card-subtitle>問答小書僮</v-card-subtitle>
             <v-card-title>{{ actor }}</v-card-title>
           </v-card-item>
         </v-card>
-        <v-divider></v-divider>
-        <div class="flex-grow-1 ma-2">
-          <v-sheet
-            border
-            rounded
-            class="text-body-2 mx-auto mt-2"
-            v-for="msg in messages"
-            :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-          >
-            <v-container fluid>
-              <v-row>
-                <v-col cols="auto">
-                  <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                </v-col>
-                <v-col>
-                  <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-sheet>
-        </div>
 
         <v-divider></v-divider>
+
+        <v-form class="ma-4">
+          <v-select
+            label="沒靈感嗎？點我選擇範例提示詞"
+            :items="hintItems"
+            item-title="title"
+            item-value="value"
+            variant="outlined"
+            density="comfortable"
+            hide-details="auto"
+            color="orange"
+            v-model="hintSelect"
+          ></v-select>
+        </v-form>
+
+        <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
+          <v-container class="pa-2 pt-0">
+            <v-sheet
+              border
+              rounded
+              class="text-body-2 mx-auto mt-2"
+              v-for="msg in messages"
+              :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+            >
+              <v-container fluid>
+                <v-row>
+                  <v-col cols="auto">
+                    <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                  </v-col>
+                  <v-col>
+                    <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-sheet>
+          </v-container>
+        </v-layout>
+
+        <v-divider class="mt-2"></v-divider>
+
         <v-textarea
           class="mt-2 mx-7 flex-grow-0"
-          rows="1"
+          rows="3"
           no-resize
           variant="solo"
           v-model="prompt"
-          :disabled="mqttLoading"
+          :disabled="mqttLoading || isVoiceInputWorking"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
+          clearable
+          @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex flex-column align-center">
-          <v-btn
-            class="mb-4 text-orange"
-            size="large"
+          <TheVoiceInput
             :disabled="mqttLoading"
-            @click="onVoiceInput"
-          >
-            <template v-slot:prepend>
-              <v-icon
-                :class="{ 'mic-icon-working': speech.isListening.value }"
-                :icon="
-                  speech.isSupported.value
-                    ? speech.isListening.value
-                      ? 'mdi-microphone'
-                      : 'mdi-microphone-outline'
-                    : 'mdi-microphone-off'
-                "
-                color="orange"
-                size="x-large"
-              ></v-icon>
-            </template>
-            試試語音輸入
-          </v-btn>
+            @message="onVoiceMessage"
+            @start="onVoiceStart"
+            @stop="onVoiceStop"
+          />
         </div>
       </div>
     </pane>
