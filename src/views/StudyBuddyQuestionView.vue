@@ -34,6 +34,16 @@ const ROLE_TYPE = {
   AI: 'ai',
 };
 let _promptTemp: String = '';
+const hintSelect = ref('');
+const hintItems = ref([
+  { title: '按學生年級出題', value: '按照[年級]學生的程度出題' },
+  {
+    title: '批判性思考提問',
+    value: '出開放性問題，題目沒有正確答案，要引導學生進行批判性思考',
+  },
+  { title: '5W1H 出題策略', value: '你會用5W1H策略出題' },
+  { title: '是非題', value: '出是非題，選項是「是」或「否」' },
+]);
 
 const addMessage = (role: string, msg: string) => {
   messages.value.push({
@@ -199,6 +209,10 @@ watch(mqttLoading, (val) => {
   val && set(prompt, '');
 });
 
+watch(hintSelect, (val) => {
+  set(prompt, val);
+});
+
 /**
  * 思維工具的 mqtt，訊息格式與問答小書僮不一致
  * 訊息格式：
@@ -246,11 +260,14 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-form class="ma-4">
           <v-select
             label="沒靈感嗎？點我選擇範例提示詞"
-            :items="['待補充']"
+            :items="hintItems"
+            item-title="title"
+            item-value="value"
             variant="outlined"
             density="comfortable"
             hide-details="auto"
             color="orange"
+            v-model="hintSelect"
           ></v-select>
         </v-form>
 
