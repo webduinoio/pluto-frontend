@@ -12,7 +12,7 @@ import 'splitpanes/dist/splitpanes.css';
 
 const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
-const prompt = ref('');
+const prompt = ref('東漢末年');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
@@ -20,7 +20,7 @@ const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方�
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
 const markdownValueTemp = ref(''); // mqtt 更新前的訊息
 const assistantList = ref<string[]>(['高中歷史']);
-const assistant = ref('');
+const assistant = ref('高中歷史');
 const knowledgePoint = ref('');
 const numberOfChoiceQuestion = ref(1);
 const numberOfAnswerQuestion = ref(1);
@@ -93,7 +93,7 @@ const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
       .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.QA)
       .map((val, idx) => getQAText(val as QAType, idx + 1));
 
-    return [...choiceQuestions, ...qa].join('<br><br>');
+    return [...choiceQuestions, ...qa, '<br><br>'].join('<br><br>');
   } catch (err: any) {
     console.warn(err);
     return '';
