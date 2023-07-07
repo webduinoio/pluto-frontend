@@ -3,6 +3,7 @@ import TheSheetTable from '@/components/TheSheetTable.vue';
 import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { generateMqttUserId } from '@/hooks/useUtil';
 import { getGoogleSheetData } from '@/services/googleSheet';
 import type { ChoiceType, QAType } from '@/types';
 import { get, set, useDebounceFn, useSpeechRecognition } from '@vueuse/core';
@@ -12,7 +13,7 @@ import 'splitpanes/dist/splitpanes.css';
 // TODO: 語音暫定中文，後續再調整
 const lang = ref('zh-TW');
 
-const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
+const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
 const prompt = ref('從英文單字表隨機挑三個英文單字,給我英文單字欄位');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)

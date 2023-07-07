@@ -1,6 +1,5 @@
 {
   "editor.tabSize": 2,
-  "editor.indentSize": "tabSize",
   "cSpell.words": [
     "Apim",
     "argvs",
@@ -148,5 +147,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "Vue.volar"
-  }
+  },
+  "editor.insertSpaces": true
 }

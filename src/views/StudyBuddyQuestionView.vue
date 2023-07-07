@@ -4,13 +4,14 @@ import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { generateMqttUserId } from '@/hooks/useUtil';
 import { createForm, getActors } from '@/services';
 import type { Actor, ChoiceType, QAType } from '@/types';
 import { get, set, useClipboard } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
-const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
+const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
 const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
