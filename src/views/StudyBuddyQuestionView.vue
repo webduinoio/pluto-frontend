@@ -12,7 +12,7 @@ import 'splitpanes/dist/splitpanes.css';
 
 const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
-const prompt = ref('東漢末年');
+const prompt = ref('西漢末年');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
@@ -198,8 +198,6 @@ watch(mqttLoading, (val) => {
  * 2. 一般字串, e.g. 歡迎繼續提問 $UUID${{user id}}
  */
 mqtt.init((msg: string, isEnd: boolean) => {
-  if (!msg && !isEnd) return;
-
   const info = handleMsg(msg);
 
   if (info instanceof Object) {
@@ -211,14 +209,14 @@ mqtt.init((msg: string, isEnd: boolean) => {
     set(markdownValue, get(markdownValueTemp) + transformMsgToMarkdown(get(mqttMsgRightViewTemp)));
   }
 
-  if (typeof info === 'string') {
+  if (typeof info === 'string' && info.trim().length > 0) {
     mqttMsgLeftView.value.push(info);
   }
 
   if (isEnd) {
     set(mqttLoading, false);
     set(markdownValueTemp, get(markdownValue));
-    addMessage(ROLE_TYPE.AI, get(mqttMsgLeftView).join('\n'));
+    get(mqttMsgLeftView).length && addMessage(ROLE_TYPE.AI, get(mqttMsgLeftView).join('\n'));
     mqttMsgRightViewTemp.value.splice(0);
   }
 });
