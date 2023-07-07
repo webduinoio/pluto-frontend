@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
+import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
@@ -7,12 +8,9 @@ import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor } from '@/services';
 import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types/actors';
-import { get, set, useSpeechRecognition } from '@vueuse/core';
+import { get, set } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
-
-// TODO: 暫定中文，後續再調整
-const lang = ref('zh-TW');
 
 const store = useMainStore();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
@@ -25,12 +23,8 @@ const uid = ref('');
 const wholeMsg = ref('');
 const markdownValue = ref('');
 const { fire } = useSweetAlert();
-const speech = useSpeechRecognition({
-  lang,
-  continuous: true,
-});
-let _stop: Function | undefined;
 const mqttLoading = ref(false);
+const isVoiceInputWorking = ref(false);
 const hintSelect = ref('');
 const hintItems = ref([
   { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
@@ -40,22 +34,7 @@ const hintItems = ref([
   },
   { title: '題目解析', value: '[你的題目和選項]\n盡可能詳細解釋為什麼這題答案是[正確選項]' },
 ]);
-
-const startVoiceInput = () => {
-  const recordPrompt = get(prompt);
-
-  _stop = watch(speech.result, () => {
-    set(prompt, recordPrompt + speech.result.value);
-  });
-
-  speech.result.value = '';
-  speech.start();
-};
-
-const stopVoiceInput = () => {
-  typeof _stop === 'function' && _stop();
-  speech.stop();
-};
+let _promptTemp: String = '';
 
 const loadData = async () => {
   const actorOpenID = store.actorOpenID;
@@ -69,10 +48,6 @@ const loadData = async () => {
 };
 
 const onSubmit = () => {
-  if (speech.isListening.value) {
-    stopVoiceInput();
-  }
-
   set(mqttLoading, true);
   set(msg1, '');
   set(msg2, '');
@@ -85,16 +60,17 @@ const onSubmit = () => {
   });
 };
 
-const onVoiceInput = () => {
-  if (!speech.isSupported.value) {
-    fire({ title: '目前環境不支持語音輸入', text: '請更換設備，再試試。' });
-    return;
-  }
-  if (speech.isListening.value) {
-    stopVoiceInput();
-    return;
-  }
-  startVoiceInput();
+const onVoiceStart = () => {
+  _promptTemp = get(prompt);
+  set(isVoiceInputWorking, true);
+};
+
+const onVoiceStop = () => {
+  set(isVoiceInputWorking, false);
+};
+
+const onVoiceMessage = async (value: string) => {
+  set(prompt, _promptTemp + value);
 };
 
 loadData();
@@ -192,7 +168,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           no-resize
           variant="solo"
           v-model="prompt"
-          :disabled="mqttLoading"
+          :disabled="mqttLoading || isVoiceInputWorking"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
         >
@@ -201,28 +177,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
           </template>
         </v-textarea>
         <div class="d-flex flex-column align-center">
-          <v-btn
-            class="mb-4 text-orange"
-            size="large"
+          <TheVoiceInput
             :disabled="mqttLoading"
-            @click="onVoiceInput"
-          >
-            <template v-slot:prepend>
-              <v-icon
-                :class="{ 'mic-icon-working': speech.isListening.value }"
-                :icon="
-                  speech.isSupported.value
-                    ? speech.isListening.value
-                      ? 'mdi-microphone'
-                      : 'mdi-microphone-outline'
-                    : 'mdi-microphone-off'
-                "
-                color="orange"
-                size="x-large"
-              ></v-icon>
-            </template>
-            試試語音輸入
-          </v-btn>
+            @message="onVoiceMessage"
+            @start="onVoiceStart"
+            @stop="onVoiceStop"
+          />
         </div>
       </div>
     </pane>
