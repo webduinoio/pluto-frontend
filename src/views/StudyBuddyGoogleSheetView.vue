@@ -75,7 +75,7 @@ const onSubmit = () => {
 };
 
 const onSubmitByEnter = (evt: any) => {
-  if (evt.shiftKey) return;
+  if (evt.shiftKey || evt.isComposing) return;
   onSubmit();
 };
 
