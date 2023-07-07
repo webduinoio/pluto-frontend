@@ -86,6 +86,61 @@ const getPayload = () => {
   });
 };
 
+const getChoiceText = (info: ChoiceType, orderNumber: number) => {
+  const answerWords = ['A', 'B', 'C', 'D', 'E'];
+  const { title, ans_idx, choices, comment } = info;
+  return [
+    `題目 ${orderNumber}：`,
+    `問題：${title}`,
+    `選項：`,
+    ...choices.map((choice, idx) => `${answerWords[idx]}) ${choice}`),
+    `答案：${answerWords[ans_idx]}`,
+    `詳解：${comment}`,
+  ].join('<br>');
+};
+
+const getQAText = (info: QAType, orderNumber: number) => {
+  const { title, ans, comment } = info;
+  return [`題目 ${orderNumber}：`, `問題：${title}`, `答案：${ans}`, `詳解：${comment}`].join(
+    '<br>'
+  );
+};
+
+const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
+  try {
+    const choiceQuestions = info
+      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.CHOICE)
+      .map((val, idx) => getChoiceText(val as ChoiceType, idx + 1));
+
+    const qa = info
+      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.QA)
+      .map((val, idx) => getQAText(val as QAType, idx + 1));
+
+    return [...choiceQuestions, ...qa].join('<br><br>');
+  } catch (err: any) {
+    console.warn(err);
+    return '';
+  }
+};
+
+/**
+ * 處理 mqtt 訊息
+ * @param msg {string | Object}
+ */
+const handleMsg = (msg: string) => {
+  try {
+    const uuidReg = /\$UUID\$/gm;
+    const rt = uuidReg.exec(msg);
+    if (rt) {
+      return msg.substring(0, rt.index).trim();
+    }
+    const json = JSON.parse(msg);
+    return json;
+  } catch (err) {
+    return msg;
+  }
+};
+
 const onSubmit = () => {
   if (speech.isListening.value) {
     stopVoiceInput();
@@ -151,59 +206,9 @@ const onExport = async () => {
   });
 };
 
-const getChoiceText = (info: ChoiceType, orderNumber: number) => {
-  const answerWords = ['A', 'B', 'C', 'D', 'E'];
-  const { title, ans_idx, choices, comment } = info;
-  return [
-    `題目 ${orderNumber}：`,
-    `問題：${title}`,
-    `選項：`,
-    ...choices.map((choice, idx) => `${answerWords[idx]}) ${choice}`),
-    `答案：${answerWords[ans_idx]}`,
-    `詳解：${comment}`,
-  ].join('<br>');
-};
-
-const getQAText = (info: QAType, orderNumber: number) => {
-  const { title, ans, comment } = info;
-  return [`題目 ${orderNumber}：`, `問題：${title}`, `答案：${ans}`, `詳解：${comment}`].join(
-    '<br>'
-  );
-};
-
-const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
-  try {
-    const choiceQuestions = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.CHOICE)
-      .map((val, idx) => getChoiceText(val as ChoiceType, idx + 1));
-
-    const qa = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.QA)
-      .map((val, idx) => getQAText(val as QAType, idx + 1));
-
-    return [...choiceQuestions, ...qa].join('<br><br>');
-  } catch (err: any) {
-    console.warn(err);
-    return '';
-  }
-};
-
-/**
- * 處理 mqtt 訊息
- * @param msg {string | Object}
- */
-const handleMsg = (msg: string) => {
-  try {
-    const uuidReg = /\$UUID\$/gm;
-    const rt = uuidReg.exec(msg);
-    if (rt) {
-      return msg.substring(0, rt.index).trim();
-    }
-    const json = JSON.parse(msg);
-    return json;
-  } catch (err) {
-    return msg;
-  }
+const onTrash = async () => {
+  set(markdownValue, '');
+  mqttMsgRightView.value.splice(0);
 };
 
 loadData();
@@ -401,7 +406,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <v-app-bar>
             <v-app-bar-title class="text-grey-darken-1 font-weight-bold">題目預覽</v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn icon="mdi-trash-can-outline" @click="markdownValue = ''"></v-btn>
+            <v-btn icon="mdi-trash-can-outline" @click="onTrash"></v-btn>
           </v-app-bar>
 
           <v-main>
