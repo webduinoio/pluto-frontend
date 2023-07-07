@@ -20,7 +20,6 @@ const prompt = ref('');
 const msg1 = ref('');
 const msg2 = ref('');
 const uid = ref('');
-const wholeMsg = ref('');
 const markdownValue = ref('');
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
@@ -52,7 +51,6 @@ const onSubmit = () => {
   set(msg1, '');
   set(msg2, '');
   set(uid, '');
-  set(wholeMsg, '');
   mqtt.publish(`${get(actorData)?.uuid}:${get(prompt)}`);
   messages.value.push({
     type: 'user',
@@ -98,18 +96,19 @@ mqtt.init((msg: string, isEnd: boolean) => {
       newMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    set(wholeMsg, get(wholeMsg) + newMsg);
     set(msg2, newMsg);
 
     set(markdownValue, newMsg);
-    messages.value.push({
-      type: 'ai',
-      message: get(msg1),
-    });
+
+    if (get(msg1)) {
+      messages.value.push({
+        type: 'ai',
+        message: get(msg1),
+      });
+    }
   } else {
-    if (!msg) return;
+    if (!msg || msg.trim().length === 0) return;
     // 這裡會需要加換行，由於並非一次就完整送達的關係
-    set(wholeMsg, get(wholeMsg) + '\n' + msg);
     get(msg1) ? set(msg1, get(msg1) + '\n' + msg) : set(msg1, msg);
   }
 });
