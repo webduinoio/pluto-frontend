@@ -12,17 +12,15 @@ import 'splitpanes/dist/splitpanes.css';
 
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
-const prompt = ref('從英文單字表隨機挑三個英文單字,給我英文單字欄位');
+const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
-const sheetUrl = ref(
-  'https://docs.google.com/spreadsheets/d/1RMF6girkUK7MFrWBoD8Dx5dE3p6zFsKU6vNcJZ2Bhtg/edit#gid=1781104560'
-);
-const sheetName = ref('英文單字表');
+const sheetUrl = ref('');
+const sheetName = ref('');
 const sheetValue = ref([]);
 const loadingSheet = ref(false);
 let _promptTemp: String = '';
@@ -232,7 +230,6 @@ mqtt.init((msg: string, isEnd: boolean) => {
           no-resize
           variant="solo"
           v-model="prompt"
-          label="題目要求..."
           :disabled="mqttLoading || isVoiceInputWorking"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
