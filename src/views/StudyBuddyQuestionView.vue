@@ -1,67 +1,44 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
+import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { createForm, getActors } from '@/services';
 import type { Actor, ChoiceType, QAType } from '@/types';
-import { get, set, useClipboard, useSpeechRecognition } from '@vueuse/core';
+import { get, set, useClipboard } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
-// TODO: 暫定中文，後續再調整
-const lang = ref('zh-TW');
-
 const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
-const prompt = ref(
-  '你扮演高中歷史老師 答案詳解請根據資料 和學生解釋如何從資料得知答案 避免「下列何者正確」、「哪一個是對的」、「下列何者描述錯誤」這類題目'
-);
+const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
 const markdownValueTemp = ref(''); // mqtt 更新前的訊息
-const assistantList = ref<string[]>(['高中歷史']);
-const assistant = ref('高中歷史');
-const knowledgePoint = ref('日治時期、抗日活動、228事件');
-const numberOfChoiceQuestion = ref(3);
-const numberOfAnswerQuestion = ref(2);
+const assistantList = ref<string[]>(['']);
+const assistant = ref('');
+const knowledgePoint = ref('');
+const numberOfChoiceQuestion = ref(1);
+const numberOfAnswerQuestion = ref(1);
 const { fire, Swal } = useSweetAlert();
-const speech = useSpeechRecognition({
-  lang,
-  continuous: true,
-});
-let _stop: Function | undefined;
 const mqttLoading = ref(false);
+const isVoiceInputWorking = ref(false);
 const { copy } = useClipboard();
 const ROLE_TYPE = {
   USER: 'user',
   AI: 'ai',
 };
+let _promptTemp: String = '';
 
 const addMessage = (role: string, msg: string) => {
   messages.value.push({
     type: role,
     message: msg,
   });
-};
-
-const startVoiceInput = () => {
-  const recordPrompt = get(prompt);
-
-  _stop = watch(speech.result, () => {
-    set(prompt, recordPrompt + speech.result.value);
-  });
-
-  speech.result.value = '';
-  speech.start();
-};
-
-const stopVoiceInput = () => {
-  typeof _stop === 'function' && _stop();
-  speech.stop();
 };
 
 const loadData = async () => {
@@ -86,27 +63,72 @@ const getPayload = () => {
   });
 };
 
-const onSubmit = () => {
-  if (speech.isListening.value) {
-    stopVoiceInput();
-  }
+const getChoiceText = (info: ChoiceType, orderNumber: number) => {
+  const answerWords = ['A', 'B', 'C', 'D', 'E'];
+  const { title, ans_idx, choices, comment } = info;
+  return [
+    `題目 ${orderNumber}：`,
+    `問題：${title}`,
+    `選項：`,
+    ...choices.map((choice, idx) => `${answerWords[idx]}) ${choice}`),
+    `答案：${answerWords[ans_idx]}`,
+    `詳解：${comment}`,
+  ].join('<br>');
+};
 
+const getQAText = (info: QAType, orderNumber: number) => {
+  const { title, ans, comment } = info;
+  return [`題目 ${orderNumber}：`, `問題：${title}`, `答案：${ans}`, `詳解：${comment}`].join(
+    '<br>'
+  );
+};
+
+const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
+  try {
+    const choiceQuestions = info
+      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.CHOICE)
+      .map((val, idx) => getChoiceText(val as ChoiceType, idx + 1));
+
+    const qa = info
+      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.QA)
+      .map((val, idx) => getQAText(val as QAType, idx + 1));
+
+    return [...choiceQuestions, ...qa, '<br><br>'].join('<br><br>');
+  } catch (err: any) {
+    console.warn(err);
+    return '';
+  }
+};
+
+/**
+ * 處理 mqtt 訊息
+ * @param msg {string | Object}
+ */
+const handleMsg = (msg: string) => {
+  try {
+    const uuidReg = /\$UUID\$/gm;
+    const rt = uuidReg.exec(msg);
+    if (rt) {
+      return msg.substring(0, rt.index).trim();
+    }
+    const json = JSON.parse(msg);
+    return json;
+  } catch (err) {
+    return msg;
+  }
+};
+
+const onSubmit = () => {
   set(mqttLoading, true);
   mqttMsgLeftView.value.splice(0);
+  // 增加空白，就不會用 cache, e.g. mqtt.publish(`${get(actor)}: ${getPayload()}`);
   mqtt.publish(`${get(actor)}:${getPayload()}`);
   addMessage(ROLE_TYPE.USER, get(prompt));
 };
 
-const onVoiceInput = () => {
-  if (!speech.isSupported.value) {
-    fire({ title: '目前環境不支持語音輸入', text: '請更換設備，再試試。' });
-    return;
-  }
-  if (speech.isListening.value) {
-    stopVoiceInput();
-    return;
-  }
-  startVoiceInput();
+const onSubmitByEnter = (evt: any) => {
+  if (evt.shiftKey) return;
+  onSubmit();
 };
 
 const onExport = async () => {
@@ -151,59 +173,23 @@ const onExport = async () => {
   });
 };
 
-const getChoiceText = (info: ChoiceType, orderNumber: number) => {
-  const answerWords = ['A', 'B', 'C', 'D', 'E'];
-  const { title, ans_idx, choices, comment } = info;
-  return [
-    `題目 ${orderNumber}：`,
-    `問題：${title}`,
-    `選項：`,
-    ...choices.map((choice, idx) => `${answerWords[idx]}) ${choice}`),
-    `答案：${answerWords[ans_idx]}`,
-    `詳解：${comment}`,
-  ].join('<br>');
+const onTrash = async () => {
+  set(markdownValue, '');
+  set(markdownValueTemp, '');
+  mqttMsgRightView.value.splice(0);
 };
 
-const getQAText = (info: QAType, orderNumber: number) => {
-  const { title, ans, comment } = info;
-  return [`題目 ${orderNumber}：`, `問題：${title}`, `答案：${ans}`, `詳解：${comment}`].join(
-    '<br>'
-  );
+const onVoiceStart = () => {
+  _promptTemp = get(prompt);
+  set(isVoiceInputWorking, true);
 };
 
-const transformMsgToMarkdown = (info: (ChoiceType | QAType)[]) => {
-  try {
-    const choiceQuestions = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.CHOICE)
-      .map((val, idx) => getChoiceText(val as ChoiceType, idx + 1));
-
-    const qa = info
-      .filter((data: any) => data.type === GENERATE_QUESTION_TYPE.QA)
-      .map((val, idx) => getQAText(val as QAType, idx + 1));
-
-    return [...choiceQuestions, ...qa].join('<br><br>');
-  } catch (err: any) {
-    console.warn(err);
-    return '';
-  }
+const onVoiceStop = () => {
+  set(isVoiceInputWorking, false);
 };
 
-/**
- * 處理 mqtt 訊息
- * @param msg {string | Object}
- */
-const handleMsg = (msg: string) => {
-  try {
-    const uuidReg = /\$UUID\$/gm;
-    const rt = uuidReg.exec(msg);
-    if (rt) {
-      return msg.substring(0, rt.index).trim();
-    }
-    const json = JSON.parse(msg);
-    return json;
-  } catch (err) {
-    return msg;
-  }
+const onVoiceMessage = async (value: string) => {
+  set(prompt, _promptTemp + value);
 };
 
 loadData();
@@ -219,8 +205,6 @@ watch(mqttLoading, (val) => {
  * 2. 一般字串, e.g. 歡迎繼續提問 $UUID${{user id}}
  */
 mqtt.init((msg: string, isEnd: boolean) => {
-  if (!msg && !isEnd) return;
-
   const info = handleMsg(msg);
 
   if (info instanceof Object) {
@@ -232,14 +216,14 @@ mqtt.init((msg: string, isEnd: boolean) => {
     set(markdownValue, get(markdownValueTemp) + transformMsgToMarkdown(get(mqttMsgRightViewTemp)));
   }
 
-  if (typeof info === 'string') {
+  if (typeof info === 'string' && info.trim().length > 0) {
     mqttMsgLeftView.value.push(info);
   }
 
   if (isEnd) {
     set(mqttLoading, false);
     set(markdownValueTemp, get(markdownValue));
-    addMessage(ROLE_TYPE.AI, get(mqttMsgLeftView).join('\n'));
+    get(mqttMsgLeftView).length && addMessage(ROLE_TYPE.AI, get(mqttMsgLeftView).join('\n'));
     mqttMsgRightViewTemp.value.splice(0);
   }
 });
@@ -353,37 +337,18 @@ mqtt.init((msg: string, isEnd: boolean) => {
           variant="solo"
           v-model="prompt"
           label="題目要求..."
-          :disabled="mqttLoading"
+          :disabled="mqttLoading || isVoiceInputWorking"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
+          clearable
+          @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">
-          <v-btn
-            class="mb-4 text-orange"
-            size="large"
-            :disabled="mqttLoading"
-            @click="onVoiceInput"
-          >
-            <template v-slot:prepend>
-              <v-icon
-                :class="{ 'mic-icon-working': speech.isListening.value }"
-                :icon="
-                  speech.isSupported.value
-                    ? speech.isListening.value
-                      ? 'mdi-microphone'
-                      : 'mdi-microphone-outline'
-                    : 'mdi-microphone-off'
-                "
-                color="orange"
-                size="x-large"
-              ></v-icon>
-            </template>
-            試試語音輸入
-          </v-btn>
+          <TheVoiceInput @message="onVoiceMessage" @start="onVoiceStart" @stop="onVoiceStop" />
           <v-btn
             class="mb-4 text-orange ml-4"
             size="large"
@@ -401,7 +366,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <v-app-bar>
             <v-app-bar-title class="text-grey-darken-1 font-weight-bold">題目預覽</v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn icon="mdi-trash-can-outline" @click="markdownValue = ''"></v-btn>
+            <v-btn icon="mdi-trash-can-outline" @click="onTrash"></v-btn>
           </v-app-bar>
 
           <v-main>
