@@ -50,18 +50,6 @@ const getPayload = () => {
   return `${get(sheetName)} ${get(sheetUrl)} ${get(prompt)}`;
 };
 
-const onSubmit = () => {
-  set(mqttLoading, true);
-  mqttMsgLeftView.value.splice(0);
-  mqttMsgRightView.value.splice(0);
-  wholeMsg.value.splice(0);
-  mqtt.publish(`${get(actor)}: ${getPayload()}`);
-  messages.value.push({
-    type: 'user',
-    message: get(prompt),
-  });
-};
-
 const handleMsg = (msg: string) => {
   try {
     const uuidReg = /\$UUID\$/gm;
@@ -74,6 +62,23 @@ const handleMsg = (msg: string) => {
   } catch (err) {
     return msg;
   }
+};
+
+const onSubmit = () => {
+  set(mqttLoading, true);
+  mqttMsgLeftView.value.splice(0);
+  mqttMsgRightView.value.splice(0);
+  wholeMsg.value.splice(0);
+  mqtt.publish(`${get(actor)}:${getPayload()}`);
+  messages.value.push({
+    type: 'user',
+    message: get(prompt),
+  });
+};
+
+const onSubmitByEnter = (evt: any) => {
+  if (evt.shiftKey) return;
+  onSubmit();
 };
 
 const onVoiceStart = () => {
@@ -227,6 +232,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
           clearable
+          @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
