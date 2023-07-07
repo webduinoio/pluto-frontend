@@ -121,8 +121,14 @@ const handleMsg = (msg: string) => {
 const onSubmit = () => {
   set(mqttLoading, true);
   mqttMsgLeftView.value.splice(0);
+  // 增加空白，就不會用 cache, e.g. mqtt.publish(`${get(actor)}: ${getPayload()}`);
   mqtt.publish(`${get(actor)}:${getPayload()}`);
   addMessage(ROLE_TYPE.USER, get(prompt));
+};
+
+const onSubmitByEnter = (evt: any) => {
+  if (evt.shiftKey) return;
+  onSubmit();
 };
 
 const onExport = async () => {
@@ -334,6 +340,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
           clearable
+          @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
