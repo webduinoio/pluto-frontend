@@ -349,7 +349,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">
-          <TheVoiceInput @message="onVoiceMessage" @start="onVoiceStart" @stop="onVoiceStop" />
+          <TheVoiceInput
+            :disabled="mqttLoading"
+            @message="onVoiceMessage"
+            @start="onVoiceStart"
+            @stop="onVoiceStop"
+          />
           <v-btn
             class="mb-4 text-orange ml-4"
             size="large"
