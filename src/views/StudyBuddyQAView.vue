@@ -15,7 +15,7 @@ import 'splitpanes/dist/splitpanes.css';
 const store = useMainStore();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
 const messages = ref<{ type: string; message: string }[]>([]);
-const actor = ref('');
+const actorData = ref<Actor>();
 const prompt = ref('');
 const msg1 = ref('');
 const msg2 = ref('');
@@ -41,7 +41,7 @@ const loadData = async () => {
 
   try {
     const { data }: { data: Actor } = await getActor(Number(get(actorOpenID)));
-    set(actor, data.name);
+    set(actorData, data);
   } catch (err: any) {
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
@@ -53,7 +53,7 @@ const onSubmit = () => {
   set(msg2, '');
   set(uid, '');
   set(wholeMsg, '');
-  mqtt.publish(`${get(actor)}:${get(prompt)}`);
+  mqtt.publish(`${get(actorData)?.uuid}:${get(prompt)}`);
   messages.value.push({
     type: 'user',
     message: get(prompt),
@@ -122,7 +122,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
             <v-card-subtitle>問答小書僮</v-card-subtitle>
-            <v-card-title>{{ actor }}</v-card-title>
+            <v-card-title>{{ actorData?.name }}</v-card-title>
           </v-card-item>
         </v-card>
 

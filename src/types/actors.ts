@@ -33,6 +33,7 @@ export interface Actor {
   prompt: string;
   temperature: number;
   type: ACTOR_TYPE;
+  uuid: string;
 }
 
 export interface Actors {

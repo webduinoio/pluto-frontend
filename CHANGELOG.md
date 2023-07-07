@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 編輯書僮 - 設定 ui [#6959](https://redmine.kingkit.codes/issues/6959)
 - 編輯書僮 - 進階設定 ui [#6960](https://redmine.kingkit.codes/issues/6960)
 - 聊天畫面放範例 prompt [#7002](https://redmine.kingkit.codes/issues/7002)
+- 調整送出訊息的格式 [#7028](https://redmine.kingkit.codes/issues/7028)
 
 ### Changed
 
