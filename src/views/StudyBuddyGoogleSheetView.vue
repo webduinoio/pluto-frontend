@@ -94,6 +94,11 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
+const onRefresh = async () => {
+  set(loadingSheet, true);
+  loadSheetData();
+};
+
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
 });
@@ -256,7 +261,9 @@ mqtt.init((msg: string, isEnd: boolean) => {
               試算表內容
             </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn prepend-icon="mdi-refresh" color="grey-darken-1" size="large"> 重新整理 </v-btn>
+            <v-btn prepend-icon="mdi-refresh" color="grey-darken-1" size="large" @click="onRefresh">
+              重新整理
+            </v-btn>
           </v-app-bar>
           <v-main class="d-flex flex-grow-1">
             <TheSheetTable :value="sheetValue" />
