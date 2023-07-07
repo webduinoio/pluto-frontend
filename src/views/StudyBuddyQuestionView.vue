@@ -1,16 +1,14 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
+import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { createForm, getActors } from '@/services';
 import type { Actor, ChoiceType, QAType } from '@/types';
-import { get, set, useClipboard, useSpeechRecognition } from '@vueuse/core';
+import { get, set, useClipboard } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
-
-// TODO: 暫定中文，後續再調整
-const lang = ref('zh-TW');
 
 const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
@@ -29,39 +27,20 @@ const knowledgePoint = ref('日治時期、抗日活動、228事件');
 const numberOfChoiceQuestion = ref(3);
 const numberOfAnswerQuestion = ref(2);
 const { fire, Swal } = useSweetAlert();
-const speech = useSpeechRecognition({
-  lang,
-  continuous: true,
-});
-let _stop: Function | undefined;
 const mqttLoading = ref(false);
+const isVoiceInputWorking = ref(false);
 const { copy } = useClipboard();
 const ROLE_TYPE = {
   USER: 'user',
   AI: 'ai',
 };
+let _promptTemp: String = '';
 
 const addMessage = (role: string, msg: string) => {
   messages.value.push({
     type: role,
     message: msg,
   });
-};
-
-const startVoiceInput = () => {
-  const recordPrompt = get(prompt);
-
-  _stop = watch(speech.result, () => {
-    set(prompt, recordPrompt + speech.result.value);
-  });
-
-  speech.result.value = '';
-  speech.start();
-};
-
-const stopVoiceInput = () => {
-  typeof _stop === 'function' && _stop();
-  speech.stop();
 };
 
 const loadData = async () => {
@@ -142,26 +121,10 @@ const handleMsg = (msg: string) => {
 };
 
 const onSubmit = () => {
-  if (speech.isListening.value) {
-    stopVoiceInput();
-  }
-
   set(mqttLoading, true);
   mqttMsgLeftView.value.splice(0);
   mqtt.publish(`${get(actor)}:${getPayload()}`);
   addMessage(ROLE_TYPE.USER, get(prompt));
-};
-
-const onVoiceInput = () => {
-  if (!speech.isSupported.value) {
-    fire({ title: '目前環境不支持語音輸入', text: '請更換設備，再試試。' });
-    return;
-  }
-  if (speech.isListening.value) {
-    stopVoiceInput();
-    return;
-  }
-  startVoiceInput();
 };
 
 const onExport = async () => {
@@ -209,6 +172,19 @@ const onExport = async () => {
 const onTrash = async () => {
   set(markdownValue, '');
   mqttMsgRightView.value.splice(0);
+};
+
+const onVoiceStart = () => {
+  _promptTemp = get(prompt);
+  set(isVoiceInputWorking, true);
+};
+
+const onVoiceStop = () => {
+  set(isVoiceInputWorking, false);
+};
+
+const onVoiceMessage = async (value: string) => {
+  set(prompt, _promptTemp + value);
 };
 
 loadData();
@@ -358,37 +334,17 @@ mqtt.init((msg: string, isEnd: boolean) => {
           variant="solo"
           v-model="prompt"
           label="題目要求..."
-          :disabled="mqttLoading"
+          :disabled="mqttLoading || isVoiceInputWorking"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
+          clearable
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">
-          <v-btn
-            class="mb-4 text-orange"
-            size="large"
-            :disabled="mqttLoading"
-            @click="onVoiceInput"
-          >
-            <template v-slot:prepend>
-              <v-icon
-                :class="{ 'mic-icon-working': speech.isListening.value }"
-                :icon="
-                  speech.isSupported.value
-                    ? speech.isListening.value
-                      ? 'mdi-microphone'
-                      : 'mdi-microphone-outline'
-                    : 'mdi-microphone-off'
-                "
-                color="orange"
-                size="x-large"
-              ></v-icon>
-            </template>
-            試試語音輸入
-          </v-btn>
+          <TheVoiceInput @message="onVoiceMessage" @start="onVoiceStart" @stop="onVoiceStop" />
           <v-btn
             class="mb-4 text-orange ml-4"
             size="large"
