@@ -124,36 +124,52 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <template>
   <splitpanes class="default-theme">
     <pane min-size="20" size="20">
-      <div class="d-flex flex-column h-100 left-panel">
-        <v-card>
+      <div class="d-flex flex-column h-100 left-panel overflow-auto">
+        <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
             <v-card-subtitle>問答小書僮</v-card-subtitle>
             <v-card-title>{{ actor }}</v-card-title>
           </v-card-item>
         </v-card>
-        <v-divider></v-divider>
-        <div class="flex-grow-1 ma-2">
-          <v-sheet
-            border
-            rounded
-            class="text-body-2 mx-auto mt-2"
-            v-for="msg in messages"
-            :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-          >
-            <v-container fluid>
-              <v-row>
-                <v-col cols="auto">
-                  <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                </v-col>
-                <v-col>
-                  <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-sheet>
-        </div>
 
         <v-divider></v-divider>
+
+        <v-form class="ma-4">
+          <v-select
+            label="沒靈感嗎？點我選擇範例提示詞"
+            :items="['待補充']"
+            variant="outlined"
+            density="comfortable"
+            hide-details="auto"
+            color="orange"
+          ></v-select>
+        </v-form>
+
+        <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
+          <v-container class="pa-2 pt-0">
+            <v-sheet
+              border
+              rounded
+              class="text-body-2 mx-auto mt-2"
+              v-for="msg in messages"
+              :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+            >
+              <v-container fluid>
+                <v-row>
+                  <v-col cols="auto">
+                    <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                  </v-col>
+                  <v-col>
+                    <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-sheet>
+          </v-container>
+        </v-layout>
+
+        <v-divider class="mt-2"></v-divider>
+
         <v-textarea
           class="mt-2 mx-7 flex-grow-0"
           rows="1"
