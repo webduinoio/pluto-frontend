@@ -175,6 +175,7 @@ const onExport = async () => {
 
 const onTrash = async () => {
   set(markdownValue, '');
+  set(markdownValueTemp, '');
   mqttMsgRightView.value.splice(0);
 };
 
