@@ -31,6 +31,15 @@ const speech = useSpeechRecognition({
 });
 let _stop: Function | undefined;
 const mqttLoading = ref(false);
+const hintSelect = ref('');
+const hintItems = ref([
+  { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
+  {
+    title: '比較概念的異同',
+    value: '分析並比較[知識1]和[知識2]的異同，回答包含：\n相同點\n相異點',
+  },
+  { title: '題目解析', value: '[你的題目和選項]\n盡可能詳細解釋為什麼這題答案是[正確選項]' },
+]);
 
 const startVoiceInput = () => {
   const recordPrompt = get(prompt);
@@ -94,6 +103,10 @@ watch(mqttLoading, (val) => {
   val && set(prompt, '');
 });
 
+watch(hintSelect, (val) => {
+  set(prompt, val);
+});
+
 mqtt.init((msg: string, isEnd: boolean) => {
   if (isEnd) {
     set(mqttLoading, false);
@@ -137,11 +150,14 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-form class="ma-4">
           <v-select
             label="沒靈感嗎？點我選擇範例提示詞"
-            :items="['待補充']"
+            :items="hintItems"
+            item-title="title"
+            item-value="value"
             variant="outlined"
             density="comfortable"
             hide-details="auto"
             color="orange"
+            v-model="hintSelect"
           ></v-select>
         </v-form>
 
@@ -172,7 +188,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
         <v-textarea
           class="mt-2 mx-7 flex-grow-0"
-          rows="1"
+          rows="3"
           no-resize
           variant="solo"
           v-model="prompt"
