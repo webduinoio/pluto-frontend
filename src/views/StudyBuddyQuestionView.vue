@@ -12,15 +12,15 @@ import 'splitpanes/dist/splitpanes.css';
 
 const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
-const prompt = ref('西漢末年');
+const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
 const markdownValueTemp = ref(''); // mqtt 更新前的訊息
-const assistantList = ref<string[]>(['高中歷史']);
-const assistant = ref('高中歷史');
+const assistantList = ref<string[]>(['']);
+const assistant = ref('');
 const knowledgePoint = ref('');
 const numberOfChoiceQuestion = ref(1);
 const numberOfAnswerQuestion = ref(1);
