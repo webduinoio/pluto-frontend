@@ -12,9 +12,7 @@ import 'splitpanes/dist/splitpanes.css';
 
 const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
-const prompt = ref(
-  '你扮演高中歷史老師 答案詳解請根據資料 和學生解釋如何從資料得知答案 避免「下列何者正確」、「哪一個是對的」、「下列何者描述錯誤」這類題目'
-);
+const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
@@ -22,10 +20,10 @@ const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方�
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
 const markdownValueTemp = ref(''); // mqtt 更新前的訊息
 const assistantList = ref<string[]>(['高中歷史']);
-const assistant = ref('高中歷史');
-const knowledgePoint = ref('日治時期、抗日活動、228事件');
-const numberOfChoiceQuestion = ref(3);
-const numberOfAnswerQuestion = ref(2);
+const assistant = ref('');
+const knowledgePoint = ref('');
+const numberOfChoiceQuestion = ref(1);
+const numberOfAnswerQuestion = ref(1);
 const { fire, Swal } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
