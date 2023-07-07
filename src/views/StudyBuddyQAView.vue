@@ -3,6 +3,7 @@ import TheMarkdown from '@/components/TheMarkdown.vue';
 import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor } from '@/services';
 import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types/actors';
@@ -14,7 +15,7 @@ import 'splitpanes/dist/splitpanes.css';
 const lang = ref('zh-TW');
 
 const store = useMainStore();
-const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.KN);
+const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
 const messages = ref<{ type: string; message: string }[]>([]);
 const actor = ref('');
 const prompt = ref('');

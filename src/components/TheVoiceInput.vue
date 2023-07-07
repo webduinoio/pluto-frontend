@@ -4,12 +4,12 @@ import { useSpeechRecognition } from '@vueuse/core';
 
 const props = withDefaults(
   defineProps<{
-    loading?: boolean;
     text?: string;
+    disabled?: boolean;
   }>(),
   {
-    loading: false,
     text: '試試語音輸入',
+    disabled: false,
   }
 );
 
@@ -60,7 +60,7 @@ const onVoiceInput = () => {
 </script>
 
 <template>
-  <v-btn class="mb-4 text-orange" size="large" :disabled="props.loading" @click="onVoiceInput">
+  <v-btn class="mb-4 text-orange" size="large" :disabled="props.disabled" @click="onVoiceInput">
     <template v-slot:prepend>
       <v-icon
         :class="{ 'mic-icon-working': speech.isListening.value }"

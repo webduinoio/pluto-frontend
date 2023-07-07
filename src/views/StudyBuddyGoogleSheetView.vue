@@ -1,37 +1,31 @@
 <script lang="ts" setup>
 import TheSheetTable from '@/components/TheSheetTable.vue';
+import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
-import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { generateMqttUserId } from '@/hooks/useUtil';
 import { getGoogleSheetData } from '@/services/googleSheet';
 import type { ChoiceType, QAType } from '@/types';
-import { get, set, useDebounceFn, useSpeechRecognition } from '@vueuse/core';
+import { get, set, useDebounceFn } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
-// TODO: 語音暫定中文，後續再調整
-const lang = ref('zh-TW');
-
-const mqtt = useMqtt('guest_' + Math.random(), MQTT_TOPIC.CODE);
+const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
 const prompt = ref('從英文單字表隨機挑三個英文單字,給我英文單字欄位');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
-const { fire } = useSweetAlert();
-const speech = useSpeechRecognition({
-  lang,
-  continuous: true,
-});
-let _stop: Function | undefined;
 const mqttLoading = ref(false);
+const isVoiceInputWorking = ref(false);
 const sheetUrl = ref(
   'https://docs.google.com/spreadsheets/d/1RMF6girkUK7MFrWBoD8Dx5dE3p6zFsKU6vNcJZ2Bhtg/edit#gid=1781104560'
 );
 const sheetName = ref('英文單字表');
 const sheetValue = ref([]);
 const loadingSheet = ref(false);
+let _promptTemp: String = '';
 
 const _loadSheetData = async () => {
   try {
@@ -52,52 +46,8 @@ const loadSheetData = useDebounceFn(async () => {
   set(loadingSheet, false);
 }, 1000);
 
-const startVoiceInput = () => {
-  const recordPrompt = get(prompt);
-
-  _stop = watch(speech.result, () => {
-    set(prompt, recordPrompt + speech.result.value);
-  });
-
-  speech.result.value = '';
-  speech.start();
-};
-
-const stopVoiceInput = () => {
-  typeof _stop === 'function' && _stop();
-  speech.stop();
-};
-
 const getPayload = () => {
   return `${get(sheetName)} ${get(sheetUrl)} ${get(prompt)}`;
-};
-
-const onSubmit = () => {
-  if (speech.isListening.value) {
-    stopVoiceInput();
-  }
-
-  set(mqttLoading, true);
-  mqttMsgLeftView.value.splice(0);
-  mqttMsgRightView.value.splice(0);
-  wholeMsg.value.splice(0);
-  mqtt.publish(`${get(actor)}: ${getPayload()}`);
-  messages.value.push({
-    type: 'user',
-    message: get(prompt),
-  });
-};
-
-const onVoiceInput = () => {
-  if (!speech.isSupported.value) {
-    fire({ title: '目前環境不支持語音輸入', text: '請更換設備，再試試。' });
-    return;
-  }
-  if (speech.isListening.value) {
-    stopVoiceInput();
-    return;
-  }
-  startVoiceInput();
 };
 
 const handleMsg = (msg: string) => {
@@ -112,6 +62,41 @@ const handleMsg = (msg: string) => {
   } catch (err) {
     return msg;
   }
+};
+
+const onSubmit = () => {
+  set(mqttLoading, true);
+  mqttMsgLeftView.value.splice(0);
+  mqttMsgRightView.value.splice(0);
+  wholeMsg.value.splice(0);
+  mqtt.publish(`${get(actor)}:${getPayload()}`);
+  messages.value.push({
+    type: 'user',
+    message: get(prompt),
+  });
+};
+
+const onSubmitByEnter = (evt: any) => {
+  if (evt.shiftKey) return;
+  onSubmit();
+};
+
+const onVoiceStart = () => {
+  _promptTemp = get(prompt);
+  set(isVoiceInputWorking, true);
+};
+
+const onVoiceStop = () => {
+  set(isVoiceInputWorking, false);
+};
+
+const onVoiceMessage = async (value: string) => {
+  set(prompt, _promptTemp + value);
+};
+
+const onRefresh = async () => {
+  set(loadingSheet, true);
+  loadSheetData();
 };
 
 watch(mqttLoading, (val) => {
@@ -248,38 +233,23 @@ mqtt.init((msg: string, isEnd: boolean) => {
           variant="solo"
           v-model="prompt"
           label="題目要求..."
-          :disabled="mqttLoading"
+          :disabled="mqttLoading || isVoiceInputWorking"
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
           clearable
+          @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
             <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">
-          <v-btn
-            class="mb-4 text-orange"
-            size="large"
+          <TheVoiceInput
             :disabled="mqttLoading"
-            @click="onVoiceInput"
-          >
-            <template v-slot:prepend>
-              <v-icon
-                :class="{ 'mic-icon-working': speech.isListening.value }"
-                :icon="
-                  speech.isSupported.value
-                    ? speech.isListening.value
-                      ? 'mdi-microphone'
-                      : 'mdi-microphone-outline'
-                    : 'mdi-microphone-off'
-                "
-                color="orange"
-                size="x-large"
-              ></v-icon>
-            </template>
-            試試語音輸入
-          </v-btn>
+            @message="onVoiceMessage"
+            @start="onVoiceStart"
+            @stop="onVoiceStop"
+          />
         </div>
       </div>
     </pane>
@@ -291,7 +261,9 @@ mqtt.init((msg: string, isEnd: boolean) => {
               試算表內容
             </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn prepend-icon="mdi-refresh" color="grey-darken-1" size="large"> 重新整理 </v-btn>
+            <v-btn prepend-icon="mdi-refresh" color="grey-darken-1" size="large" @click="onRefresh">
+              重新整理
+            </v-btn>
           </v-app-bar>
           <v-main class="d-flex flex-grow-1">
             <TheSheetTable :value="sheetValue" />
