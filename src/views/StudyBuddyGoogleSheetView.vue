@@ -164,7 +164,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             variant="outlined"
             density="comfortable"
             hide-details="auto"
-            color="orange"
+            color="secondary"
           ></v-select>
         </v-form>
 
@@ -174,8 +174,9 @@ mqtt.init((msg: string, isEnd: boolean) => {
               border
               rounded
               class="text-body-2 mx-auto mt-2"
-              v-for="msg in messages"
+              v-for="(msg, index) in messages"
               :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+              :key="index"
             >
               <v-container fluid>
                 <v-row>
@@ -237,7 +238,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
           @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
-            <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
+            <v-icon
+              color="primary"
+              icon="mdi-chevron-right-box"
+              size="x-large"
+              style="opacity: unset"
+              @click="onSubmit"
+            ></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">
@@ -272,7 +279,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           persistent
           contained
         >
-          <v-progress-circular color="#467974" indeterminate size="40"></v-progress-circular>
+          <v-progress-circular color="primary" indeterminate size="40"></v-progress-circular>
         </v-overlay>
       </v-card>
     </pane>

@@ -71,7 +71,7 @@ const onDelete = async (id: number) => {
       <div class="d-flex justify-space-between my-15">
         <div class="text-h4">我的小書僮</div>
         <v-btn
-          color="teal"
+          color="primary"
           prepend-icon="mdi-plus"
           @click="router.push({ name: ROUTER_NAME.ACTOR_CREATION })"
         >

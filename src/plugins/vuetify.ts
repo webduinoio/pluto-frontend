@@ -2,6 +2,7 @@
  * Vuetify3 Plugin
  * 參考 https://github.com/dean9703111/vuetify-vite-ts-test/blob/master/src/plugins/vuetify.ts
  */
+import type { ThemeDefinition } from 'vuetify';
 import { createVuetify } from 'vuetify';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 
@@ -11,6 +12,16 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi';
 // Styles
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles';
+
+const webduino: ThemeDefinition = {
+  dark: false,
+  colors: {
+    primary: '#467974',
+    secondary: '#F1A23A',
+    'on-primary': 'white',
+    'on-secondary': 'white'
+  },
+}
 
 export default createVuetify({
   // Global configuration
@@ -44,7 +55,10 @@ export default createVuetify({
   // Theme
   // https://vuetifyjs.com/en/features/theme/
   theme: {
-    defaultTheme: 'light',
+    defaultTheme: 'webduino',
+    themes: {
+      webduino
+    }
   },
   defaults: {
     VBtn: {

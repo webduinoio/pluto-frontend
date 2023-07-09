@@ -108,13 +108,7 @@ onMounted(() => {
               </template>
             </template></v-file-input
           >
-          <v-btn
-            type="submit"
-            color="#467974"
-            class="text-white mt-12"
-            size="large"
-            :loading="loading"
-          >
+          <v-btn type="submit" color="primary" class="mt-12" size="large" :loading="loading">
             儲存
           </v-btn>
         </v-form>

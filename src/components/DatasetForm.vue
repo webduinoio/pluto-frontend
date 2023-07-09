@@ -117,10 +117,9 @@ watch(
 <template>
   <slot v-bind="{ props: defaultSlotProps }">
     <v-btn
-      color="orange"
-      theme="dark"
+      color="secondary"
       variant="elevated"
-      class="ml-2 text-white"
+      class="ml-2"
       size="large"
       flat
       v-bind="defaultSlotProps"
@@ -165,26 +164,10 @@ watch(
 
         <v-card-actions class="mb-4">
           <v-spacer></v-spacer>
-          <v-btn
-            color="orange"
-            theme="dark"
-            variant="outlined"
-            class="text-white"
-            size="large"
-            flat
-            @click="dialog = false"
-          >
+          <v-btn color="secondary" variant="outlined" size="large" flat @click="dialog = false">
             取消
           </v-btn>
-          <v-btn
-            color="orange"
-            theme="dark"
-            variant="elevated"
-            class="mr-5 text-white"
-            size="large"
-            flat
-            type="submit"
-          >
+          <v-btn color="secondary" variant="elevated" class="mr-5" size="large" flat type="submit">
             儲存
           </v-btn>
         </v-card-actions>

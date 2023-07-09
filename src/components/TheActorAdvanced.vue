@@ -107,9 +107,9 @@ onMounted(async () => {
                 :disabled="loading"
               ></v-textarea>
               <v-btn
-                color="orange"
+                color="secondary"
                 variant="outlined"
-                class="text-white mt-12"
+                class="mt-12"
                 size="large"
                 :disabled="loading"
                 @click="onReset"
@@ -118,8 +118,8 @@ onMounted(async () => {
               </v-btn>
               <v-btn
                 type="submit"
-                color="#467974"
-                class="text-white mt-12 ml-2"
+                color="primary"
+                class="mt-12 ml-2"
                 size="large"
                 :loading="loading"
               >

@@ -88,7 +88,7 @@ const onSubmit = handleSubmit(async (values) => {
             :error-messages="url.errorMessage.value"
           ></v-text-field>
           <div class="mt-16 d-flex justify-center">
-            <v-btn type="submit" color="indigo-darken-3" size="large">開始訓練</v-btn>
+            <v-btn type="submit" color="primary" size="large">開始訓練</v-btn>
           </div>
         </v-form>
       </v-sheet>

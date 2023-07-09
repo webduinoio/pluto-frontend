@@ -171,19 +171,19 @@ onMounted(async () => {
 
       <v-row align-content="center" class="mt-2">
         <v-col cols="12">
-          <v-btn color="#467974" class="text-white" size="large" @click="onTrain"> 再次訓練 </v-btn>
+          <v-btn color="primary" size="large" @click="onTrain"> 再次訓練 </v-btn>
         </v-col>
         <v-col cols="6">
           <v-progress-linear
             :active="training"
             :indeterminate="training"
-            color="#467974"
+            color="primary"
           ></v-progress-linear>
         </v-col>
       </v-row>
 
       <v-overlay :model-value="loading" class="align-center justify-center" persistent contained>
-        <v-progress-circular color="#467974" indeterminate size="40"></v-progress-circular>
+        <v-progress-circular color="primary" indeterminate size="40"></v-progress-circular>
       </v-overlay>
     </v-container>
   </v-window-item>

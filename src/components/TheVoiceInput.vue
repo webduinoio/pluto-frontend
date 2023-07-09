@@ -71,7 +71,7 @@ const onVoiceInput = () => {
               : 'mdi-microphone-outline'
             : 'mdi-microphone-off'
         "
-        color="orange"
+        color="secondary"
         size="x-large"
       ></v-icon>
     </template>
