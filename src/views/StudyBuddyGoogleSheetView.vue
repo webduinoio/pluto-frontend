@@ -173,7 +173,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             <v-sheet
               border
               rounded
-              class="text-body-2 mx-auto mt-2"
+              class="text-body-1 mx-auto mt-2"
               v-for="(msg, index) in messages"
               :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
               :key="index"

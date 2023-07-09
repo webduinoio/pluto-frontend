@@ -68,7 +68,7 @@ const onTrain = async () => {
     <v-container>
       <v-row>
         <v-col cols="12" class="d-flex align-center">
-          <div class="text-body-2 mr-2">
+          <div class="text-body-1 mr-2">
             請開啟雲端硬碟資料夾，更新訓練資料後，點擊再次訓練。
             <a
               href="https://docs.google.com/document/d/1faGhiXiscEq5UJhNYN1O0PUdPizCXv5sXAirfMe5qDc/edit?usp=sharing"
