@@ -79,12 +79,18 @@ const onSubmit = handleSubmit(async (values) => {
           <v-text-field
             label="小書僮名稱"
             v-model="name.value.value"
+            variant="outlined"
+            color="black"
+            bg-color="white"
             :error-messages="name.errorMessage.value"
           ></v-text-field>
           <v-text-field
             label="Google 雲端資料網址"
             class="mt-2"
+            variant="outlined"
             v-model="url.value.value"
+            color="black"
+            bg-color="white"
             :error-messages="url.errorMessage.value"
           ></v-text-field>
           <div class="mt-16 d-flex justify-center">
