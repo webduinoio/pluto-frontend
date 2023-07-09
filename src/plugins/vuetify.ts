@@ -16,6 +16,7 @@ import 'vuetify/styles';
 const webduino: ThemeDefinition = {
   dark: false,
   colors: {
+    background: '#FAF8F4',
     primary: '#467974',
     secondary: '#F1A23A',
     'on-primary': 'white',

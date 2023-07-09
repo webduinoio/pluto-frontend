@@ -297,7 +297,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
         <v-divider class="mt-2"></v-divider>
 
-        <v-sheet class="ma-2 bg-grey-lighten-2">
+        <v-sheet class="ma-2 bg-transparent">
           <v-form @submit.prevent="onSubmit">
             <v-container>
               <v-row>

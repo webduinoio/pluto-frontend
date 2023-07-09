@@ -125,7 +125,7 @@ onMounted(async () => {
 <template>
   <v-window-item :value="props.value">
     <v-container>
-      <v-toolbar class="bg-grey-lighten-2">
+      <v-toolbar color="transparent">
         <v-spacer></v-spacer>
         <v-responsive max-width="270">
           <v-text-field
@@ -146,7 +146,7 @@ onMounted(async () => {
         <DatasetForm title="新增 Q & A" :actorID="store?.actorEditData?.id" @create="loadDataset" />
       </v-toolbar>
 
-      <v-list class="bg-grey-lighten-2" lines="two" max-height="460">
+      <v-list class="bg-transparent" lines="two" max-height="460">
         <template v-for="(item, idx) in datasets" :key="idx">
           <v-list-item>
             <template v-slot:prepend>

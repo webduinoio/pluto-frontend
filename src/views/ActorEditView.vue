@@ -41,7 +41,7 @@ const onOpen = () => {
         </template>
       </v-breadcrumbs>
       <v-main>
-        <v-toolbar class="bg-grey-lighten-2">
+        <v-toolbar class="bg-transparent">
           <v-toolbar-title class="text-h4 font-weight-bold">
             {{ store?.actorEditData?.name }}
             <v-btn icon="mdi-open-in-new" color="grey-darken-1" @click="onOpen"></v-btn>

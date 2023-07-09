@@ -94,7 +94,7 @@ onMounted(async () => {
 <template>
   <v-window-item :value="props.value">
     <v-container>
-      <v-sheet class="mt-4 bg-grey-lighten-2">
+      <v-sheet class="mt-4 bg-transparent">
         <v-row>
           <v-col cols="12" md="6">
             <v-form @submit.prevent="onSubmit">

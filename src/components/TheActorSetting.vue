@@ -79,7 +79,7 @@ onMounted(() => {
 <template>
   <v-window-item :value="props.value">
     <v-container>
-      <v-sheet width="342" class="mt-4 bg-grey-lighten-2">
+      <v-sheet width="342" class="mt-4 bg-transparent">
         <v-form @submit.prevent="onSubmit">
           <v-textarea
             variant="outlined"
