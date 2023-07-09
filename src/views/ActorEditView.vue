@@ -49,9 +49,9 @@ const onOpen = () => {
 
           <template v-slot:extension>
             <v-tabs v-model="tab" class="text-grey" color="black">
-              <v-tab class="text-h6" value="setting">設定</v-tab>
-              <v-tab class="text-h6" value="dataManager">資料管理</v-tab>
-              <v-tab class="text-h6" value="advanced">進階設定</v-tab>
+              <v-tab class="text-h6 px-16" value="setting">設定</v-tab>
+              <v-tab class="text-h6 px-16" value="dataManager">資料管理</v-tab>
+              <v-tab class="text-h6 px-16" value="advanced">進階設定</v-tab>
             </v-tabs>
           </template>
         </v-toolbar>
