@@ -61,6 +61,13 @@ const onTrain = async () => {
     set(training, false);
   }
 };
+
+const onClick = () => {
+  window.open(
+    'https://docs.google.com/document/d/1faGhiXiscEq5UJhNYN1O0PUdPizCXv5sXAirfMe5qDc/edit?usp=sharing',
+    '_blank'
+  );
+};
 </script>
 
 <template>
@@ -77,6 +84,7 @@ const onTrain = async () => {
             icon="mdi-open-in-new"
             variant="plain"
             color="grey-darken-2"
+            @click="onClick"
           ></v-btn>
         </v-col>
       </v-row>
@@ -86,7 +94,7 @@ const onTrain = async () => {
         </v-col>
         <v-col>
           <v-btn
-            color="orange"
+            color="secondary"
             variant="outlined"
             size="large"
             :href="store?.actorEditData?.url"
@@ -98,13 +106,13 @@ const onTrain = async () => {
       </v-row>
       <v-row align-content="center">
         <v-col cols="12">
-          <v-btn color="#467974" class="text-white" size="large" @click="onTrain"> 再次訓練 </v-btn>
+          <v-btn color="primary" size="large" @click="onTrain"> 再次訓練 </v-btn>
         </v-col>
         <v-col cols="6">
           <v-progress-linear
             :active="training"
             :indeterminate="training"
-            color="#467974"
+            color="primary"
           ></v-progress-linear>
         </v-col>
       </v-row>
