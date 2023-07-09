@@ -146,7 +146,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
 <template>
   <splitpanes class="default-theme">
-    <pane min-size="20" size="20">
+    <pane min-size="30" size="30">
       <div class="d-flex flex-column h-100 left-panel">
         <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
