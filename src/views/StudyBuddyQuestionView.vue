@@ -246,7 +246,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
 <template>
   <splitpanes class="default-theme">
-    <pane min-size="20" size="20">
+    <pane min-size="30" size="30">
       <div class="d-flex flex-column h-100 left-panel overflow-auto">
         <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
@@ -266,7 +266,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             variant="outlined"
             density="comfortable"
             hide-details="auto"
-            color="orange"
+            color="secondary"
             v-model="hintSelect"
           ></v-select>
         </v-form>
@@ -276,9 +276,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
             <v-sheet
               border
               rounded
-              class="text-body-2 mx-auto mt-2"
-              v-for="msg in messages"
+              class="text-body-1 mx-auto mt-2"
+              v-for="(msg, index) in messages"
               :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+              :key="`${index}-${msg.type}-${msg.message}`"
             >
               <v-container fluid>
                 <v-row>
@@ -296,7 +297,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
         <v-divider class="mt-2"></v-divider>
 
-        <v-sheet class="ma-2 bg-grey-lighten-2">
+        <v-sheet class="ma-2 bg-transparent">
           <v-form @submit.prevent="onSubmit">
             <v-container>
               <v-row>
@@ -362,7 +363,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
           @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
-            <v-icon icon="mdi-chevron-right-box" size="x-large" @click="onSubmit"></v-icon>
+            <v-icon
+              color="primary"
+              icon="mdi-chevron-right-box"
+              size="x-large"
+              style="opacity: unset"
+              @click="onSubmit"
+            ></v-icon>
           </template>
         </v-textarea>
         <div class="d-flex justify-center align-center flex-wrap">

@@ -64,11 +64,12 @@ const emit = defineEmits<{
       <v-btn
         v-if="props.data.createdBy === user?.id"
         variant="outlined"
+        color="secondary"
         @click="emit('edit', props.data)"
       >
         編輯
       </v-btn>
-      <v-btn variant="flat" color="indigo-darken-3" @click="emit('open', props.data)"> 開啟 </v-btn>
+      <v-btn variant="flat" color="secondary" @click="emit('open', props.data)"> 開啟 </v-btn>
     </v-card-actions>
   </v-card>
 </template>

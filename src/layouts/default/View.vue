@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <v-main class="bg-grey-lighten-2">
+  <v-main>
     <router-view />
   </v-main>
 </template>

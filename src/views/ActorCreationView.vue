@@ -74,21 +74,27 @@ const onSubmit = handleSubmit(async (values) => {
   <v-container class="mb-6 h-100">
     <div class="h-100 d-flex justify-center align-center flex-column">
       <p class="text-h4">新增小書僮</p>
-      <v-sheet width="342" class="mx-auto mt-14 bg-grey-lighten-2">
+      <v-sheet width="342" class="mx-auto mt-14 bg-transparent">
         <v-form @submit.prevent="onSubmit">
           <v-text-field
             label="小書僮名稱"
             v-model="name.value.value"
+            variant="outlined"
+            color="black"
+            bg-color="white"
             :error-messages="name.errorMessage.value"
           ></v-text-field>
           <v-text-field
             label="Google 雲端資料網址"
             class="mt-2"
+            variant="outlined"
             v-model="url.value.value"
+            color="black"
+            bg-color="white"
             :error-messages="url.errorMessage.value"
           ></v-text-field>
           <div class="mt-16 d-flex justify-center">
-            <v-btn type="submit" color="indigo-darken-3" size="large">開始訓練</v-btn>
+            <v-btn type="submit" color="primary" size="large">開始訓練</v-btn>
           </div>
         </v-form>
       </v-sheet>

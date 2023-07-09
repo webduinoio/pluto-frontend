@@ -125,7 +125,7 @@ onMounted(async () => {
 <template>
   <v-window-item :value="props.value">
     <v-container>
-      <v-toolbar class="bg-grey-lighten-2">
+      <v-toolbar color="transparent">
         <v-spacer></v-spacer>
         <v-responsive max-width="270">
           <v-text-field
@@ -146,8 +146,8 @@ onMounted(async () => {
         <DatasetForm title="新增 Q & A" :actorID="store?.actorEditData?.id" @create="loadDataset" />
       </v-toolbar>
 
-      <v-list class="bg-grey-lighten-2" lines="two" max-height="460">
-        <template v-for="(item, idx) in datasets">
+      <v-list class="bg-transparent" lines="two" max-height="460">
+        <template v-for="(item, idx) in datasets" :key="idx">
           <v-list-item>
             <template v-slot:prepend>
               <p>{{ `#${idx + 1}` }}</p>
@@ -171,19 +171,19 @@ onMounted(async () => {
 
       <v-row align-content="center" class="mt-2">
         <v-col cols="12">
-          <v-btn color="#467974" class="text-white" size="large" @click="onTrain"> 再次訓練 </v-btn>
+          <v-btn color="primary" size="large" @click="onTrain"> 再次訓練 </v-btn>
         </v-col>
         <v-col cols="6">
           <v-progress-linear
             :active="training"
             :indeterminate="training"
-            color="#467974"
+            color="primary"
           ></v-progress-linear>
         </v-col>
       </v-row>
 
       <v-overlay :model-value="loading" class="align-center justify-center" persistent contained>
-        <v-progress-circular color="#467974" indeterminate size="40"></v-progress-circular>
+        <v-progress-circular color="primary" indeterminate size="40"></v-progress-circular>
       </v-overlay>
     </v-container>
   </v-window-item>

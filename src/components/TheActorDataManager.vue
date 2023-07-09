@@ -20,8 +20,8 @@ const tab = ref();
 <template>
   <v-window-item :value="props.value">
     <v-tabs v-model="tab" class="text-grey" color="black">
-      <v-tab class="text-h6" value="file">檔案</v-tab>
-      <v-tab class="text-h6" value="qa">Q & A</v-tab>
+      <v-tab class="text-h6 px-16" value="file">檔案</v-tab>
+      <v-tab class="text-h6 px-16" value="qa">Q & A</v-tab>
     </v-tabs>
 
     <v-window v-model="tab">

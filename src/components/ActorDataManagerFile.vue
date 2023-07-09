@@ -68,16 +68,15 @@ const onTrain = async () => {
     <v-container>
       <v-row>
         <v-col cols="12" class="d-flex align-center">
-          <div class="text-body-2 mr-2">
-            請開啟雲端硬碟資料夾，更新訓練資料後，點擊再次訓練。訓練資料說明
+          <div class="text-body-1 mr-2">
+            請開啟雲端硬碟資料夾，更新訓練資料後，點擊再次訓練。
+            <a
+              href="https://docs.google.com/document/d/1faGhiXiscEq5UJhNYN1O0PUdPizCXv5sXAirfMe5qDc/edit?usp=sharing"
+              target="_blank"
+              class="text-primary"
+              >訓練資料說明 <v-icon icon="mdi-open-in-new" size="x-small"></v-icon
+            ></a>
           </div>
-          <v-btn
-            size="x-small"
-            density="compact"
-            icon="mdi-open-in-new"
-            variant="plain"
-            color="grey-darken-2"
-          ></v-btn>
         </v-col>
       </v-row>
       <v-row align-content="center">
@@ -86,7 +85,7 @@ const onTrain = async () => {
         </v-col>
         <v-col>
           <v-btn
-            color="orange"
+            color="secondary"
             variant="outlined"
             size="large"
             :href="store?.actorEditData?.url"
@@ -98,13 +97,13 @@ const onTrain = async () => {
       </v-row>
       <v-row align-content="center">
         <v-col cols="12">
-          <v-btn color="#467974" class="text-white" size="large" @click="onTrain"> 再次訓練 </v-btn>
+          <v-btn color="primary" size="large" @click="onTrain"> 再次訓練 </v-btn>
         </v-col>
         <v-col cols="6">
           <v-progress-linear
             :active="training"
             :indeterminate="training"
-            color="#467974"
+            color="primary"
           ></v-progress-linear>
         </v-col>
       </v-row>

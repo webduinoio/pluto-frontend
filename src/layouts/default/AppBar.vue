@@ -9,7 +9,7 @@ const user = oauth.user;
 </script>
 
 <template>
-  <v-app-bar class="header px-3" color="#F1A23A">
+  <v-app-bar class="header px-3" color="secondary">
     <v-img
       class="logo"
       src="@/assets/logo.webp"

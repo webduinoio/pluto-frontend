@@ -41,7 +41,7 @@ const onOpen = () => {
         </template>
       </v-breadcrumbs>
       <v-main>
-        <v-toolbar class="bg-grey-lighten-2">
+        <v-toolbar class="bg-transparent">
           <v-toolbar-title class="text-h4 font-weight-bold">
             {{ store?.actorEditData?.name }}
             <v-btn icon="mdi-open-in-new" color="grey-darken-1" @click="onOpen"></v-btn>
@@ -49,9 +49,9 @@ const onOpen = () => {
 
           <template v-slot:extension>
             <v-tabs v-model="tab" class="text-grey" color="black">
-              <v-tab class="text-h6" value="setting">設定</v-tab>
-              <v-tab class="text-h6" value="dataManager">資料管理</v-tab>
-              <v-tab class="text-h6" value="advanced">進階設定</v-tab>
+              <v-tab class="text-h6 px-16" value="setting">設定</v-tab>
+              <v-tab class="text-h6 px-16" value="dataManager">資料管理</v-tab>
+              <v-tab class="text-h6 px-16" value="advanced">進階設定</v-tab>
             </v-tabs>
           </template>
         </v-toolbar>
