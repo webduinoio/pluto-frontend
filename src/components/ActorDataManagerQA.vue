@@ -147,7 +147,7 @@ onMounted(async () => {
       </v-toolbar>
 
       <v-list class="bg-grey-lighten-2" lines="two" max-height="460">
-        <template v-for="(item, idx) in datasets">
+        <template v-for="(item, idx) in datasets" :key="idx">
           <v-list-item>
             <template v-slot:prepend>
               <p>{{ `#${idx + 1}` }}</p>
