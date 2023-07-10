@@ -13,7 +13,7 @@ const { resetForm, handleSubmit } = useForm({
   },
   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
-    name: 'required',
+    name: 'required|max:50',
     url: 'required|url',
   },
 });
