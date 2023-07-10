@@ -68,7 +68,7 @@ const onDelete = async (id: number) => {
 <template>
   <v-container class="mb-6 d-flex justify-center">
     <v-responsive max-width="1024">
-      <div class="d-flex justify-space-between my-15">
+      <div class="d-flex justify-space-between mt-15">
         <div class="text-h4">我的小書僮</div>
         <v-btn
           color="primary"
@@ -78,19 +78,23 @@ const onDelete = async (id: number) => {
           新增小書僮
         </v-btn>
       </div>
-      <v-row class="mx-auto">
-        <TheActor
-          v-for="item in data"
-          :key="item.id"
-          height="380"
-          width="320"
-          class="ma-2 pa-2"
-          :data="item"
-          @edit="onEdit"
-          @open="onOpen"
-          @delete="onDelete"
-        />
-      </v-row>
+      <v-main>
+        <v-container>
+          <v-row>
+            <TheActor
+              v-for="item in data"
+              :key="item.id"
+              height="380"
+              width="320"
+              class="ma-2 pa-2"
+              :data="item"
+              @edit="onEdit"
+              @open="onOpen"
+              @delete="onDelete"
+            />
+          </v-row>
+        </v-container>
+      </v-main>
     </v-responsive>
   </v-container>
 </template>

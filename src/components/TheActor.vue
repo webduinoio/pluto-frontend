@@ -7,15 +7,9 @@ const user = oauth.user;
 const props = withDefaults(
   defineProps<{
     data: Actor;
-
-    // cssVarFooterFontSize?: string; // 設定 footer 的字型大小
-    // showIndex?: boolean;
-    // showIndexSymbol?: string;
   }>(),
   {
-    // cssVarFooterFontSize: '16px',
-    // showIndex: false,
-    // rowsItems: () => [10, 20, 30],
+    // nothing
   }
 );
 
@@ -77,10 +71,5 @@ const emit = defineEmits<{
 <style lang="scss" scoped>
 .description {
   min-height: 20px;
-}
-.text-truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 </style>
