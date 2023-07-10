@@ -19,8 +19,8 @@ const webduino: ThemeDefinition = {
     background: '#FAF8F4',
     primary: '#467974',
     secondary: '#F1A23A',
-    'on-primary': 'white',
-    'on-secondary': 'white'
+    'on-primary': '#FFFFFF',
+    'on-secondary': '#FFFFFF'
   },
 }
 
