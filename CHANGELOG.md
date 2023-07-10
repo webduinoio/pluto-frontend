@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
+
+## [1.0.0-alpha] - 2023-07-11
 
 ### Added
 
@@ -27,3 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
+
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/1.1.0...HEAD
+[1.0.0-alpha]: https://github.com/webduinoio/pluto-frontend/releases/tag/v1.0.0-alpha
