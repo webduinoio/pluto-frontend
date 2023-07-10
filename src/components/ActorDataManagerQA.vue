@@ -3,13 +3,13 @@ import DatasetForm from '@/components/DatasetForm.vue';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { getDatasets, trainActor } from '@/services';
 import { deleteDataset } from '@/services/dataset';
-import { useMainStore } from '@/stores/main';
-import type { Dataset } from '@/types';
+import type { Actor, Dataset } from '@/types';
 import { get, set } from '@vueuse/core';
 
 const props = withDefaults(
   defineProps<{
     value: string;
+    actor: Actor | undefined;
   }>(),
   {}
 );
@@ -19,7 +19,6 @@ const props = withDefaults(
 //   (e: 'update'): void;
 // }>();
 
-const store = useMainStore();
 const { fire, confirm, showLoading, hideLoading } = useSweetAlert();
 
 const training = ref(false);
@@ -30,10 +29,10 @@ const loading = ref(false);
 // TODO: 目前先支援載入 30 筆，後續需再調整
 const loadDataset = async (options = {}) => {
   try {
-    if (!store?.actorEditData?.id) {
+    if (!props.actor?.id) {
       return;
     }
-    const { data: value } = await getDatasets({ actorID: store.actorEditData.id, ...options });
+    const { data: value } = await getDatasets({ actorID: props.actor.id, ...options });
     set(datasets, value.list || []);
   } catch (err: any) {
     console.error(err);
@@ -72,17 +71,17 @@ const onDeleteDataset = async (data: Dataset) => {
 const onTrain = async () => {
   try {
     set(training, true);
-    if (!store?.actorEditData?.id) {
+    if (!props.actor?.id) {
       await fire({
         title: '發生錯誤',
         icon: 'error',
-        text: `資料不存在 id: ${store?.actorEditData?.id}`,
+        text: `資料不存在 id: ${props.actor?.id}`,
       });
       return;
     }
     const {
       data: { code },
-    } = await trainActor(store.actorEditData.id);
+    } = await trainActor(props.actor.id);
 
     if (code === 1) {
       await fire({
@@ -150,7 +149,7 @@ onMounted(async () => {
             :disabled="loading"
           ></v-text-field>
         </v-responsive>
-        <DatasetForm title="新增 Q & A" :actorID="store?.actorEditData?.id" @create="loadDataset" />
+        <DatasetForm title="新增 Q & A" :actorID="props.actor?.id" @create="loadDataset" />
       </v-toolbar>
 
       <v-list class="bg-transparent" lines="two" max-height="460">

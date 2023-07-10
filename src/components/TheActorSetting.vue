@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
-import { useMainStore } from '@/stores/main';
+import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 import { useField, useForm } from 'vee-validate';
 
 const props = withDefaults(
   defineProps<{
     value: string;
+    actor: Actor | undefined;
   }>(),
   {}
 );
 
-const store = useMainStore();
 const { fire } = useSweetAlert();
 
 // TODO: file 格式的檢查，再研究看看，真不行，就混合 vuetify3 的檢查
@@ -46,13 +46,13 @@ const onChange = (event: any) => {
 };
 
 const onSubmit = handleSubmit(async (values) => {
-  if (!store?.actorEditData?.id) return;
+  if (!props.actor?.id) return;
   try {
     set(loading, true);
     const form = new FormData();
     form.append('description', values.description);
     form.append('image', values.image);
-    await updateActor(store?.actorEditData?.id, form);
+    await updateActor(props.actor?.id, form);
     await fire({
       title: '更新完成',
       icon: 'success',
@@ -72,7 +72,7 @@ const onSubmit = handleSubmit(async (values) => {
 });
 
 onMounted(() => {
-  setFieldValue('description', store?.actorEditData?.description || '');
+  setFieldValue('description', props.actor?.description || '');
 });
 </script>
 

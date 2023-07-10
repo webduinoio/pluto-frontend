@@ -3,10 +3,13 @@ import TheActorAdvanced from '@/components/TheActorAdvanced.vue';
 import TheActorDataManager from '@/components/TheActorDataManager.vue';
 import TheActorSetting from '@/components/TheActorSetting.vue';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
-import { useMainStore } from '@/stores/main';
+import { getActor } from '@/services/actors';
+import type { Actor } from '@/types';
+import { set } from '@vueuse/core';
 
 const router = useRouter();
-const store = useMainStore();
+const route = useRoute();
+const actor = ref<Actor>();
 
 const tab = ref();
 
@@ -16,12 +19,21 @@ const onBack = () => {
   });
 };
 
+onMounted(async () => {
+  try {
+    const { data: value } = await getActor(Number(route.params.id));
+    set(actor, value);
+  } catch (err) {
+    console.error(err);
+  }
+});
+console.log(route.params);
+
 const onOpen = () => {
-  if (!store?.actorEditData?.id) return;
-  store.actorOpenID = store.actorEditData.id;
+  if (!actor.value?.type) return;
   const location = router.resolve({
     name:
-      store?.actorEditData?.type === ACTOR_TYPE.QUIZ
+      actor.value.type === ACTOR_TYPE.QUIZ
         ? ROUTER_NAME.STUDY_BUDDY_QUESTION
         : ROUTER_NAME.STUDY_BUDDY_QA,
   });
@@ -43,7 +55,7 @@ const onOpen = () => {
       <v-main>
         <v-toolbar class="bg-transparent">
           <v-toolbar-title class="text-h4 font-weight-bold">
-            {{ store?.actorEditData?.name }}
+            {{ actor?.name }}
             <v-btn icon="mdi-open-in-new" color="grey-darken-1" @click="onOpen"></v-btn>
           </v-toolbar-title>
 
@@ -58,9 +70,9 @@ const onOpen = () => {
         <v-divider :thickness="2" class="divider"></v-divider>
 
         <v-window v-model="tab">
-          <TheActorSetting value="setting" />
-          <TheActorDataManager value="dataManager" />
-          <TheActorAdvanced value="advanced" />
+          <TheActorSetting value="setting" :actor="actor" />
+          <TheActorDataManager value="dataManager" :actor="actor" />
+          <TheActorAdvanced value="advanced" :actor="actor" />
         </v-window>
       </v-main>
     </v-container>

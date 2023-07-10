@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { trainActor } from '@/services';
-import { useMainStore } from '@/stores/main';
+import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 
 const props = withDefaults(
   defineProps<{
     value: string;
+    actor: Actor | undefined;
   }>(),
   {}
 );
@@ -16,24 +17,23 @@ const props = withDefaults(
 //   (e: 'update'): void;
 // }>();
 
-const store = useMainStore();
 const { fire } = useSweetAlert();
 const training = ref(false);
 
 const onTrain = async () => {
   try {
     set(training, true);
-    if (!store?.actorEditData?.id) {
+    if (!props.actor?.id) {
       await fire({
         title: '發生錯誤',
         icon: 'error',
-        text: `資料不存在 id: ${store?.actorEditData?.id}`,
+        text: `資料不存在 id: ${props.actor?.id}`,
       });
       return;
     }
     const {
       data: { code },
-    } = await trainActor(store.actorEditData.id);
+    } = await trainActor(props.actor.id);
 
     if (code === 1) {
       await fire({
@@ -88,7 +88,7 @@ const onTrain = async () => {
             color="secondary"
             variant="outlined"
             size="large"
-            :href="store?.actorEditData?.url"
+            :href="props.actor?.url"
             target="_blank"
           >
             開啟

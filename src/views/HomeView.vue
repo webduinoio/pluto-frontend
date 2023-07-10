@@ -3,13 +3,11 @@ import TheActor from '@/components/TheActor.vue';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { deleteActor, getActors } from '@/services';
-import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
-const store = useMainStore();
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
@@ -24,9 +22,9 @@ onMounted(async () => {
 });
 
 const onEdit = (data: Actor) => {
-  store.setEditData(data);
   router.push({
     name: ROUTER_NAME.ACTOR_EDIT,
+    params: { id: data.id },
   });
 };
 
@@ -37,9 +35,9 @@ const getRouterName = (type: ACTOR_TYPE) => {
 };
 
 const onOpen = (data: Actor) => {
-  store.actorOpenID = data.id;
   router.push({
     name: getRouterName(data.type),
+    params: { id: data.id },
   });
 };
 

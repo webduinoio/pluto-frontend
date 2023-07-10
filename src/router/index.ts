@@ -22,22 +22,22 @@ const router = createRouter({
           component: () => import('@/views/ActorCreationView.vue'),
         },
         {
-          path: 'edit',
+          path: 'edit/:id',
           name: ROUTER_NAME.ACTOR_EDIT,
           component: () => import('@/views/ActorEditView.vue'),
         },
         {
-          path: 'qa',
+          path: 'qa/:id',
           name: ROUTER_NAME.STUDY_BUDDY_QA,
           component: () => import('@/views/StudyBuddyQAView.vue'),
         },
         {
-          path: 'generate-question',
+          path: 'generate-question/:id',
           name: ROUTER_NAME.STUDY_BUDDY_QUESTION,
           component: () => import('@/views/StudyBuddyQuestionView.vue'),
         },
         {
-          path: 'google-sheet',
+          path: 'google-sheet/:id',
           name: ROUTER_NAME.STUDY_BUDDY_GOOGLE_SHEET,
           component: () => import('@/views/StudyBuddyGoogleSheetView.vue'),
         },

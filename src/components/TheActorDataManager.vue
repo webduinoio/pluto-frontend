@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { Actor } from '@/types';
 import ActorDataManagerFile from './ActorDataManagerFile.vue';
 import ActorDataManagerQA from './ActorDataManagerQA.vue';
 
 const props = withDefaults(
   defineProps<{
     value: string;
+    actor: Actor | undefined;
   }>(),
   {}
 );
@@ -25,8 +27,8 @@ const tab = ref();
     </v-tabs>
 
     <v-window v-model="tab">
-      <ActorDataManagerFile value="file" />
-      <ActorDataManagerQA value="qa" />
+      <ActorDataManagerFile value="file" :actor="props.actor" />
+      <ActorDataManagerQA value="qa" :actor="props.actor" />
     </v-window>
   </v-window-item>
 </template>

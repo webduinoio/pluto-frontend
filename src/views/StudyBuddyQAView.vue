@@ -6,13 +6,12 @@ import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor } from '@/services';
-import { useMainStore } from '@/stores/main';
 import type { Actor } from '@/types/actors';
 import { get, set } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
-const store = useMainStore();
+const route = useRoute();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
 const messages = ref<{ type: string; message: string }[]>([]);
 const actorData = ref<Actor>();
@@ -36,7 +35,7 @@ const hintItems = ref([
 let _promptTemp: String = '';
 
 const loadData = async () => {
-  const actorOpenID = store.actorOpenID;
+  const actorOpenID = route.params.id;
 
   try {
     const { data }: { data: Actor } = await getActor(Number(get(actorOpenID)));
