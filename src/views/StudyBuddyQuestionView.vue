@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
-import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
+import { GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
@@ -20,7 +20,7 @@ const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋
 const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
 const markdownValueTemp = ref(''); // mqtt 更新前的訊息
-const assistantList = ref<string[]>(['']);
+const assistantList = ref<Actor[]>([]);
 const assistant = ref('');
 const knowledgePoint = ref('');
 const numberOfChoiceQuestion = ref(1);
@@ -55,10 +55,7 @@ const addMessage = (role: string, msg: string) => {
 const loadData = async () => {
   try {
     const { data }: { data: { list: Actor[] } } = await getActors();
-    const assistants = data.list
-      .filter((actor) => actor.type === ACTOR_TYPE.TUTORIAL)
-      .map((actor) => actor.name);
-    assistantList.value.push(...assistants);
+    assistantList.value.push(...data.list);
   } catch (err: any) {
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
@@ -305,6 +302,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   <v-select
                     label="出題範圍"
                     :items="assistantList"
+                    item-title="name"
+                    item-value="uuid"
                     variant="solo"
                     density="compact"
                     hide-details="auto"
