@@ -23,6 +23,7 @@ const sheetUrl = ref('');
 const sheetName = ref('');
 const sheetValue = ref([]);
 const loadingSheet = ref(false);
+const messageScrollTarget = ref<HTMLFormElement>();
 let _promptTemp: String = '';
 
 const _loadSheetData = async () => {
@@ -63,6 +64,8 @@ const handleMsg = (msg: string) => {
 };
 
 const onSubmit = () => {
+  if (!sheetValue.value.length) return;
+
   set(mqttLoading, true);
   mqttMsgLeftView.value.splice(0);
   mqttMsgRightView.value.splice(0);
@@ -110,6 +113,22 @@ watch(
     url && name && loadSheetData();
   },
   { immediate: true }
+);
+
+watch(
+  messages,
+  () => {
+    nextTick(() => {
+      if (messageScrollTarget.value) {
+        messageScrollTarget.value.$el.querySelector('.v-sheet:last-child').scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest',
+        });
+      }
+    });
+  },
+  { deep: true }
 );
 
 /**
@@ -169,27 +188,29 @@ mqtt.init((msg: string, isEnd: boolean) => {
         </v-form>
 
         <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
-          <v-container class="pa-2 pt-0">
-            <v-sheet
-              border
-              rounded
-              class="text-body-1 mx-auto mt-2"
-              v-for="(msg, index) in messages"
-              :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-              :key="index"
-            >
-              <v-container fluid>
-                <v-row>
-                  <v-col cols="auto">
-                    <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                  </v-col>
-                  <v-col>
-                    <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-sheet>
-          </v-container>
+          <div class="w-100">
+            <v-container class="pa-2 pt-0" ref="messageScrollTarget">
+              <v-sheet
+                border
+                rounded
+                class="text-body-1 mx-auto mt-2"
+                v-for="(msg, index) in messages"
+                :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+                :key="index"
+              >
+                <v-container fluid>
+                  <v-row>
+                    <v-col cols="auto">
+                      <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                    </v-col>
+                    <v-col>
+                      <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-sheet>
+            </v-container>
+          </div>
         </v-layout>
 
         <v-divider class="mt-2"></v-divider>
@@ -242,7 +263,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
               color="primary"
               icon="mdi-chevron-right-box"
               size="x-large"
-              style="opacity: unset"
+              :style="{
+                cursor: sheetValue.length ? 'pointer' : 'not-allowed',
+                opacity: sheetValue.length ? 'unset' : '',
+              }"
               @click="onSubmit"
             ></v-icon>
           </template>

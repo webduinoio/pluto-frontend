@@ -23,6 +23,7 @@ const markdownValue = ref('');
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
+const messageScrollTarget = ref<HTMLFormElement>();
 const hintSelect = ref('');
 const hintItems = ref([
   { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
@@ -85,6 +86,22 @@ watch(hintSelect, (val) => {
   set(prompt, val);
 });
 
+watch(
+  messages,
+  () => {
+    nextTick(() => {
+      if (messageScrollTarget.value) {
+        messageScrollTarget.value.$el.querySelector('.v-sheet:last-child').scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest',
+        });
+      }
+    });
+  },
+  { deep: true }
+);
+
 mqtt.init((msg: string, isEnd: boolean) => {
   if (isEnd) {
     set(mqttLoading, false);
@@ -141,27 +158,29 @@ mqtt.init((msg: string, isEnd: boolean) => {
         </v-form>
 
         <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
-          <v-container class="pa-2 pt-0">
-            <v-sheet
-              border
-              rounded
-              class="text-body-1 mx-auto mt-2"
-              v-for="(msg, index) in messages"
-              :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-              :key="index"
-            >
-              <v-container fluid>
-                <v-row>
-                  <v-col cols="auto">
-                    <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                  </v-col>
-                  <v-col>
-                    <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-sheet>
-          </v-container>
+          <div class="w-100">
+            <v-container class="pa-2 pt-0" ref="messageScrollTarget">
+              <v-sheet
+                border
+                rounded
+                class="text-body-1 mx-auto mt-2"
+                v-for="(msg, index) in messages"
+                :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+                :key="index"
+              >
+                <v-container fluid>
+                  <v-row>
+                    <v-col cols="auto">
+                      <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                    </v-col>
+                    <v-col>
+                      <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-sheet>
+            </v-container>
+          </div>
         </v-layout>
 
         <v-divider class="mt-2"></v-divider>

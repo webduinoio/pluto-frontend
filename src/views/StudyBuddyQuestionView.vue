@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
-import { GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
+import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
@@ -10,6 +10,7 @@ import type { Actor, ChoiceType, QAType } from '@/types';
 import { get, set, useClipboard } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+import { nextTick } from 'vue';
 
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
@@ -28,6 +29,8 @@ const numberOfAnswerQuestion = ref(1);
 const { fire, Swal } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
+const messageScrollTarget = ref<HTMLFormElement>();
+const markdownValueScrollTarget = ref<HTMLFormElement>();
 const { copy } = useClipboard();
 const ROLE_TYPE = {
   USER: 'user',
@@ -55,7 +58,7 @@ const addMessage = (role: string, msg: string) => {
 const loadData = async () => {
   try {
     const { data }: { data: { list: Actor[] } } = await getActors();
-    assistantList.value.push(...data.list);
+    assistantList.value.push(...data.list.filter((datum) => datum.type === ACTOR_TYPE.TUTORIAL));
   } catch (err: any) {
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
@@ -127,6 +130,7 @@ const handleMsg = (msg: string) => {
 };
 
 const onSubmit = () => {
+  if (!assistant.value) return;
   set(mqttLoading, true);
   mqttMsgLeftView.value.splice(0);
   // 增加空白，就不會用 cache, e.g. mqtt.publish(`${get(actor)}: ${getPayload()}`);
@@ -203,12 +207,40 @@ const onVoiceMessage = async (value: string) => {
 loadData();
 
 watch(mqttLoading, (val) => {
-  val && set(prompt, '');
+  if (val) {
+    set(prompt, '');
+    set(hintSelect, '');
+  }
 });
 
 watch(hintSelect, (val) => {
   set(prompt, val);
 });
+
+watch(
+  messages,
+  () => {
+    nextTick(() => {
+      if (messageScrollTarget.value) {
+        messageScrollTarget.value.$el.querySelector('.v-sheet:last-child').scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest',
+        });
+      }
+      setTimeout(() => {
+        if (markdownValueScrollTarget.value) {
+          markdownValueScrollTarget.value.$el.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'nearest',
+          });
+        }
+      }, 1000);
+    });
+  },
+  { deep: true }
+);
 
 /**
  * 思維工具的 mqtt，訊息格式與問答小書僮不一致
@@ -269,27 +301,29 @@ mqtt.init((msg: string, isEnd: boolean) => {
         </v-form>
 
         <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
-          <v-container class="pa-2 pt-0">
-            <v-sheet
-              border
-              rounded
-              class="text-body-1 mx-auto mt-2"
-              v-for="(msg, index) in messages"
-              :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-              :key="`${index}-${msg.type}-${msg.message}`"
-            >
-              <v-container fluid>
-                <v-row>
-                  <v-col cols="auto">
-                    <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                  </v-col>
-                  <v-col>
-                    <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-sheet>
-          </v-container>
+          <div class="w-100">
+            <v-container class="pa-2 pt-0" ref="messageScrollTarget">
+              <v-sheet
+                border
+                rounded
+                class="text-body-1 mx-auto mt-2"
+                v-for="(msg, index) in messages"
+                :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+                :key="`${index}-${msg.type}`"
+              >
+                <v-container fluid>
+                  <v-row>
+                    <v-col cols="auto">
+                      <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                    </v-col>
+                    <v-col>
+                      <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-sheet>
+            </v-container>
+          </div>
         </v-layout>
 
         <v-divider class="mt-2"></v-divider>
@@ -365,8 +399,11 @@ mqtt.init((msg: string, isEnd: boolean) => {
             <v-icon
               color="primary"
               icon="mdi-chevron-right-box"
+              :style="{
+                cursor: !assistant ? 'not-allowed' : 'pointer',
+                opacity: !assistant ? '' : 'unset',
+              }"
               size="x-large"
-              style="opacity: unset"
               @click="onSubmit"
             ></v-icon>
           </template>
@@ -391,7 +428,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
     </pane>
     <pane size="80">
       <v-card class="h-100 overflow-y-auto" max-height="calc(100vh - 64px)">
-        <v-layout>
+        <v-layout ref="markdownValueScrollTarget">
           <v-app-bar>
             <v-app-bar-title class="text-grey-darken-1 font-weight-bold">題目預覽</v-app-bar-title>
             <v-spacer></v-spacer>
