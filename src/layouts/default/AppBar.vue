@@ -35,11 +35,11 @@ const user = oauth.user;
             <p class="text-caption mt-1">
               {{ user?.email }}
             </p>
-            <div class="d-flex flex-column justify-center">
+            <!-- <div class="d-flex flex-column justify-center">
               <v-btn rounded variant="text"> 方案 </v-btn>
               <v-btn rounded variant="text"> 語言 </v-btn>
               <v-btn rounded variant="text"> 我的群組 </v-btn>
-            </div>
+            </div> -->
             <v-divider class="mb-9 mt-1"></v-divider>
             <v-btn variant="outlined" density="comfortable" rounded="lg" @click="logout">
               登出
