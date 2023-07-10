@@ -71,9 +71,12 @@ const onSubmit = handleSubmit(async (values) => {
   }
 });
 
-onMounted(async () => {
-  setFieldValue('prompt', props.actor?.prompt || '');
-});
+watch(
+  () => props.actor,
+  (val) => {
+    setFieldValue('prompt', val?.prompt || '');
+  }
+);
 </script>
 
 <template>

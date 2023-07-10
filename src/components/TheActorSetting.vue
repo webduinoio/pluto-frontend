@@ -71,9 +71,13 @@ const onSubmit = handleSubmit(async (values) => {
   }
 });
 
-onMounted(() => {
-  setFieldValue('description', props.actor?.description || '');
-});
+watch(
+  () => props.actor,
+  (val) => {
+    setFieldValue('description', val?.description || '');
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

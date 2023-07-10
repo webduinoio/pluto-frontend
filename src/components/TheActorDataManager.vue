@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Actor } from '@/types';
+import { set } from '@vueuse/core';
 import ActorDataManagerFile from './ActorDataManagerFile.vue';
 import ActorDataManagerQA from './ActorDataManagerQA.vue';
 
@@ -11,10 +12,19 @@ const props = withDefaults(
   {}
 );
 
+const datum = ref<Actor>();
+
 // const emit = defineEmits<{
 //   (e: 'create'): void;
 //   (e: 'update'): void;
 // }>();
+
+watch(
+  () => props.actor,
+  (val) => {
+    set(datum, val);
+  }
+);
 
 const tab = ref();
 </script>
@@ -27,8 +37,8 @@ const tab = ref();
     </v-tabs>
 
     <v-window v-model="tab">
-      <ActorDataManagerFile value="file" :actor="props.actor" />
-      <ActorDataManagerQA value="qa" :actor="props.actor" />
+      <ActorDataManagerFile value="file" :actor="datum" />
+      <ActorDataManagerQA value="qa" :actor="datum" />
     </v-window>
   </v-window-item>
 </template>
