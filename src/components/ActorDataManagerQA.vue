@@ -92,6 +92,13 @@ const onTrain = async () => {
       });
       return;
     }
+
+    await fire({
+      title: '訓練完成',
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false,
+    });
   } catch (err: any) {
     console.error(err);
     await fire({
