@@ -27,7 +27,6 @@ onMounted(async () => {
     console.error(err);
   }
 });
-console.log(route.params);
 
 const onOpen = () => {
   if (!actor.value?.type) return;
