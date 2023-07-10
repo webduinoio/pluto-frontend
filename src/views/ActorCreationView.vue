@@ -62,6 +62,14 @@ const onSubmit = handleSubmit(async (values) => {
           showConfirmButton: false,
           timer: 1500,
         });
+      } else if (code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
+        fire({
+          title: '發生錯誤',
+          icon: 'error',
+          text: '資料夾權限不足',
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     } else {
       console.error('unexpected error: ', err);
