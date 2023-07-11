@@ -50,8 +50,6 @@ const onCreate = async () => {
     });
   } finally {
     hideLoading();
-    set(question, '');
-    set(answer, '');
   }
 };
 
@@ -112,6 +110,11 @@ watch(
   },
   { immediate: true }
 );
+
+watch(dialog, () => {
+  set(question, '');
+  set(answer, '');
+});
 </script>
 
 <template>
