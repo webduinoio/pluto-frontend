@@ -19,8 +19,8 @@ export enum GENERATE_QUESTION_TYPE {
 
 // TODO: 後續需要根據正式機/測試機進行調整
 export enum MQTT_TOPIC {
-  KN = 'kn@chat-staging', // 小書僮
-  CODE = 'code@chat-staging', // 思維工具
+  KN = 'kn@chat', // 小書僮
+  CODE = 'code@chat', // 思維工具
 }
 
 export enum ACTOR_TYPE {
