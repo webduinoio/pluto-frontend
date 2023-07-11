@@ -47,6 +47,8 @@ const loadData = async () => {
 };
 
 const onSubmit = () => {
+  if (!prompt.value) return;
+
   set(mqttLoading, true);
   set(msg1, '');
   set(msg2, '');
@@ -201,7 +203,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
             <v-icon
               color="primary"
               icon="mdi-chevron-right-box"
-              style="opacity: unset"
+              :style="{
+                cursor: prompt ? 'pointer' : 'not-allowed',
+                opacity: prompt ? 'unset' : '',
+              }"
               size="x-large"
               @click="onSubmit"
             ></v-icon>
