@@ -16,8 +16,6 @@ const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
 const messages = ref<{ type: string; message: string }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
-const msg1 = ref('');
-const msg2 = ref('');
 const uid = ref('');
 const markdownValue = ref('');
 const { fire } = useSweetAlert();
@@ -50,8 +48,6 @@ const onSubmit = () => {
   if (!prompt.value) return;
 
   set(mqttLoading, true);
-  set(msg1, '');
-  set(msg2, '');
   set(uid, '');
   mqtt.publish(`${get(actorData)?.uuid}:${get(prompt)}`);
   messages.value.push({
@@ -105,6 +101,7 @@ watch(
 );
 
 mqtt.init((msg: string, isEnd: boolean) => {
+  if (!msg || msg.trim().length === 0) return;
   if (isEnd) {
     set(mqttLoading, false);
     // 其中包含 uuid 的部份，在這裡暫時無用
@@ -114,20 +111,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
       newMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    set(msg2, newMsg);
-
     set(markdownValue, newMsg);
-
-    if (get(msg1)) {
-      messages.value.push({
-        type: 'ai',
-        message: get(msg1),
-      });
-    }
   } else {
-    if (!msg || msg.trim().length === 0) return;
-    // 這裡會需要加換行，由於並非一次就完整送達的關係
-    get(msg1) ? set(msg1, get(msg1) + '\n' + msg) : set(msg1, msg);
+    messages.value.push({
+      type: 'ai',
+      message: msg,
+    });
   }
 });
 </script>
