@@ -264,8 +264,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
               icon="mdi-chevron-right-box"
               size="x-large"
               :style="{
-                cursor: sheetValue.length ? 'pointer' : 'not-allowed',
-                opacity: sheetValue.length ? 'unset' : '',
+                cursor: sheetValue.length && prompt ? 'pointer' : 'not-allowed',
+                opacity: sheetValue.length && prompt ? 'unset' : '',
               }"
               @click="onSubmit"
             ></v-icon>

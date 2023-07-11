@@ -97,7 +97,9 @@ const onTrain = async () => {
       </v-row>
       <v-row align-content="center">
         <v-col cols="12">
-          <v-btn color="primary" size="large" @click="onTrain"> 再次訓練 </v-btn>
+          <v-btn color="primary" size="large" @click="onTrain" :disabled="training">
+            再次訓練
+          </v-btn>
         </v-col>
         <v-col cols="6">
           <v-progress-linear
