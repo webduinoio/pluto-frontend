@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import TheMarkdown from '@/components/TheMarkdown.vue';
+import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
@@ -13,7 +13,7 @@ import 'splitpanes/dist/splitpanes.css';
 
 const route = useRoute();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const messages = ref<{ type: string; message: string }[]>([]);
+const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -32,6 +32,7 @@ const hintItems = ref([
   { title: '題目解析', value: '[你的題目和選項]\n盡可能詳細解釋為什麼這題答案是[正確選項]' },
 ]);
 let _promptTemp: String = '';
+let respMsg: string[] = [];
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -43,16 +44,16 @@ const loadData = async () => {
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
 };
-
+let cnt = 0;
 const onSubmit = () => {
   if (!prompt.value) return;
 
   set(mqttLoading, true);
   set(uid, '');
   mqtt.publish(`${get(actorData)?.uuid}:${get(prompt)}`);
-  messages.value.push({
+  actors.value.push({
     type: 'user',
-    message: get(prompt),
+    messages: [get(prompt)],
   });
 };
 
@@ -85,13 +86,13 @@ watch(hintSelect, (val) => {
 });
 
 watch(
-  messages,
+  actors,
   () => {
     nextTick(() => {
       if (messageScrollTarget.value) {
         messageScrollTarget.value.$el.querySelector('.v-sheet:last-child').scrollIntoView({
           behavior: 'smooth',
-          block: 'start',
+          block: 'end',
           inline: 'nearest',
         });
       }
@@ -103,6 +104,7 @@ watch(
 mqtt.init((msg: string, isEnd: boolean) => {
   if (!msg || msg.trim().length === 0) return;
   if (isEnd) {
+    respMsg = [];
     set(mqttLoading, false);
     // 其中包含 uuid 的部份，在這裡暫時無用
     const uuid = msg.split('\n\n$UUID$')[1];
@@ -113,10 +115,16 @@ mqtt.init((msg: string, isEnd: boolean) => {
     }
     set(markdownValue, newMsg);
   } else {
-    messages.value.push({
-      type: 'ai',
-      message: msg,
-    });
+    if (respMsg.length == 0) {
+      respMsg.push(msg);
+      actors.value.push({
+        type: 'ai',
+        messages: respMsg,
+      });
+    } else {
+      respMsg.push(msg);
+      actors.value = [...actors.value];
+    }
   }
 });
 </script>
@@ -151,25 +159,35 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
           <div class="w-100">
             <v-container class="pa-2 pt-0" ref="messageScrollTarget">
-              <v-sheet
-                border
-                rounded
-                class="text-body-1 mx-auto mt-2"
-                v-for="(msg, index) in messages"
-                :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-                :key="index"
-              >
-                <v-container fluid>
-                  <v-row>
-                    <v-col cols="auto">
-                      <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                    </v-col>
-                    <v-col>
-                      <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-sheet>
+              <div>
+                <v-sheet
+                  border
+                  rounded
+                  class="text-body-1 mx-auto mt-2"
+                  v-for="(actor, index) in actors"
+                  :color="actor.type === 'ai' ? 'grey-lighten-1' : ''"
+                  :key="index"
+                >
+                  <v-container>
+                    <v-row fluid v-for="(msg, msgIdx) in actor.messages" :key="msgIdx">
+                      <v-col cols="auto">
+                        <v-icon
+                          :icon="
+                            actor.type === 'ai'
+                              ? msgIdx === 0
+                                ? 'mdi-robot'
+                                : ''
+                              : 'mdi-account-box'
+                          "
+                        ></v-icon>
+                      </v-col>
+                      <v-col style="padding: 12px 12px 3px 12px">
+                        <div v-html="msg"></div>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-sheet>
+              </div>
             </v-container>
           </div>
         </v-layout>
@@ -218,7 +236,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
           </v-card-item>
         </v-card>
-        <TheMarkdown class="mx-8 my-6" :value="markdownValue" />
+        <ThePDFViewer class="mx-8 my-6" :value="markdownValue" />
       </div>
     </pane>
   </splitpanes>
