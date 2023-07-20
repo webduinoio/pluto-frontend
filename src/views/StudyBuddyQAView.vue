@@ -77,11 +77,10 @@ const onVoiceMessage = async (value: string) => {
 };
 
 const onReferenceMessage = (endMsg: string) => {
-  //set(referenceData, endMsg);
   var info: Array<object> = JSON.parse(endMsg);
   var links = '<div style="text-align:right">';
   var idxLink = 1;
-  console.log(info);
+  var keywordAmt = 0;
   for (var i in info) {
     var idx = parseInt(i);
     var item = info[idx] as { score: number; content: string; url: string };
@@ -100,11 +99,14 @@ const onReferenceMessage = (endMsg: string) => {
         break;
       }
     }
-    let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
-    links += `<a href="#" onclick="${link}">[${idxLink++}]</a> `;
+    if (keyword != '') {
+      keywordAmt++;
+      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
+      links += `<a href="#" onclick="${link}">[${idxLink++}]</a> `;
+    }
   }
   links += '</div>';
-  return links;
+  return keywordAmt == 0 ? '' : links;
 };
 
 loadData();
@@ -143,7 +145,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
       endMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    respMsg.push(onReferenceMessage(endMsg));
+    var linkInfo = onReferenceMessage(endMsg);
+    if (linkInfo != '') respMsg.push(linkInfo);
     actors.value = [...actors.value];
     respMsg = [];
     set(mqttLoading, false);
