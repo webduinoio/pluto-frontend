@@ -79,7 +79,7 @@ const onVoiceMessage = async (value: string) => {
 const onReferenceMessage = (endMsg: string) => {
   //set(referenceData, endMsg);
   var info: Array<object> = JSON.parse(endMsg);
-  var links = '';
+  var links = '<div style="text-align:right">';
   var idxLink = 1;
   console.log(info);
   for (var i in info) {
@@ -103,6 +103,7 @@ const onReferenceMessage = (endMsg: string) => {
     let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
     links += `<a href="#" onclick="${link}">[${idxLink++}]</a> `;
   }
+  links += '</div>';
   return links;
 };
 

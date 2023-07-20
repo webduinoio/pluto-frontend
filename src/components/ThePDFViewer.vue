@@ -1,29 +1,7 @@
 <script setup lang="ts">
-/**
- * 使用 showdown.js 來呈現 markdown 的內容
- */
-
-const props = withDefaults(
-  defineProps<{
-    value: string;
-  }>(),
-  {
-    value: '',
-  }
-);
-
-const html = ref('');
 const myPDF = pdf;
 
-watch(
-  () => props.value,
-  (val) => {
-    console.log('watch>>>', val);
-  },
-  { immediate: true }
-);
-
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 onMounted(() => {
   const ele = document.getElementById('pdfContainer');
   myPDF.setViewElement(ele);
@@ -31,7 +9,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-html="html" id="pdfContainer"></div>
+  <div id="pdfContainer"></div>
 </template>
 <style>
 #pdfContainer {
@@ -58,7 +36,7 @@ onMounted(() => {
   top: 50%;
   transform: translateY(-50%);
   text-align: center;
-  font-size: 3em;
+  font-size: 1.6em;
   width: 100%;
 }
 </style>

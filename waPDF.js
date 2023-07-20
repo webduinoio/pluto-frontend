@@ -78,7 +78,7 @@ class PDF {
 
     try {
       this.pdfContainer.innerHTML = '';
-      this.showMsg('PDF loading...xx', pdfUrl);
+      this.showMsg('PDF loading...', pdfUrl);
       this.loadingEffect(true);
       // Start loading the PDF
       const pdfDoc = await pdfjsLib.getDocument(this.pdfUrl).promise;
@@ -199,7 +199,7 @@ class PDF {
       overlay.className = 'pdfContainer-overlay';
       var loading = document.createElement('div');
       loading.className = 'pdfContainer-loading';
-      loading.textContent = 'loading...';
+      loading.textContent = '檔案下載中...';
       overlay.appendChild(loading);
       ele.appendChild(overlay);
     } else if (!show && overlay) {
