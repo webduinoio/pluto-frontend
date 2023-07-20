@@ -6,8 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Test
-- test push flow
+### Changed
+
+- 改用 PDF 預覽 - ui [#49195](https://redmine.kingkit.codes/issues/7062#change-49195)
 
 ## [1.0.0-alpha] - 2023-07-11
 
