@@ -1,10 +1,17 @@
 <script setup lang="ts">
-const myPDF = pdf;
+declare global {
+  interface Window {
+    pdf: any;
+  }
+}
+import PDF from '../waPDF.js';
+const myPDF = new PDF();
 
-import { onMounted } from 'vue';
 onMounted(() => {
   const ele = document.getElementById('pdfContainer');
   myPDF.setViewElement(ele);
+
+  window.pdf = myPDF;
 });
 </script>
 
@@ -40,3 +47,4 @@ onMounted(() => {
   width: 100%;
 }
 </style>
+../waPDF.js
