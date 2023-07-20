@@ -2,6 +2,7 @@ import { MQTT_TOPIC } from '@/enums';
 
 class MQTTApp {
   userId: string;
+  
   client: any;
   options: any;
   pubTopic: string;
