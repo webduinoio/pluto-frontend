@@ -17,7 +17,8 @@ const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-const markdownValue = ref('');
+const referenceData = ref('');
+
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
@@ -44,7 +45,7 @@ const loadData = async () => {
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
 };
-let cnt = 0;
+
 const onSubmit = () => {
   if (!prompt.value) return;
 
@@ -73,6 +74,41 @@ const onVoiceStop = () => {
 
 const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
+};
+
+const onReferenceLinkClick = (item: any) => {
+  console.log('okokokok:', item);
+  //set(referenceData, item);
+};
+
+const onReferenceMessage = (endMsg: string) => {
+  //set(referenceData, endMsg);
+  var info: Array<object> = JSON.parse(endMsg);
+  var links = '';
+  var idxLink = 1;
+  console.log(info);
+  for (var i in info) {
+    var idx = parseInt(i);
+    var item = info[idx] as { score: number; content: string; url: string };
+    if (idx > 0 && item.score < 0.8) continue;
+    var content = item.content.split('\n');
+    var keyword = '';
+    for (var line in content) {
+      console.log('line:[' + content[line] + ']');
+      if (
+        content[line].trim() != '' &&
+        !content[line].trim().startsWith('#') &&
+        !content[line].trim().startsWith('https://')
+      ) {
+        keyword = content[line];
+        console.log('keyword:', keyword);
+        break;
+      }
+    }
+    let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
+    links += `<a href="#" onclick="${link}">[${idxLink++}]</a> `;
+  }
+  return links;
 };
 
 loadData();
@@ -104,16 +140,17 @@ watch(
 mqtt.init((msg: string, isEnd: boolean) => {
   if (!msg || msg.trim().length === 0) return;
   if (isEnd) {
-    respMsg = [];
-    set(mqttLoading, false);
     // 其中包含 uuid 的部份，在這裡暫時無用
     const uuid = msg.split('\n\n$UUID$')[1];
-    let newMsg = msg;
+    let endMsg = msg;
     if (uuid) {
-      newMsg = msg.split('\n\n$UUID$')[0];
+      endMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    set(markdownValue, newMsg);
+    respMsg.push(onReferenceMessage(endMsg));
+    actors.value = [...actors.value];
+    respMsg = [];
+    set(mqttLoading, false);
   } else {
     if (respMsg.length == 0) {
       respMsg.push(msg);
@@ -131,7 +168,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
 <template>
   <splitpanes class="default-theme">
-    <pane min-size="30" size="30">
+    <pane min-size="40" size="40">
       <div class="d-flex flex-column h-100 left-panel overflow-auto">
         <v-card class="flex-shrink-0">
           <v-card-item prepend-icon="mdi-home">
@@ -229,15 +266,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
         </div>
       </div>
     </pane>
-    <pane size="80">
-      <div class="h-100 right-panel">
-        <v-card>
-          <v-card-item>
-            <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
-          </v-card-item>
-        </v-card>
-        <ThePDFViewer class="mx-8 my-6" :value="markdownValue" />
-      </div>
+    <pane size="60" class="h-100 right-panel">
+      <v-card>
+        <v-card-item>
+          <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
+        </v-card-item>
+      </v-card>
+      <ThePDFViewer class="mx-8 my-6 custom-pdf-viewer" :value="referenceData" />
     </pane>
   </splitpanes>
 </template>
@@ -251,8 +286,11 @@ mqtt.init((msg: string, isEnd: boolean) => {
 }
 
 .right-panel {
-  max-height: calc(100vh - 64px);
+  max-height: 100vh;
   overflow-y: auto;
+}
+.custom-pdf-viewer {
+  height: calc(100vh - 150px);
 }
 
 @keyframes micAnimation {
