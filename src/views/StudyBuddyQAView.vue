@@ -76,11 +76,6 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
-const onReferenceLinkClick = (item: any) => {
-  console.log('okokokok:', item);
-  //set(referenceData, item);
-};
-
 const onReferenceMessage = (endMsg: string) => {
   //set(referenceData, endMsg);
   var info: Array<object> = JSON.parse(endMsg);
@@ -171,9 +166,16 @@ mqtt.init((msg: string, isEnd: boolean) => {
     <pane min-size="40" size="40">
       <div class="d-flex flex-column h-100 left-panel overflow-auto">
         <v-card class="flex-shrink-0">
-          <v-card-item prepend-icon="mdi-home">
-            <v-card-subtitle>問答小書僮</v-card-subtitle>
-            <v-card-title>{{ actorData?.name }}</v-card-title>
+          <v-card-item>
+            <v-row fluid>
+              <v-col cols="auto" class="image-container">
+                <img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
+              </v-col>
+              <v-col>
+                <v-card-subtitle>問答小書僮</v-card-subtitle>
+                <v-card-title>{{ actorData?.name }}</v-card-title>
+              </v-col>
+            </v-row>
           </v-card-item>
         </v-card>
 
@@ -291,6 +293,17 @@ mqtt.init((msg: string, isEnd: boolean) => {
 }
 .custom-pdf-viewer {
   height: calc(100vh - 165px);
+}
+
+.image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rounded-image {
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 @keyframes micAnimation {
