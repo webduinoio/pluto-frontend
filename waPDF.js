@@ -52,9 +52,7 @@ class PDF {
 
   async load(pdfUrl) {
     if (typeof pdfUrl == 'undefined' || pdfUrl == '') return;
-    this.showMsg('PDF loading...', pdfUrl);
     this.pdfUrl = pdfUrl;
-    this.pdfContainer = document.getElementById('pdfContainer');
     this.scale = 1; // Initialize scale
     this.highlightTimeout = 0;
     this.selectedText = '';
@@ -80,6 +78,8 @@ class PDF {
 
     try {
       this.pdfContainer.innerHTML = '';
+      this.showMsg('PDF loading...xx', pdfUrl);
+      this.loadingEffect(true);
       // Start loading the PDF
       const pdfDoc = await pdfjsLib.getDocument(this.pdfUrl).promise;
       this.pdfDoc = pdfDoc; // Save the pdfDoc
@@ -97,6 +97,7 @@ class PDF {
       // Handle any errors that occur during loading
       console.error('Error loading PDF:', error);
     }
+    this.loadingEffect(false);
     this.showMsg('PDF loading...done.');
   }
 
@@ -170,7 +171,7 @@ class PDF {
                 matchIndex++;
 
                 if (matchIndex >= keywords.length) {
-                  matches.forEach((element) => element.classList.add('highlight'));
+                  matches.forEach((element) => element.classList.add('pdfContainer-highlight'));
                   matches = [];
                   matchIndex = 0;
                 }
@@ -188,6 +189,22 @@ class PDF {
 
   nowPage() {
     return this.nowPageNum;
+  }
+
+  loadingEffect(show) {
+    var ele = this.pdfContainer;
+    var overlay = ele.getElementsByClassName('pdfContainer-overlay')[0];
+    if (show && !overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'pdfContainer-overlay';
+      var loading = document.createElement('div');
+      loading.className = 'pdfContainer-loading';
+      loading.textContent = 'loading...';
+      overlay.appendChild(loading);
+      ele.appendChild(overlay);
+    } else if (!show && overlay) {
+      ele.removeChild(overlay);
+    }
   }
 
   page(pageNum) {
@@ -280,9 +297,9 @@ class PDF {
         if (target.tagName.toLowerCase() !== 'span') return;
 
         // Remove all existing highlights
-        var highlightedElements = document.querySelectorAll('.highlight');
+        var highlightedElements = document.querySelectorAll('.pdfContainer-highlight');
         highlightedElements.forEach(function (element) {
-          element.classList.remove('highlight');
+          element.classList.remove('pdfContainer-highlight');
         });
 
         // Get the position of the target element
@@ -315,7 +332,7 @@ class PDF {
 
           // Highlight all elements in the same block
           sameBlockElements.forEach(function (element) {
-            element.classList.add('highlight');
+            element.classList.add('pdfContainer-highlight');
           });
         }
       }, 1000);

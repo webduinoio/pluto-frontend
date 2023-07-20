@@ -290,7 +290,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
   overflow-y: auto;
 }
 .custom-pdf-viewer {
-  height: calc(100vh - 150px);
+  height: calc(100vh - 165px);
 }
 
 @keyframes micAnimation {
