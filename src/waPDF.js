@@ -85,59 +85,58 @@ class PDF {
     }
     return pages;
   }
+
   async mark(keyword) {
-    // Normalize the keyword
-    keyword = keyword.trim();
+    // Ensure the document is loaded
+    if (!this.pdfDoc) {
+      console.error('PDF document not loaded');
+      return;
+    }
 
-    // Go through each page
-    for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
-      const pageDiv = document.getElementById('page-' + pageNum);
-      if (!pageDiv) continue;
+    const pages = await this.count(keyword, keyword.length);
 
-      const textLayerDiv = pageDiv.getElementsByClassName('textLayer')[0];
-      if (!textLayerDiv) continue;
+    for (let i = 0; i < pages.length; i++) {
+      let [pageNum, match] = pages[i];
+      let pageDiv = document.getElementById('page-' + pageNum);
 
-      // Go through each text element in the text layer
-      const textElements = Array.from(textLayerDiv.getElementsByTagName('span'));
+      if (!pageDiv) {
+        console.error('Could not find div for page ' + pageNum);
+        continue;
+      }
 
-      // Create a composite string of the page
-      const pageCompositeString = textElements.map((element) => element.textContent).join('');
+      let textLayerDiv = pageDiv.querySelector('.textLayer');
 
-      if (pageCompositeString.includes(keyword)) {
-        // Keyword found on the page
-        let start = pageCompositeString.indexOf(keyword);
-        let end = start + keyword.length;
+      if (!textLayerDiv) {
+        console.error('Could not find text layer for page ' + pageNum);
+        continue;
+      }
 
-        let startIndex = 0,
-          endIndex = 0;
-        let i = 0,
-          j = 0;
-
-        // Find the span elements that contain the keyword
-        while (
-          i < textElements.length &&
-          startIndex + textElements[i].textContent.length <= start
-        ) {
-          startIndex += textElements[i].textContent.length;
-          i++;
-        }
-
-        while (j < textElements.length && endIndex + textElements[j].textContent.length < end) {
-          endIndex += textElements[j].textContent.length;
-          j++;
-        }
-
-        // Mark the span elements as highlight
-        for (let k = i; k <= j; k++) {
-          textElements[k].classList.add('pdfContainer-highlight');
+      let spans = Array.from(textLayerDiv.getElementsByTagName('span')); // Convert to array to prevent infinite loop
+      for (let j = 0; j < spans.length; j++) {
+        let span = spans[j];
+        if (span.textContent.includes(keyword)) {
+          // Only replace spans that contain the keyword
+          let spanText = span.textContent;
+          // Use a regular expression with capturing groups to separate the text before, the keyword, and the text after the keyword
+          let regex = new RegExp(`(.*?)(${keyword})(.*)`);
+          let match = spanText.match(regex);
+          if (match) {
+            let [_, before, keywordMatch, after] = match;
+            // Create a new span element to hold the highlighted keyword
+            let keywordSpan = document.createElement('span');
+            keywordSpan.className = 'pdfContainer-highlight';
+            keywordSpan.textContent = keywordMatch;
+            // Replace the span's text with the text before the keyword, the highlighted keyword, and the text after the keyword
+            span.innerHTML = before + keywordSpan.outerHTML + after;
+          }
         }
       }
     }
   }
 
-  async search(keyword, contextLength) {
+  async search(keyword) {
     // First, count the keyword
-    const matches = await this.count(keyword, contextLength);
+    const matches = await this.count(keyword, 0);
 
     // Filter out any matches that are empty strings
     const validMatches = matches.filter((match) => match[1].trim() !== '');
