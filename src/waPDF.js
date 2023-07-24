@@ -50,7 +50,7 @@ class PDF {
     }
   }
 
-  async count(keyword, n) {
+  async count(keyword, n = 0) {
     let keywordWithoutSpaces = keyword.replace(/\s+/g, '');
     let pages = [];
     for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
