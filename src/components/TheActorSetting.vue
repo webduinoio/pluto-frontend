@@ -41,6 +41,18 @@ const rules = [
   },
 ];
 
+const OnClick = async () => {
+  if (!props.actor) return;
+
+  await navigator.clipboard.writeText(props.actor.uuid);
+  await fire({
+    title: '複製成功',
+    icon: 'success',
+    timer: 1500,
+    showConfirmButton: false,
+  });
+};
+
 const onChange = (event: any) => {
   setFieldValue('image', event.target.files[0]);
 };
@@ -83,9 +95,21 @@ watch(
 <template>
   <v-window-item :value="props.value">
     <v-container>
-      <v-sheet width="342" class="mt-4 bg-transparent">
+      <v-sheet width="400" class="mt-4 bg-transparent">
         <v-form @submit.prevent="onSubmit">
+          <p class="text-subtitle-2">小書僮 ID</p>
+          <v-row align="center">
+            <v-col cols="9">
+              <p class="text-subtitle-1 text-disabled">{{ props.actor?.uuid }}</p>
+            </v-col>
+            <v-col cols="2">
+              <v-btn color="secondary" variant="outlined" size="large" @click="OnClick">
+                複製
+              </v-btn>
+            </v-col>
+          </v-row>
           <v-textarea
+            class="mt-5"
             variant="outlined"
             label="介紹你的小書僮"
             rows="3"
