@@ -38,6 +38,10 @@ const onOpen = () => {
   });
   window.open(location.href, '_blank');
 };
+
+const onSave = (value: Actor) => {
+  set(actor, value);
+};
 </script>
 
 <template>
@@ -69,7 +73,7 @@ const onOpen = () => {
         <v-divider :thickness="2" class="divider"></v-divider>
 
         <v-window v-model="tab">
-          <TheActorSetting value="setting" :actor="actor" />
+          <TheActorSetting value="setting" :actor="actor" @save="onSave" />
           <TheActorDataManager value="dataManager" :actor="actor" />
           <TheActorAdvanced value="advanced" :actor="actor" />
         </v-window>

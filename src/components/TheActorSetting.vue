@@ -13,6 +13,10 @@ const props = withDefaults(
   {}
 );
 
+const emit = defineEmits<{
+  (e: 'save', data: Actor): void;
+}>();
+
 const { fire } = useSweetAlert();
 
 // TODO: file 格式的檢查，再研究看看，真不行，就混合 vuetify3 的檢查
@@ -70,13 +74,19 @@ const onSubmit = handleSubmit(async (values) => {
     form.append('name', values.name);
     form.append('description', values.description);
     form.append('image', values.image);
-    await updateActor(props.actor?.id, form);
+    await updateActor(props.actor.id, form);
     await fire({
       title: '更新完成',
       icon: 'success',
       timer: 1500,
       showConfirmButton: false,
     });
+
+    const instance = JSON.parse(JSON.stringify(props.actor));
+    instance.name = values.name;
+    instance.description = values.description;
+    instance.image = values.image;
+    emit('save', instance);
   } catch (err: any) {
     console.error(err);
     fire({
