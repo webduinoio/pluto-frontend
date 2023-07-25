@@ -18,16 +18,21 @@ const { fire } = useSweetAlert();
 // TODO: file 格式的檢查，再研究看看，真不行，就混合 vuetify3 的檢查
 const { handleSubmit, setFieldValue } = useForm({
   initialValues: {
+    name: '',
     description: '',
     image: '',
   },
   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
+    name: 'required|max:50',
     description: 'required|max:300',
     // image: 'required|image/jpg|image/png|size:250',
   },
 });
 
+const name = useField('name', undefined, {
+  label: '小書僮名稱',
+});
 const description = useField('description', undefined, {
   label: '介紹你的小書僮',
 });
@@ -62,6 +67,7 @@ const onSubmit = handleSubmit(async (values) => {
   try {
     set(loading, true);
     const form = new FormData();
+    form.append('name', values.name);
     form.append('description', values.description);
     form.append('image', values.image);
     await updateActor(props.actor?.id, form);
@@ -87,6 +93,7 @@ watch(
   () => props.actor,
   (val) => {
     setFieldValue('description', val?.description || '');
+    setFieldValue('name', val?.name || '');
   },
   { immediate: true }
 );
@@ -108,11 +115,21 @@ watch(
               </v-btn>
             </v-col>
           </v-row>
-          <v-textarea
+          <v-text-field
             class="mt-5"
+            variant="outlined"
+            v-model="name.value.value"
+            :error-messages="description.errorMessage.value"
+            :counter="50"
+            label="小書僮名稱"
+            :disabled="loading"
+          ></v-text-field>
+          <v-textarea
+            class="mt-2"
             variant="outlined"
             label="介紹你的小書僮"
             rows="3"
+            :counter="300"
             v-model="description.value.value"
             :error-messages="description.errorMessage.value"
             :disabled="loading"
