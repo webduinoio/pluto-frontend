@@ -59,7 +59,6 @@ export default class PDF {
     // Initialize PDF.js settings
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
 
-    // Listen for the scroll event
     this.pdfContainer.addEventListener('scroll', () => {
       // Get all page elements
       const pageElements = Array.from(this.pdfContainer.children);
