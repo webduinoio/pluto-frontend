@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { MQTT_TOPIC } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
-import { trainActor } from '@/services';
-import type { Actor } from '@/types';
+import { trainActor, validateUrl } from '@/services';
+import type { Actor, Response } from '@/types';
 import { set } from '@vueuse/core';
+import { AxiosError } from 'axios';
 
 const mqtt = useMqtt(generateMqttUserId(), '');
 
@@ -57,11 +58,13 @@ const onTrain = async () => {
       });
       return;
     }
+
+    await validateUrl(props.actor.url);
     const {
       data: { code },
     } = await trainActor(props.actor.id);
 
-    if (code === 1) {
+    if (code === ERROR_CODE.INTERNAL_SERVER_ERROR) {
       await fire({
         title: '發生錯誤',
         icon: 'error',
@@ -70,11 +73,25 @@ const onTrain = async () => {
       return;
     }
   } catch (err: any) {
-    console.error(err);
+    let message = null;
+    if (err instanceof AxiosError && err.response?.data) {
+      const data = err.response.data as Response;
+
+      if (data.code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
+        message = '資料夾權限未分享';
+      } else if (data.code === ERROR_CODE.TOO_LARGE_ERROR) {
+        message = '單一檔案超過 20 MB';
+      } else if (data.code === ERROR_CODE.TOO_MANY_FILES_ERROR) {
+        message = '檔案數量不能超過 5 個';
+      } else {
+        message = '伺服器發生錯誤，請詢問管理員進行處理。';
+      }
+    }
+
     await fire({
       title: '發生錯誤',
       icon: 'error',
-      text: err.message,
+      text: message || err.message,
     });
     set(training, false);
   }
