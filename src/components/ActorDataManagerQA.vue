@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import DatasetForm from '@/components/DatasetForm.vue';
-import { ERROR_CODE } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC } from '@/enums';
+import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { generateMqttUserId } from '@/hooks/useUtil';
 import { getDatasets, trainActor, validateUrl } from '@/services';
 import { deleteDataset } from '@/services/dataset';
 import type { Actor, Dataset, Response } from '@/types';
@@ -16,17 +18,22 @@ const props = withDefaults(
   {}
 );
 
-// const emit = defineEmits<{
-//   (e: 'create'): void;
-//   (e: 'update'): void;
-// }>();
-
+const mqtt = useMqtt(generateMqttUserId(), '');
 const { fire, confirm, showLoading, hideLoading } = useSweetAlert();
 
 const training = ref(false);
 const datasets = ref<Dataset[]>([]);
 const search = ref('');
 const loading = ref(false);
+
+// debug setup
+const debugMsg = ref(true);
+
+const debugLog = (msg: any) => {
+  if (debugMsg.value) {
+    console.log(msg);
+  }
+};
 
 // TODO: 目前先支援載入 30 筆，後續需再調整
 const loadDataset = async (options = {}) => {
@@ -37,7 +44,7 @@ const loadDataset = async (options = {}) => {
     const { data: value } = await getDatasets({ actorID: props.actor.id, ...options });
     set(datasets, value.list || []);
   } catch (err: any) {
-    console.error(err);
+    debugLog(err);
     await fire({
       title: '發生錯誤',
       icon: 'error',
@@ -59,7 +66,7 @@ const onDeleteDataset = async (data: Dataset) => {
     await deleteDataset(data.id, data.actorId);
     await loadDataset();
   } catch (err: any) {
-    console.error(err);
+    debugLog(err);
     fire({
       title: '刪除 Q & A 發生錯誤',
       icon: 'error',
@@ -73,6 +80,23 @@ const onDeleteDataset = async (data: Dataset) => {
 const onTrain = async () => {
   try {
     set(training, true);
+    await mqtt.connect();
+    const actorTrainResp = MQTT_TOPIC.PROC + '/' + props.actor?.uuid;
+    mqtt.subscribe(actorTrainResp, async function (msg) {
+      debugLog('msg:' + msg);
+      if (msg.startsWith('true ')) {
+        set(training, false);
+        await fire({
+          title: '訓練完成',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        await mqtt.disconnect();
+      }
+    });
+    debugLog('mqtt connected.');
+
     if (!props.actor?.id) {
       await fire({
         title: '發生錯誤',
@@ -95,13 +119,6 @@ const onTrain = async () => {
       });
       return;
     }
-
-    await fire({
-      title: '訓練完成',
-      icon: 'success',
-      timer: 1500,
-      showConfirmButton: false,
-    });
   } catch (err: any) {
     let message = null;
     if (err instanceof AxiosError && err.response?.data) {
@@ -123,7 +140,6 @@ const onTrain = async () => {
       icon: 'error',
       text: message || err.message,
     });
-  } finally {
     set(training, false);
   }
 };
@@ -139,13 +155,12 @@ onMounted(async () => {
     set(loading, true);
     await loadDataset();
   } catch (err) {
-    console.error(err);
+    debugLog(err);
   } finally {
     set(loading, false);
   }
 });
 </script>
-
 <template>
   <v-window-item :value="props.value">
     <v-container>
@@ -196,7 +211,7 @@ onMounted(async () => {
       <v-row align-content="center" class="mt-2">
         <v-col cols="12">
           <v-btn color="primary" size="large" @click="onTrain" :disabled="training">
-            再次訓練
+            {{ training ? '訓練中' : '再次訓練' }}
           </v-btn>
         </v-col>
         <v-col cols="6">

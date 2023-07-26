@@ -21,6 +21,7 @@ export enum GENERATE_QUESTION_TYPE {
 export enum MQTT_TOPIC {
   KN = 'kn@chat-staging', // 小書僮
   CODE = 'code@chat-staging', // 思維工具
+  PROC = 'chat-staging' // actorId 處理訊息通報
 }
 
 export enum ACTOR_TYPE {
