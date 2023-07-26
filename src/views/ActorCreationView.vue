@@ -1,9 +1,14 @@
 <script lang="ts" setup>
-import { ERROR_CODE, ROUTER_NAME } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
+import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { generateMqttUserId } from '@/hooks/useUtil';
 import { createActor } from '@/services';
 import axios from 'axios';
 import { useField, useForm } from 'vee-validate';
+
+const mqtt = useMqtt(generateMqttUserId(), '');
+
 const router = useRouter();
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const { resetForm, handleSubmit } = useForm({
@@ -18,6 +23,14 @@ const { resetForm, handleSubmit } = useForm({
   },
 });
 
+// debug setup
+const debugMsg = ref(true);
+const debugLog = (msg: any) => {
+  if (debugMsg.value) {
+    console.log(msg);
+  }
+};
+
 const name = useField('name', undefined, {
   label: '名稱',
 });
@@ -29,17 +42,26 @@ const url = useField('url', undefined, {
 const onSubmit = handleSubmit(async (values) => {
   try {
     showLoading();
-    await createActor(values);
-    hideLoading();
-
-    resetForm();
-    await fire({
-      title: '更新完成',
-      icon: 'success',
-      timer: 1500,
-      showConfirmButton: false,
+    let resp = await createActor(values);
+    const actorUUID = resp['data']['data']['uuid'];
+    await mqtt.connect();
+    const actorTrainResp = MQTT_TOPIC.PROC + '/' + actorUUID;
+    mqtt.subscribe(actorTrainResp, async function (msg) {
+      debugLog('msg:' + msg);
+      if (msg.startsWith('true ')) {
+        resetForm();
+        await mqtt.disconnect();
+        await fire({
+          title: '建立完成',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        hideLoading();
+        router.push({ name: ROUTER_NAME.HOME });
+      }
     });
-    router.push({ name: ROUTER_NAME.HOME });
+    debugLog('mqtt connected.');
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
       console.error('error message: ', err.message);
