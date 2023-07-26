@@ -22,6 +22,7 @@ class PDF {
     this.highlightTimeout = 0;
     this.selectedText = '';
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+
     this.pdfContainer.addEventListener('scroll', () => {
       const pageElements = Array.from(this.pdfContainer.children);
       const visiblePageElement = pageElements.find((pageElement) => {
@@ -36,7 +37,8 @@ class PDF {
 
     try {
       this.pdfContainer.innerHTML = '';
-      const pdfDoc = await pdfjsLib.getDocument(this.pdfUrl).promise;
+      const pdfDoc = await pdfjsLib.getDocument({ url: this.pdfUrl, useWorkerFetch: true }).promise;
+
       this.pdfDoc = pdfDoc;
       const page = await this.pdfDoc.getPage(1);
       const unscaledViewport = page.getViewport({ scale: 1 });
