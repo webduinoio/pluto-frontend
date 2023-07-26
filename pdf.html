@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>PDF Viewer</title>
+  <link rel="stylesheet" type="text/css" href="https://mozilla.github.io/pdf.js/web/viewer.css">
+  <style>
+    #pdfContainer {
+      height: 100vh;
+      overflow-y: scroll;
+    }
+
+    .pdfContainer-highlight {
+      background-color: rgb(255, 77, 77);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="pdfContainer">
+  </div>
+  <!--
+  <script src="./src/pdf.js"></script>
+  -->
+  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script src="./src/waPDF.js"></script>
+  <script>
+    var pdf = new PDF();
+    ((async function () {
+      await pdf.load('./book1.pdf');
+      //pdf.page(1);
+    })())
+  </script>
+</body>
+
+</html>
