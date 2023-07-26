@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { MQTT_TOPIC } from '@/enums';
+import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { generateMqttUserId } from '@/hooks/useUtil';
 import { trainActor } from '@/services';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
+
+const mqtt = useMqtt(generateMqttUserId(), '');
 
 const props = withDefaults(
   defineProps<{
@@ -12,17 +17,38 @@ const props = withDefaults(
   {}
 );
 
-// const emit = defineEmits<{
-//   (e: 'create'): void;
-//   (e: 'update'): void;
-// }>();
-
 const { fire } = useSweetAlert();
 const training = ref(false);
+
+// debug setup
+const debugMsg = ref(true);
+
+const debugLog = (msg: any) => {
+  if (debugMsg.value) {
+    console.log(msg);
+  }
+};
 
 const onTrain = async () => {
   try {
     set(training, true);
+    await mqtt.connect();
+    const actorTrainResp = MQTT_TOPIC.PROC + '/' + props.actor?.uuid;
+    mqtt.subscribe(actorTrainResp, async function (msg) {
+      debugLog('msg:' + msg);
+      if (msg.startsWith('true ')) {
+        set(training, false);
+        await fire({
+          title: '訓練完成',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        await mqtt.disconnect();
+      }
+    });
+    debugLog('mqtt connected.');
+
     if (!props.actor?.id) {
       await fire({
         title: '發生錯誤',
@@ -43,13 +69,6 @@ const onTrain = async () => {
       });
       return;
     }
-
-    await fire({
-      title: '訓練完成',
-      icon: 'success',
-      timer: 1500,
-      showConfirmButton: false,
-    });
   } catch (err: any) {
     console.error(err);
     await fire({
@@ -57,7 +76,6 @@ const onTrain = async () => {
       icon: 'error',
       text: err.message,
     });
-  } finally {
     set(training, false);
   }
 };
@@ -98,7 +116,7 @@ const onTrain = async () => {
       <v-row align-content="center">
         <v-col cols="12">
           <v-btn color="primary" size="large" @click="onTrain" :disabled="training">
-            再次訓練
+            {{ training ? '訓練中' : '再次訓練' }}
           </v-btn>
         </v-col>
         <v-col cols="6">
