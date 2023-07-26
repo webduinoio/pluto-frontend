@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 顯示小書僮 ID [#7059](https://redmine.kingkit.codes/issues/7059)
 - 上傳檔案限制 [#7061](https://redmine.kingkit.codes/issues/7061)
+- 小書僮狀態 [#7032](https://redmine.kingkit.codes/issues/7032)
+- 小書僮小地方優化 [#7080](https://redmine.kingkit.codes/issues/7080)
+  - 小書僮圖示
+  - 對話框的角色 icon
+  - 小書僮清單，點小書僮圖片可開啟小書僮
+  - 點 logo 旁的「伴學小書僮」文字也回到首頁
+  - 修改聊天畫面的逐段回答，改成全部在同一段回答
+- PDF 預覽功能 [#7062](https://redmine.kingkit.codes/issues/7062)
 
 ### Changed
 
