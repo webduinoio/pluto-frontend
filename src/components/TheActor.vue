@@ -46,7 +46,13 @@ const emit = defineEmits<{
     </v-toolbar>
 
     <v-card-text class="overflow-auto">
-      <v-img :src="props.data.image" height="180" cover class="text-white"></v-img>
+      <v-img
+        :src="props.data.image"
+        height="180"
+        cover
+        class="text-white clickable-image"
+        @click="emit('open', props.data)"
+      ></v-img>
       <p class="mt-2 description text-truncate">
         {{ props.data.description }}
         <v-tooltip v-if="props.data.description.length > 19" activator="parent" location="top">
@@ -71,5 +77,9 @@ const emit = defineEmits<{
 <style lang="scss" scoped>
 .description {
   min-height: 20px;
+}
+
+.clickable-image {
+  cursor: pointer;
 }
 </style>

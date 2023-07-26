@@ -14,7 +14,7 @@ const { resetForm, handleSubmit } = useForm({
   // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
     name: 'required|max:50',
-    url: 'required|url',
+    url: 'required|url|google_drive|google_drive_valid',
   },
 });
 
