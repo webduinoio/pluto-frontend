@@ -28,3 +28,8 @@ export interface QAType {
   ans: string;
   comment: string;
 }
+
+export interface Response {
+  code: number;
+  message: string;
+}
