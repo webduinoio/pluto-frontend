@@ -119,7 +119,7 @@ class MQTTApp {
   onMessageArrived(message: any) {
     const topic = message.destinationName;
     const payload = message.payloadString;
-    if (this.subscriptions[topic] && this.subscriptions[topic].onMessageReceived) {
+    if (this.subscriptions[topic] && typeof this.subscriptions[topic].onMessageReceived === 'function') {
       this.subscriptions[topic].onMessageReceived(payload);
     }
   }
