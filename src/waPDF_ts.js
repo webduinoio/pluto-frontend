@@ -161,7 +161,6 @@ export default class PDF {
         _spanHighlightMap = {};
       }
     }
-    let scroll = false;
     // highlight
     for (var spanIdx in this.spanHighlightMap) {
       var cnt = elements[spanIdx].innerHTML;
@@ -172,11 +171,7 @@ export default class PDF {
       var highlightStr = `<span class='pdfContainer-mark'>${replaceStr}</span>`;
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
-      if (!scroll) {
-        //console.log('scrollIntoView:', elements[spanIdx]);
-        elements[spanIdx].scrollIntoView();
-        scroll = true;
-      }
+      elements[spanIdx].scrollIntoView();
     }
     return findPage;
   }
@@ -218,7 +213,7 @@ export default class PDF {
     // Scroll to the specified page
     var pageDiv = document.getElementById('page-' + pageNum);
     if (pageDiv) {
-      pageDiv.scrollIntoView();
+      pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
