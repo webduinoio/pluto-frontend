@@ -73,8 +73,6 @@ const onUpdate = async () => {
     });
   } finally {
     hideLoading();
-    set(question, '');
-    set(answer, '');
   }
 };
 
