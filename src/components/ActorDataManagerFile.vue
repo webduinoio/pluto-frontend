@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ERROR_CODE, MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
@@ -42,7 +43,7 @@ const onTrain = async () => {
         await fire({
           title: '訓練完成',
           icon: 'success',
-          timer: 1500,
+          timer: NOTIFICATION_TIMEOUT,
           showConfirmButton: false,
         });
         await mqtt.disconnect();

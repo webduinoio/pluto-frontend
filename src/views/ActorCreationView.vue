@@ -1,10 +1,12 @@
 <script lang="ts" setup>
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { createActor } from '@/services';
 import axios from 'axios';
+
 import { useField, useForm } from 'vee-validate';
 
 const mqtt = useMqtt(generateMqttUserId(), '');
@@ -54,7 +56,7 @@ const onSubmit = handleSubmit(async (values) => {
         await fire({
           title: '建立完成',
           icon: 'success',
-          timer: 1500,
+          timer: NOTIFICATION_TIMEOUT,
           showConfirmButton: false,
         });
         hideLoading();
@@ -74,7 +76,7 @@ const onSubmit = handleSubmit(async (values) => {
           icon: 'error',
           text: '網址不正確',
           showConfirmButton: false,
-          timer: 1500,
+          timer: NOTIFICATION_TIMEOUT,
         });
       } else if (code === ERROR_CODE.DUPLICATE_ERROR) {
         fire({
@@ -82,7 +84,7 @@ const onSubmit = handleSubmit(async (values) => {
           icon: 'error',
           text: '名稱重複',
           showConfirmButton: false,
-          timer: 1500,
+          timer: NOTIFICATION_TIMEOUT,
         });
       } else if (code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
         fire({
@@ -90,7 +92,7 @@ const onSubmit = handleSubmit(async (values) => {
           icon: 'error',
           text: '資料夾權限不足',
           showConfirmButton: false,
-          timer: 1500,
+          timer: NOTIFICATION_TIMEOUT,
         });
       }
     } else {

@@ -131,6 +131,16 @@ export function trainActor(id: number) {
   return instance(`/${id}/train`, config);
 }
 
+/**
+ * 切換小書僮分享的狀態
+ * @param id
+ */
+export function toggleShareActor(id: number) {
+  const config = {
+    method: 'put',
+  }
+  return instance(`/${id}/shared`, config);
+}
 
 export function validateUrl(url: string) {
   const config = {

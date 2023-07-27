@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
 import type { Actor } from '@/types';
@@ -57,7 +58,7 @@ const OnClick = async () => {
   await fire({
     title: '複製成功',
     icon: 'success',
-    timer: 1500,
+    timer: NOTIFICATION_TIMEOUT,
     showConfirmButton: false,
   });
 };
@@ -78,7 +79,7 @@ const onSubmit = handleSubmit(async (values) => {
     await fire({
       title: '更新完成',
       icon: 'success',
-      timer: 1500,
+      timer: NOTIFICATION_TIMEOUT,
       showConfirmButton: false,
     });
 
@@ -129,7 +130,7 @@ watch(
             class="mt-5"
             variant="outlined"
             v-model="name.value.value"
-            :error-messages="description.errorMessage.value"
+            :error-messages="name.errorMessage.value"
             :counter="50"
             label="小書僮名稱"
             :disabled="loading"

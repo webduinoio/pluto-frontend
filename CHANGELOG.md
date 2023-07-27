@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 編輯書僮 - 設定 ui [#6959](https://redmine.kingkit.codes/issues/6959)
 - 編輯書僮 - 進階設定 ui [#6960](https://redmine.kingkit.codes/issues/6960)
 - 聊天畫面放範例 prompt [#7002](https://redmine.kingkit.codes/issues/7002)
+- 分享連結 [#6949](https://redmine.kingkit.codes/issues/6949)
 
 ### Changed
 
