@@ -103,66 +103,64 @@ class PDF {
   }
 
   async mark(markStr) {
+    this.clearMark();
     let verifyLength = markStr.length;
     let verifyCnt = 0;
     // 選擇所有的span元素
     let elements = this.pdfContainer.querySelectorAll('span');
     let spans = [];
-
     let findPage = '';
     let kewordNotFound = true;
+    let _spanHighlightMap = {};
     elements.forEach(function (element) {
       spans.push(element);
     });
+
     outerLoop: for (var idx in spans) {
-      let _spanHighlightMap = {};
       var words = spans[idx].textContent;
       var sameSpanCnt = 0;
       var startMatch = 0;
+
       for (var w in words) {
         let mark = markStr.substring(verifyCnt, verifyCnt + 1);
         if (words[w] == mark) {
+          // debugger;
           kewordNotFound = false;
           if (sameSpanCnt == 0) {
             startMatch = parseInt(w);
             _spanHighlightMap[idx] = { start: startMatch };
           }
           var end = ++sameSpanCnt + startMatch;
+          _spanHighlightMap[idx]['ele'] = spans[idx];
           _spanHighlightMap[idx]['end'] = end;
           _spanHighlightMap[idx]['cnt'] = words.substring(startMatch, end);
           _spanHighlightMap[idx]['page'] = parseInt(
             spans[idx].parentElement.parentElement.id.substring(5)
           );
-          console.log(`set:${idx}`, _spanHighlightMap[idx]);
-          if (++verifyCnt == verifyLength) {
+          console.log(`set:${idx}.${verifyCnt}`, _spanHighlightMap[idx]);
+          if (verifyCnt++ == verifyLength - 1) {
+            //debugger;
             if (findPage == '') {
               var pageId = spans[idx].parentElement.parentElement.id;
               findPage = parseInt(pageId.substring(5));
             }
-            this.spanHighlightMap[idx] = _spanHighlightMap[idx];
-            console.log(`add[1]:${idx}`, _spanHighlightMap[idx]);
+            this.spanHighlightMap = _spanHighlightMap;
+            console.log(`add[1]:${idx}`, _spanHighlightMap);
             break outerLoop;
           }
         } else {
           verifyCnt = 0;
           sameSpanCnt = 0;
           kewordNotFound = true;
-          if (typeof _spanHighlightMap[idx] != 'undefined') {
-            console.log('del[1]:', _spanHighlightMap[idx]);
-            delete _spanHighlightMap[idx];
-          }
+          _spanHighlightMap = {};
         }
       }
       if (kewordNotFound && typeof _spanHighlightMap[idx] != 'undefined') {
         console.log('del[2]:', _spanHighlightMap[idx]);
-        delete _spanHighlightMap[idx];
-      }
-      if (!kewordNotFound) {
-        this.spanHighlightMap[idx] = _spanHighlightMap[idx];
-        console.log(`add[2]:${idx}`, _spanHighlightMap[idx]);
+        //delete _spanHighlightMap[idx];
+        _spanHighlightMap = {};
       }
     }
-    //console.log("final:", _spanHighlightMap[idx]);
     // highlight
     for (var spanIdx in this.spanHighlightMap) {
       var cnt = elements[spanIdx].innerHTML;
@@ -175,6 +173,17 @@ class PDF {
       elements[spanIdx].innerHTML = cnt;
     }
     return findPage;
+  }
+
+  clearMark() {
+    for (var spanIdx in this.spanHighlightMap) {
+      var text = this.spanHighlightMap[spanIdx]['ele'].innerHTML;
+      var replaceStr = this.spanHighlightMap[spanIdx]['cnt'];
+      var highlightStr = `<span class="pdfContainer-mark">${replaceStr}</span>`;
+      var newText = text.replace(highlightStr, replaceStr);
+      this.spanHighlightMap[spanIdx]['ele'].innerHTML = newText;
+    }
+    this.spanHighlightMap = {};
   }
 
   nowPage() {
