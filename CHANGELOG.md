@@ -23,6 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 改用 PDF 預覽 - ui [#49195](https://redmine.kingkit.codes/issues/7062#change-49195)
 
+### Fixed
+
+- 小書僮 Q&A 無法編輯 [#7085](https://redmine.kingkit.codes/issues/7085)
+
 ## [1.0.0-alpha] - 2023-07-11
 
 ### Added
