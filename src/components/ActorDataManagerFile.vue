@@ -43,7 +43,7 @@ const onTrain = async () => {
         await fire({
           title: '訓練完成',
           icon: 'success',
-          timer: 1500,
+          timer: NOTIFICATION_TIMEOUT,
           showConfirmButton: false,
         });
         await mqtt.disconnect();
@@ -73,13 +73,6 @@ const onTrain = async () => {
       });
       return;
     }
-
-    await fire({
-      title: '訓練完成',
-      icon: 'success',
-      timer: NOTIFICATION_TIMEOUT,
-      showConfirmButton: false,
-    });
   } catch (err: any) {
     let message = null;
     if (err instanceof AxiosError && err.response?.data) {

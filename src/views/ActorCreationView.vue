@@ -56,7 +56,7 @@ const onSubmit = handleSubmit(async (values) => {
         await fire({
           title: '建立完成',
           icon: 'success',
-          timer: 1500,
+          timer: NOTIFICATION_TIMEOUT,
           showConfirmButton: false,
         });
         hideLoading();
