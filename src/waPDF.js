@@ -1,7 +1,7 @@
 class PDF {
   constructor() {
     this.msgEle = null;
-    this.spanMap = {};
+    this.spanHighlightMap = {};
   }
 
   setViewElement(pdfContainer) {
@@ -121,34 +121,34 @@ class PDF {
         if (words[w] == mark) {
           if (sameSpanCnt == 0) {
             startMatch = parseInt(w);
-            this.spanMap[idx] = { start: startMatch };
+            this.spanHighlightMap[idx] = { start: startMatch };
           }
           var end = ++sameSpanCnt + startMatch;
-          this.spanMap[idx]['end'] = end;
-          this.spanMap[idx]['cnt'] = words.substring(startMatch, end);
+          this.spanHighlightMap[idx]['end'] = end;
+          this.spanHighlightMap[idx]['cnt'] = words.substring(startMatch, end);
+          this.spanHighlightMap[idx]['page'] = spans[idx].parentElement.parentElement.id;
 
           if (++verifyCnt == verifyLength) {
             if (findPage == '') {
               var pageId = spans[idx].parentElement.parentElement.id;
               findPage = parseInt(pageId.substring(5));
             }
-            console.log(`add:${idx}`, this.spanMap[idx]);
+            //console.log(`add:${idx}`, this.spanHighlightMap[idx]);
             break outerLoop;
           }
         } else {
           verifyCnt = 0;
           sameSpanCnt = 0;
-          if (typeof this.spanMap[idx] != 'undefined') {
-            console.log(`del:[${idx}]`, this.spanMap[idx]);
-            delete this.spanMap[idx];
-          }
         }
       }
     }
     // highlight
-    for (var spanIdx in this.spanMap) {
+    for (var spanIdx in this.spanHighlightMap) {
       var cnt = elements[spanIdx].innerHTML;
-      var replaceStr = cnt.substring(this.spanMap[spanIdx]['start'], this.spanMap[spanIdx]['end']);
+      var replaceStr = cnt.substring(
+        this.spanHighlightMap[spanIdx]['start'],
+        this.spanHighlightMap[spanIdx]['end']
+      );
       var highlightStr = `<span class='pdfContainer-mark'>${replaceStr}</span>`;
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
