@@ -1,17 +1,19 @@
 <script lang="ts" setup>
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
-import { MQTT_TOPIC } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor } from '@/services';
 import type { Actor } from '@/types/actors';
 import { get, set } from '@vueuse/core';
+import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
 const route = useRoute();
+const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
 const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
@@ -42,6 +44,15 @@ const loadData = async () => {
     const { data }: { data: Actor } = await getActor(Number(get(actorOpenID)));
     set(actorData, data);
   } catch (err: any) {
+    if (axios.isAxiosError(err)) {
+      const code = err.response?.data.code;
+
+      if (code === ERROR_CODE.NOT_FOUND_ERROR) {
+        await fire({ title: '沒有檢視權限', icon: 'warning' });
+        router.push({ name: ROUTER_NAME.HOME });
+        return;
+      }
+    }
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
 };
@@ -109,7 +120,9 @@ const onReferenceMessage = (endMsg: string) => {
   return keywordAmt == 0 ? '' : links;
 };
 
-loadData();
+onMounted(async () => {
+  await loadData();
+});
 
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
