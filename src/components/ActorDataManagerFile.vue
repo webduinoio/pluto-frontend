@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { trainActor } from '@/services';
 import type { Actor } from '@/types';
@@ -47,7 +48,7 @@ const onTrain = async () => {
     await fire({
       title: '訓練完成',
       icon: 'success',
-      timer: 1500,
+      timer: NOTIFICATION_TIMEOUT,
       showConfirmButton: false,
     });
   } catch (err: any) {

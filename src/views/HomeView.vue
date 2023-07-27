@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { deleteActor, getActors } from '@/services';
@@ -57,7 +58,7 @@ const onDelete = async (id: number) => {
       icon: 'error',
       text: err.message,
       showConfirmButton: false,
-      timer: 1500,
+      timer: NOTIFICATION_TIMEOUT,
     });
   }
 };

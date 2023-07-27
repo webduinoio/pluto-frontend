@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DatasetForm from '@/components/DatasetForm.vue';
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { getDatasets, trainActor } from '@/services';
 import { deleteDataset } from '@/services/dataset';
@@ -95,7 +96,7 @@ const onTrain = async () => {
     await fire({
       title: '訓練完成',
       icon: 'success',
-      timer: 1500,
+      timer: NOTIFICATION_TIMEOUT,
       showConfirmButton: false,
     });
   } catch (err: any) {
