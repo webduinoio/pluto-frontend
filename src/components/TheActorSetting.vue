@@ -120,7 +120,7 @@ watch(
             <v-col cols="9">
               <p class="text-subtitle-2 text-disabled">{{ props.actor?.uuid }}</p>
             </v-col>
-            <v-col cols="2">
+            <v-col cols="3">
               <v-btn color="secondary" variant="outlined" size="large" @click="OnClick">
                 複製
               </v-btn>

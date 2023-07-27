@@ -99,14 +99,12 @@ const onReferenceMessage = (endMsg: string) => {
     var content = item.content.split('\n');
     var keyword = '';
     for (var line in content) {
-      console.log('line:[' + content[line] + ']');
       if (
         content[line].trim() != '' &&
         !content[line].trim().startsWith('#') &&
         !content[line].trim().startsWith('https://')
       ) {
         keyword = content[line];
-        console.log('keyword:', keyword);
         break;
       }
     }
@@ -227,15 +225,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   <v-container>
                     <v-row fluid v-for="(msg, msgIdx) in actor.messages" :key="msgIdx">
                       <v-col cols="auto">
-                        <v-icon
-                          :icon="
-                            actor.type === 'ai'
-                              ? msgIdx === 0
-                                ? 'mdi-robot'
-                                : ''
-                              : 'mdi-account-box'
-                          "
-                        ></v-icon>
+                        <v-icon v-if="msgIdx !== 0"></v-icon>
+                        <template v-else>
+                          <v-icon v-if="actor.type !== 'ai'">mdi-account-box</v-icon>
+                          <v-icon v-else>
+                            <img class="icon-image" :src="get(actorData)?.image" />
+                          </v-icon>
+                        </template>
                       </v-col>
                       <v-col style="padding: 12px 12px 3px 12px">
                         <div v-html="msg"></div>
@@ -331,7 +327,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
     opacity: 0;
   }
 }
-
+.icon-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 .mic-icon-working {
   animation-name: micAnimation;
   animation-duration: 0.8s;

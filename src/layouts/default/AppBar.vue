@@ -17,7 +17,9 @@ const user = oauth.user;
       inline
       @click="router.push({ name: ROUTER_NAME.HOME })"
     ></v-img>
-    <v-toolbar-title class="title"> 伴學小書僮 </v-toolbar-title>
+    <v-toolbar-title class="title clickable" @click="router.push({ name: ROUTER_NAME.HOME })">
+      伴學小書僮
+    </v-toolbar-title>
     <v-menu min-width="200px" rounded open-on-hover>
       <template v-slot:activator="{ props }">
         <v-btn icon v-bind="props">
@@ -57,6 +59,9 @@ const user = oauth.user;
   font-size: 1.875rem !important;
   line-height: 2.25rem !important;
   font-weight: 800 !important;
+}
+.clickable {
+  cursor: pointer;
 }
 
 .logo {

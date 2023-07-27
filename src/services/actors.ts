@@ -141,3 +141,13 @@ export function toggleShareActor(id: number) {
   }
   return instance(`/${id}/shared`, config);
 }
+
+export function validateUrl(url: string) {
+  const config = {
+    method: 'post',
+    data: {
+      url
+    }
+  }
+  return instance(`/validate`, config);
+}

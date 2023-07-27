@@ -4,13 +4,12 @@ declare global {
     pdf: any;
   }
 }
-import PDF from '../waPDF.js';
+import PDF from '../waPDF_ts.js';
 const myPDF = new PDF();
 
 onMounted(() => {
   const ele = document.getElementById('pdfContainer');
   myPDF.setViewElement(ele);
-
   window.pdf = myPDF;
 });
 </script>
@@ -24,8 +23,11 @@ onMounted(() => {
 }
 
 .pdfContainer-highlight {
-  color: brown;
-  background-color: rgb(33, 20, 205);
+  background-color: rgb(239, 248, 0);
+}
+
+.pdfContainer-mark {
+  background-color: rgb(255, 77, 77);
 }
 
 .pdfContainer-overlay {
@@ -47,4 +49,3 @@ onMounted(() => {
   width: 100%;
 }
 </style>
-../waPDF.js
