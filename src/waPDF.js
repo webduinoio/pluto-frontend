@@ -48,7 +48,7 @@ class PDF {
       await this.load(url);
     }
     this.showMsg('find:[' + keyword + ']');
-    await this.find(keyword);
+    await this.page(await this.mark(keyword));
   }
 
   async load(pdfUrl) {
@@ -108,40 +108,61 @@ class PDF {
     // 選擇所有的span元素
     let elements = this.pdfContainer.querySelectorAll('span');
     let spans = [];
+
     let findPage = '';
+    let kewordNotFound = true;
     elements.forEach(function (element) {
       spans.push(element);
     });
     outerLoop: for (var idx in spans) {
+      let _spanHighlightMap = {};
       var words = spans[idx].textContent;
       var sameSpanCnt = 0;
       var startMatch = 0;
       for (var w in words) {
         let mark = markStr.substring(verifyCnt, verifyCnt + 1);
         if (words[w] == mark) {
+          kewordNotFound = false;
           if (sameSpanCnt == 0) {
             startMatch = parseInt(w);
-            this.spanHighlightMap[idx] = { start: startMatch };
+            _spanHighlightMap[idx] = { start: startMatch };
           }
           var end = ++sameSpanCnt + startMatch;
-          this.spanHighlightMap[idx]['end'] = end;
-          this.spanHighlightMap[idx]['cnt'] = words.substring(startMatch, end);
-          this.spanHighlightMap[idx]['page'] = spans[idx].parentElement.parentElement.id;
-
+          _spanHighlightMap[idx]['end'] = end;
+          _spanHighlightMap[idx]['cnt'] = words.substring(startMatch, end);
+          _spanHighlightMap[idx]['page'] = parseInt(
+            spans[idx].parentElement.parentElement.id.substring(5)
+          );
+          console.log(`set:${idx}`, _spanHighlightMap[idx]);
           if (++verifyCnt == verifyLength) {
             if (findPage == '') {
               var pageId = spans[idx].parentElement.parentElement.id;
               findPage = parseInt(pageId.substring(5));
             }
-            //console.log(`add:${idx}`, this.spanHighlightMap[idx]);
+            this.spanHighlightMap[idx] = _spanHighlightMap[idx];
+            console.log(`add[1]:${idx}`, _spanHighlightMap[idx]);
             break outerLoop;
           }
         } else {
           verifyCnt = 0;
           sameSpanCnt = 0;
+          kewordNotFound = true;
+          if (typeof _spanHighlightMap[idx] != 'undefined') {
+            console.log('del[1]:', _spanHighlightMap[idx]);
+            delete _spanHighlightMap[idx];
+          }
         }
       }
+      if (kewordNotFound && typeof _spanHighlightMap[idx] != 'undefined') {
+        console.log('del[2]:', _spanHighlightMap[idx]);
+        delete _spanHighlightMap[idx];
+      }
+      if (!kewordNotFound) {
+        this.spanHighlightMap[idx] = _spanHighlightMap[idx];
+        console.log(`add[2]:${idx}`, _spanHighlightMap[idx]);
+      }
     }
+    //console.log("final:", _spanHighlightMap[idx]);
     // highlight
     for (var spanIdx in this.spanHighlightMap) {
       var cnt = elements[spanIdx].innerHTML;
