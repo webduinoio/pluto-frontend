@@ -112,8 +112,10 @@ watch(
 );
 
 watch(dialog, () => {
-  set(question, '');
-  set(answer, '');
+  if (!props.editItem) {
+    set(question, '');
+    set(answer, '');
+  }
 });
 </script>
 
