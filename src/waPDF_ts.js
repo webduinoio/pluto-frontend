@@ -1,6 +1,7 @@
 export default class PDF {
   constructor() {
     this.msgEle = null;
+    this.spanHighlightMap = {};
   }
 
   setViewElement(pdfContainer) {
@@ -47,7 +48,7 @@ export default class PDF {
       await this.load(url);
     }
     this.showMsg('find:[' + keyword + ']');
-    await this.find(keyword);
+    await this.page(await this.mark(keyword));
   }
 
   async load(pdfUrl) {
@@ -57,9 +58,9 @@ export default class PDF {
     this.highlightTimeout = 0;
     this.selectedText = '';
     // Initialize PDF.js settings
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
-
-    // Listen for the scroll event
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      //'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.js';
+      'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
     this.pdfContainer.addEventListener('scroll', () => {
       // Get all page elements
       const pageElements = Array.from(this.pdfContainer.children);
@@ -85,7 +86,7 @@ export default class PDF {
       this.pdfDoc = pdfDoc; // Save the pdfDoc
       const page = await this.pdfDoc.getPage(1);
       // Get the viewport for the page at scale 1
-      const unscaledViewport = page.getViewport({ scale: 1 });
+      const unscaledViewport = page.getViewport({ scale: this.scale });
       // Calculate the scale necessary to fit the page width to the container width
       this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
       await new Promise((r) => setTimeout(r, 500));
@@ -101,90 +102,89 @@ export default class PDF {
     this.showMsg('PDF loading...done.');
   }
 
-  async count(keyword) {
-    let keywordWithoutSpaces = keyword.replace(/\s+/g, ''); // Remove all spaces from the keyword
+  async mark(markStr) {
+    this.clearMark();
+    let verifyLength = markStr.length;
+    let verifyCnt = 0;
+    // 選擇所有的span元素
+    let elements = this.pdfContainer.querySelectorAll('span');
+    let spans = [];
+    let findPage = '';
+    let kewordNotFound = true;
+    let _spanHighlightMap = {};
+    elements.forEach(function (element) {
+      spans.push(element);
+    });
 
-    let pages = []; // Create an array to store the pages
+    outerLoop: for (var idx in spans) {
+      var words = spans[idx].textContent;
+      var sameSpanCnt = 0;
+      var startMatch = 0;
 
-    for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
-      const page = await this.pdfDoc.getPage(pageNum);
-      const textContent = await page.getTextContent();
-      let textItems = textContent.items.map((item) => item.str); // Keep the spaces in the text items
-      let pageText = textItems.join('');
-      let pageTextWithoutSpaces = pageText.replace(/\s+/g, ''); // Remove all spaces from the page text
-
-      let matchIndex = 0;
-      let matchStart = -1;
-      let spaceBuffer = '';
-      for (let i = 0, j = 0; i < pageText.length && j < pageTextWithoutSpaces.length; i++) {
-        if (pageText[i] === ' ') {
-          spaceBuffer += ' ';
-          continue;
-        }
-
-        if (pageTextWithoutSpaces[j] === keywordWithoutSpaces[matchIndex]) {
-          if (matchIndex === 0) {
-            matchStart = i; // Save the start index of the match
+      for (var w in words) {
+        let mark = markStr.substring(verifyCnt, verifyCnt + 1);
+        if (words[w] == mark) {
+          // debugger;
+          kewordNotFound = false;
+          if (sameSpanCnt == 0) {
+            startMatch = parseInt(w);
+            _spanHighlightMap[idx] = { start: startMatch };
           }
-          matchIndex++;
+          var end = ++sameSpanCnt + startMatch;
+          _spanHighlightMap[idx]['ele'] = spans[idx];
+          _spanHighlightMap[idx]['end'] = end;
+          _spanHighlightMap[idx]['cnt'] = words.substring(startMatch, end);
+          _spanHighlightMap[idx]['page'] = parseInt(
+            spans[idx].parentElement.parentElement.id.substring(5)
+          );
+          //console.log(`set:${idx}.${verifyCnt}`, _spanHighlightMap[idx]);
+          if (verifyCnt++ == verifyLength - 1) {
+            //debugger;
+            if (findPage == '') {
+              var pageId = spans[idx].parentElement.parentElement.id;
+              findPage = parseInt(pageId.substring(5));
+            }
+            this.spanHighlightMap = _spanHighlightMap;
+            //console.log(`add[1]:${idx}`, _spanHighlightMap);
+            break outerLoop;
+          }
         } else {
-          matchStart = -1;
-          matchIndex = 0; // Reset the match index if the characters do not match
-          spaceBuffer = '';
-        }
-
-        j++;
-
-        if (matchIndex === keywordWithoutSpaces.length) {
-          let realKeyword = pageText.slice(matchStart, i + 1); // Extract the real keyword from the original page text
-          pages.push([pageNum, realKeyword]); // Add the page number and the real keyword to the array
-          break;
+          verifyCnt = 0;
+          sameSpanCnt = 0;
+          kewordNotFound = true;
+          _spanHighlightMap = {};
         }
       }
+      if (kewordNotFound && typeof _spanHighlightMap[idx] != 'undefined') {
+        //console.log('del[2]:', _spanHighlightMap[idx]);
+        //delete _spanHighlightMap[idx];
+        _spanHighlightMap = {};
+      }
     }
-    return pages; // Return the array of pages
+    // highlight
+    for (var spanIdx in this.spanHighlightMap) {
+      var cnt = elements[spanIdx].innerHTML;
+      var replaceStr = cnt.substring(
+        this.spanHighlightMap[spanIdx]['start'],
+        this.spanHighlightMap[spanIdx]['end']
+      );
+      var highlightStr = `<span class='pdfContainer-mark'>${replaceStr}</span>`;
+      cnt = cnt.replace(replaceStr, highlightStr);
+      elements[spanIdx].innerHTML = cnt;
+      elements[spanIdx].scrollIntoView();
+    }
+    return findPage;
   }
 
-  async find(keyword) {
-    let keywords = keyword.split(' ');
-    for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
-      const page = await this.pdfDoc.getPage(pageNum);
-      const textContent = await page.getTextContent();
-      let textItems = textContent.items.map((item) => item.str);
-      let pageText = textItems.join(' ');
-
-      if (keywords.every((kw) => pageText.includes(kw))) {
-        this.page(pageNum);
-
-        var pageDiv = document.getElementById('page-' + pageNum);
-        if (pageDiv) {
-          var textLayerDiv = pageDiv.querySelector('.textLayer');
-          if (textLayerDiv) {
-            var textElements = Array.from(textLayerDiv.getElementsByTagName('span'));
-
-            let matches = [];
-            let matchIndex = 0;
-
-            for (let i = 0; i < textElements.length; i++) {
-              if (textElements[i].textContent.includes(keywords[matchIndex])) {
-                matches.push(textElements[i]);
-                matchIndex++;
-
-                if (matchIndex >= keywords.length) {
-                  matches.forEach((element) => element.classList.add('pdfContainer-highlight'));
-                  matches = [];
-                  matchIndex = 0;
-                }
-              } else {
-                matches = [];
-                matchIndex = 0;
-              }
-            }
-          }
-        }
-        break;
-      }
+  clearMark() {
+    for (var spanIdx in this.spanHighlightMap) {
+      var text = this.spanHighlightMap[spanIdx]['ele'].innerHTML;
+      var replaceStr = this.spanHighlightMap[spanIdx]['cnt'];
+      var highlightStr = `<span class="pdfContainer-mark">${replaceStr}</span>`;
+      var newText = text.replace(highlightStr, replaceStr);
+      this.spanHighlightMap[spanIdx]['ele'].innerHTML = newText;
     }
+    this.spanHighlightMap = {};
   }
 
   nowPage() {
@@ -208,11 +208,12 @@ export default class PDF {
   }
 
   page(pageNum) {
+    if (pageNum == '') return;
     this.nowPageNum = pageNum;
     // Scroll to the specified page
     var pageDiv = document.getElementById('page-' + pageNum);
     if (pageDiv) {
-      pageDiv.scrollIntoView();
+      pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
 
@@ -220,6 +221,7 @@ export default class PDF {
     var self = this;
     this.showMsg('load :', this.scale);
     const page = await this.pdfDoc.getPage(pageNum);
+    //var viewport = page.getViewport({ scale: this.scale }); // Use the current scale
     var viewport = page.getViewport({ scale: this.scale }); // Use the current scale
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
@@ -244,14 +246,28 @@ export default class PDF {
     textLayerDiv.style.left = '0';
     textLayerDiv.style.setProperty('--scale-factor', this.scale);
 
+    var outputScale = window.devicePixelRatio || 1;
+
     // Set up the canvas
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
+    canvas.width = Math.floor(viewport.width * outputScale);
+    canvas.height = Math.floor(viewport.height * outputScale);
+    canvas.style.width = Math.floor(viewport.width) + 'px';
+    canvas.style.height = Math.floor(viewport.height) + 'px';
+    //canvas.width = viewport.width;
+    //canvas.height = viewport.height;
+    //canvas.style.width = '100%';
+    //canvas.style.height = '100%';
     canvas.style.position = 'absolute';
     canvas.style.top = '0';
     canvas.style.left = '0';
+
+    var transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+    var renderContext = {
+      canvasContext: context,
+      transform: transform,
+      viewport: viewport,
+    };
 
     // Append elements to the pageDiv
     pageDiv.appendChild(canvas);
@@ -261,10 +277,7 @@ export default class PDF {
     const textContent = await page.getTextContent();
 
     // Render the page onto the canvas
-    await page.render({
-      canvasContext: context,
-      viewport: viewport,
-    }).promise;
+    await page.render(renderContext).promise;
 
     // Render the text layer
     pdfjsLib.renderTextLayer({
@@ -287,7 +300,7 @@ export default class PDF {
     });
 
     textLayerDiv.addEventListener('mouseover', function (event) {
-      console.log('event:', event);
+      //console.log('event:', event);
       if (this.highlightTimeout) clearTimeout(this.highlightTimeout);
 
       this.highlightTimeout = setTimeout(function () {
