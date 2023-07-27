@@ -2,6 +2,8 @@ import { ROUTER_NAME } from '@/enums';
 import LayoutDefault from '@/layouts/default/Default.vue';
 import { getUser, logout } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
+import { useRouteStore } from '@/stores/route';
+import type { RouteLocationNormalized } from 'vue-router';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -68,18 +70,29 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach(async (to, from) => {
+router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next) => {
+  const route = useRouteStore();
+  const oauth = useOAuthStore();
+
   try {
-    const oauth = useOAuthStore();
+    if (route.to !== null) {
+      const path = route.to.path as string
+      route.to = null;
+      next({ path: path });
+      return;
+    }
+
     if (oauth.user === null) {
       const resp = await getUser();
-      oauth.$patch({ user: resp?.data });
+      oauth.user = resp?.data;
     }
+    next();
   } catch (error) {
     console.error(error);
+    route.to = to;
     logout();
+    next(false)
   }
-  return true;
 });
 
 export default router;
