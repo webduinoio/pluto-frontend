@@ -11,11 +11,11 @@
     }
 
     .pdfContainer-highlight {
-      background-color: rgb(255, 77, 77);
+      background-color: rgb(239, 248, 0);
     }
 
     .pdfContainer-mark {
-      background-color: rgb(239, 248, 0);
+      background-color: rgb(255, 77, 77);
     }
 
     /*
@@ -26,7 +26,7 @@
     */
     @font-face {
       font-family: HanyiSentySong;
-      src: url(./public/pdf/font/HanyiSentySong.ttf);
+      src: url(./test/pdf/font/HanyiSentySong.ttf);
     }
 
     body {
@@ -38,18 +38,22 @@
 <body>
   <div id="pdfContainer">
   </div>
-  <!--
-  <script src="./src/pdf.js"></script>
-  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
-  -->
   <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
   <script src="./src/waPDF.js"></script>
   <script>
     var pdf = new PDF();
     pdf.setViewElement(document.getElementById("pdfContainer"));
     ((async function () {
-      await pdf.load('./public/pdf/book.pdf');
-      //pdf.page(1);
+      await pdf.load('./test/pdf/book.pdf');
+      console.log("== test1 ==");
+      //pdf.page(await pdf.mark('生物可藉由'));
+      console.log("== test2 ==");
+      //pdf.page(await pdf.mark('1-1'));
+      pdf.page(await pdf.mark('5 張開雙眼，以一眼從目鏡觀察，打開光源及調整光圈的大小，使視野中的亮度'));
+      console.log("== test4 ==");
+      //pdf.page(await pdf.mark('瞬間一片寂靜'));
+      console.log("== test3 ==");
+      //pdf.page(await pdf.mark('設計與進行實驗'));
     })())
   </script>
 </body>

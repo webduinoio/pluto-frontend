@@ -137,7 +137,7 @@ class PDF {
           _spanHighlightMap[idx]['page'] = parseInt(
             spans[idx].parentElement.parentElement.id.substring(5)
           );
-          console.log(`set:${idx}.${verifyCnt}`, _spanHighlightMap[idx]);
+          //console.log(`set:${idx}.${verifyCnt}`, _spanHighlightMap[idx]);
           if (verifyCnt++ == verifyLength - 1) {
             //debugger;
             if (findPage == '') {
@@ -145,7 +145,7 @@ class PDF {
               findPage = parseInt(pageId.substring(5));
             }
             this.spanHighlightMap = _spanHighlightMap;
-            console.log(`add[1]:${idx}`, _spanHighlightMap);
+            //console.log(`add[1]:${idx}`, _spanHighlightMap);
             break outerLoop;
           }
         } else {
@@ -156,11 +156,12 @@ class PDF {
         }
       }
       if (kewordNotFound && typeof _spanHighlightMap[idx] != 'undefined') {
-        console.log('del[2]:', _spanHighlightMap[idx]);
+        //console.log('del[2]:', _spanHighlightMap[idx]);
         //delete _spanHighlightMap[idx];
         _spanHighlightMap = {};
       }
     }
+    let scroll = false;
     // highlight
     for (var spanIdx in this.spanHighlightMap) {
       var cnt = elements[spanIdx].innerHTML;
@@ -171,6 +172,11 @@ class PDF {
       var highlightStr = `<span class='pdfContainer-mark'>${replaceStr}</span>`;
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
+      if (!scroll) {
+        //console.log('scrollIntoView:', elements[spanIdx]);
+        elements[spanIdx].scrollIntoView();
+        scroll = true;
+      }
     }
     return findPage;
   }
