@@ -2,6 +2,7 @@
 import { NOTIFICATION_TIMEOUT } from '@/config';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
+import { useNotificationStore } from '@/stores/notification';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 import { useField, useForm } from 'vee-validate';
@@ -19,6 +20,7 @@ const emit = defineEmits<{
 }>();
 
 const { fire } = useSweetAlert();
+const notification = useNotificationStore();
 
 // TODO: file 格式的檢查，再研究看看，真不行，就混合 vuetify3 的檢查
 const { handleSubmit, setFieldValue } = useForm({
@@ -55,12 +57,7 @@ const OnClick = async () => {
   if (!props.actor) return;
 
   await navigator.clipboard.writeText(props.actor.uuid);
-  await fire({
-    title: '複製成功',
-    icon: 'success',
-    timer: NOTIFICATION_TIMEOUT,
-    showConfirmButton: false,
-  });
+  notification.fire('複製成功', 'top');
 };
 
 const onChange = (event: any) => {
