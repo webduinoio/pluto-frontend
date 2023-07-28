@@ -2,6 +2,9 @@ class PDF {
   constructor() {
     this.msgEle = null;
     this.spanHighlightMap = {};
+    this.nowPageNum = 1;
+    this.scale = 1; // Initialize scale
+    this.elePageShow = document.getElementById('pageShow');
   }
 
   setViewElement(pdfContainer) {
@@ -22,25 +25,18 @@ class PDF {
     console.log(msg1);
   }
 
-  async zoomIn() {
-    this.scale += 0.2;
-    await this.load(); // Re-load the PDF after changing the scale
+  async zoomIn(val) {
+    if (this.scale > 2) return;
+    await this.setViewport(this.scale + val);
   }
 
-  async zoomOut() {
-    this.scale -= 0.2;
-    await this.load(); // Re-load the PDF after changing the scale
+  async zoomOut(val) {
+    if (this.scale < 0.3) return;
+    await this.setViewport(this.scale - val);
   }
 
-  async fitWidth() {
-    // Get the first page
-    const page = await this.pdfDoc.getPage(1);
-    // Get the viewport for the page at scale 1
-    const unscaledViewport = page.getViewport({ scale: 1 });
-    // Calculate the scale necessary to fit the page width to the container width
-    this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
-    // Re-load the PDF
-    await this.load();
+  async zoom(val) {
+    await this.setViewport(val);
   }
 
   async load_and_find(url, keyword) {
@@ -54,7 +50,6 @@ class PDF {
   async load(pdfUrl) {
     if (typeof pdfUrl == 'undefined' || pdfUrl == '') return;
     this.pdfUrl = pdfUrl;
-    this.scale = 1; // Initialize scale
     this.highlightTimeout = 0;
     this.selectedText = '';
     // Initialize PDF.js settings
@@ -74,6 +69,7 @@ class PDF {
       if (visiblePageElement) {
         this.nowPageNum = parseInt(visiblePageElement.id.split('-')[1]);
         this.showMsg('Page:', this.nowPageNum);
+        this.showPage(this.nowPageNum);
       }
     });
 
@@ -82,16 +78,20 @@ class PDF {
       this.showMsg('PDF loading...', pdfUrl);
       this.loadingEffect(true);
       // Start loading the PDF
-      const pdfDoc = await pdfjsLib.getDocument(this.pdfUrl).promise;
-      this.pdfDoc = pdfDoc; // Save the pdfDoc
-      const page = await this.pdfDoc.getPage(1);
+      this.pdfDoc = await pdfjsLib.getDocument({
+        url: this.pdfUrl,
+        cMapUrl: '/public/cmaps/',
+        //useSystemFonts: true,
+      }).promise;
+      this._nowPage = await this.pdfDoc.getPage(1);
+      this.pdfContainer.innerHTML = '';
       // Get the viewport for the page at scale 1
-      const unscaledViewport = page.getViewport({ scale: this.scale });
+      const unscaledViewport = this._nowPage.getViewport({ scale: this.scale });
       // Calculate the scale necessary to fit the page width to the container width
       this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
       await new Promise((r) => setTimeout(r, 500));
       //
-      for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+      for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
         await this.renderPage(pageNum);
       }
     } catch (error) {
@@ -99,7 +99,15 @@ class PDF {
       console.error('Error loading PDF:', error);
     }
     this.loadingEffect(false);
+    this.showPage();
     this.showMsg('PDF loading...done.');
+  }
+
+  async setViewport(scale) {
+    this.scale = scale;
+    for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
+      await this.setPageScale(pageNum);
+    }
   }
 
   async mark(markStr) {
@@ -139,7 +147,6 @@ class PDF {
           );
           //console.log(`set:${idx}.${verifyCnt}`, _spanHighlightMap[idx]);
           if (verifyCnt++ == verifyLength - 1) {
-            //debugger;
             if (findPage == '') {
               var pageId = spans[idx].parentElement.parentElement.id;
               findPage = parseInt(pageId.substring(5));
@@ -172,6 +179,10 @@ class PDF {
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
       elements[spanIdx].scrollIntoView();
+      var top = elements[spanIdx].getBoundingClientRect().y;
+      setTimeout(function () {
+        window.scrollBy(0, top < 20 ? top : top - 10);
+      }, 100);
     }
     return findPage;
   }
@@ -187,8 +198,30 @@ class PDF {
     this.spanHighlightMap = {};
   }
 
+  lastPage() {
+    this.page(this.nowPage() - 1);
+  }
+
+  nextPage() {
+    this.page(this.nowPage() + 1);
+  }
+
   nowPage() {
     return this.nowPageNum;
+  }
+
+  showPage() {
+    this.elePageShow.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
+  }
+
+  page(pageNum) {
+    if (pageNum == '') return;
+    this.nowPageNum = pageNum;
+    // Scroll to the specified page
+    var pageDiv = document.getElementById('page-' + pageNum);
+    if (pageDiv) {
+      pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   loadingEffect(show) {
@@ -207,21 +240,40 @@ class PDF {
     }
   }
 
-  page(pageNum) {
-    if (pageNum == '') return;
-    this.nowPageNum = pageNum;
-    // Scroll to the specified page
+  async setPageScale(pageNum) {
+    const page = await this.pdfDoc.getPage(pageNum);
+    var viewport = page.getViewport({ scale: this.scale });
     var pageDiv = document.getElementById('page-' + pageNum);
-    if (pageDiv) {
-      pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    var canvas = pageDiv.children[0];
+    var textLayerDiv = pageDiv.children[1];
+    textLayerDiv.style.setProperty('--scale-factor', this.scale);
+    var outputScale = window.devicePixelRatio || 1;
+    // Set up the canvas
+    canvas.width = Math.floor(viewport.width * outputScale);
+    canvas.height = Math.floor(viewport.height * outputScale);
+    canvas.style.width = Math.floor(viewport.width) + 'px';
+    canvas.style.height = Math.floor(viewport.height) + 'px';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    // Set up the pageDiv
+    pageDiv.style['height'] = canvas.style.height;
+    pageDiv.style['width'] = canvas.style.width;
+    var context = canvas.getContext('2d');
+    var transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+    var renderContext = {
+      canvasContext: context,
+      transform: transform,
+      viewport: viewport,
+    };
+    // Render the page onto the canvas
+    await page.render(renderContext).promise;
   }
 
-  async renderPage(pageNum, keyword = null) {
+  async renderPage(pageNum) {
     var self = this;
     this.showMsg('load :', this.scale);
     const page = await this.pdfDoc.getPage(pageNum);
-    //var viewport = page.getViewport({ scale: this.scale }); // Use the current scale
     var viewport = page.getViewport({ scale: this.scale }); // Use the current scale
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
@@ -253,10 +305,6 @@ class PDF {
     canvas.height = Math.floor(viewport.height * outputScale);
     canvas.style.width = Math.floor(viewport.width) + 'px';
     canvas.style.height = Math.floor(viewport.height) + 'px';
-    //canvas.width = viewport.width;
-    //canvas.height = viewport.height;
-    //canvas.style.width = '100%';
-    //canvas.style.height = '100%';
     canvas.style.position = 'absolute';
     canvas.style.top = '0';
     canvas.style.left = '0';

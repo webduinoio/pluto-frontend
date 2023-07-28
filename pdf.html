@@ -5,9 +5,14 @@
   <title>PDF Viewer</title>
   <link rel="stylesheet" type="text/css" href="https://mozilla.github.io/pdf.js/web/viewer.css">
   <style>
-    #pdfContainer {
+    #pdfObj {
       height: 100vh;
+    }
+
+    #pdfContainer {
+      height: calc(100vh - 40px);
       overflow-y: scroll;
+      margin: 50px 0 0 0;
     }
 
     .pdfContainer-highlight {
@@ -18,25 +23,60 @@
       background-color: rgb(255, 77, 77);
     }
 
-    /*
-    @font-face {
-      font-family: SentyDew;
-      src: url(./src/font/SentyDew.ttf);
-    }
-    */
-    @font-face {
-      font-family: HanyiSentySong;
-      src: url(./test/pdf/font/HanyiSentySong.ttf);
+    .pdfContainer-overlay {
+      z-index: 900;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      top: 0;
+      left: 0;
     }
 
-    body {
-      font-family: HanyiSentySong;
+    .pdfContainer-loading {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: center;
+      font-size: 1.6em;
+      width: 100%;
+    }
+
+    .page-tool {
+      bottom: 10px;
+      position: fixed;
+      padding-left: 15px;
+      padding-right: 15px;
+      display: flex;
+      align-items: center;
+      background: rgb(66, 66, 66);
+      color: white;
+      border-radius: 19px;
+      z-index: 100;
+      cursor: pointer;
+      transform: translateX(55%)
+    }
+
+    .page-tool-item {
+      padding: 8px 15px;
+      padding-left: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
-  <div id="pdfContainer">
+  <div id="pdfObj">
+    <div class="page-tool">
+      <div class="page-tool-item" onclick="pdf.zoom(0.5)">整頁</div>
+      <div class="page-tool-item" onclick="pdf.lastPage()">上一頁</div>
+      <div id='pageShow' class="page-tool-item"></div>
+      <div class="page-tool-item" onclick="pdf.nextPage()">下一頁</div>
+      <div class="page-tool-item" onclick="pdf.zoomIn(0.2)">放大</div>
+      <div class="page-tool-item" onclick="pdf.zoomOut(0.2)">缩小</div>
+    </div>
+    <div id="pdfContainer">
+    </div>
   </div>
   <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
   <script src="./src/waPDF.js"></script>
@@ -45,12 +85,15 @@
     pdf.setViewElement(document.getElementById("pdfContainer"));
     ((async function () {
       await pdf.load('./test/pdf/book.pdf');
+      //pdf.page(await pdf.mark('民國38年'));
+
       console.log("== test1 ==");
       //pdf.page(await pdf.mark('生物可藉由'));
       pdf.page(await pdf.mark('認識各種顯微鏡'));
       console.log("== test2 ==");
       //pdf.page(await pdf.mark('1-1'));
       //pdf.page(await pdf.mark('5 張開雙眼，以一眼從目鏡觀察，打開光源及調整光圈的大小，使視野中的亮度'));
+      //pdf.page(await pdf.mark('解探究提問'));
       console.log("== test4 ==");
       //pdf.page(await pdf.mark('瞬間一片寂靜'));
       console.log("== test3 ==");
