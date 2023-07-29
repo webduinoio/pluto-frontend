@@ -4,11 +4,11 @@ class PDF {
     this.spanHighlightMap = {};
     this.nowPageNum = 1;
     this.scale = 1; // Initialize scale
-    this.elePageShow = document.getElementById('pageShow');
   }
 
-  setViewElement(pdfContainer) {
+  setViewElement(pdfContainer, pageShow) {
     this.pdfContainer = pdfContainer;
+    this.elePageShow = pageShow;
   }
 
   setMsgElement(ele) {
@@ -111,6 +111,7 @@ class PDF {
   }
 
   async mark(markStr) {
+    if (markStr == null) return;
     this.clearMark();
     let verifyLength = markStr.length;
     let verifyCnt = 0;
@@ -178,11 +179,13 @@ class PDF {
       var highlightStr = `<span class='pdfContainer-mark'>${replaceStr}</span>`;
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
-      elements[spanIdx].scrollIntoView();
+      elements[spanIdx].scrollIntoView({ block: 'start' });
+      /*
       var top = elements[spanIdx].getBoundingClientRect().y;
       setTimeout(function () {
-        window.scrollBy(0, top < 20 ? top : top - 10);
-      }, 100);
+        window.scrollBy(0, top < 10 ? -10 : -1 * top + 10);
+      }, 200);
+      //*/
     }
     return findPage;
   }
