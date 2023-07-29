@@ -12,23 +12,23 @@ onMounted(() => {
   pdf.setViewElement(ele);
   window.pdf = pdf;
   pdf.setViewElement(document.getElementById('pdfContainer'), document.getElementById('pageShow'));
-  var searchInput = document.querySelector('.page-tool-input');
+  var searchInput = document.querySelector('.page-tool-input') as HTMLInputElement;
   var flag = false;
-  searchInput.addEventListener('compositionstart', function (ev) {
+  searchInput.addEventListener('compositionstart', function () {
     flag = true;
   });
-  searchInput.addEventListener('compositionupdate', function (ev) {
+  searchInput.addEventListener('compositionupdate', function () {
     flag = true;
   });
   searchInput.addEventListener('compositionend', function (ev) {
     handleInput(ev.data);
     flag = false;
   });
-  searchInput.addEventListener('input', function (ev) {
+  (searchInput as any).addEventListener('input', (ev: any) => {
     if (!flag) handleInput(ev.data);
   });
-  function handleInput(value) {
-    console.log('find:', searchInput.value);
+  function handleInput(value: string) {
+    console.log('find:', value, searchInput.value);
     pdf.mark(searchInput.value);
   }
 });
@@ -58,7 +58,6 @@ onMounted(() => {
 #pdfContainer {
   height: calc(100vh - 120px);
   overflow: auto;
-  #border: solid;
 }
 
 .pdfContainer-highlight {
@@ -97,7 +96,6 @@ onMounted(() => {
   align-items: center;
   background: rgb(227, 227, 227);
   color: rgb(40, 40, 40);
-  #border-radius: 15px;
   z-index: 1000;
   cursor: pointer;
   left: 85%;
