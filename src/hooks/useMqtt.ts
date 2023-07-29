@@ -46,6 +46,10 @@ class MQTTApp {
         ...this.options,
         onSuccess: () => {
           console.log('Connected to MQTT broker');
+          for (const topic in this.subscriptions) {
+            this.client.subscribe(topic);
+            console.log(`Re-subscribed to topic: ${topic}`);
+          }
           resolve();
         },
         onFailure: (err: any) => {
