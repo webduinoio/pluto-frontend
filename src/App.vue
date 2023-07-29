@@ -6,7 +6,4 @@
 html {
   overflow: auto !important;
 }
-body {
-  overflow: hidden;
-}
 </style>
