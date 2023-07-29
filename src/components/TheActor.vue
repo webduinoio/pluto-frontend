@@ -50,8 +50,34 @@ const onClick = async (actor: Actor) => {
 <template>
   <v-card height="380" width="320" class="d-flex flex-column">
     <v-toolbar color="rgba(0, 0, 0, 0)">
-      <v-toolbar-title class="text-h6">
-        {{ props.data.name }}
+      <v-toolbar-title>
+        <div class="d-flex align-center" style="gap: 5px">
+          <div class="text-h6 text-truncate" style="max-width: 210px">
+            {{ props.data.name }}
+            <v-tooltip v-if="props.data.name.length > 19" activator="parent" location="top">
+              {{ props.data.name }}
+            </v-tooltip>
+          </div>
+          <v-tooltip location="top" v-if="props.data.shared">
+            <template v-slot:activator="{ props }">
+              <v-icon size="x-small" v-bind="props"> mdi-earth </v-icon>
+            </template>
+            <span>公開</span>
+          </v-tooltip>
+          <v-tooltip location="top" v-else>
+            <template v-slot:activator="{ props }">
+              <v-icon size="x-small" v-bind="props"> mdi-lock </v-icon>
+            </template>
+            <span>不公開</span>
+          </v-tooltip>
+          <!-- TODO: 如果是指定分享，則用這個 icon -->
+          <!-- <v-tooltip location="end" >
+            <template v-slot:activator="{ props }">
+              <v-icon size="x-small" v-bind="props"> mdi-account-multiple </v-icon>
+            </template>
+            <span>指定分享</span>
+          </v-tooltip> -->
+        </div>
       </v-toolbar-title>
 
       <template v-slot:append>

@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - 點 logo 旁的「伴學小書僮」文字也回到首頁
   - 修改聊天畫面的逐段回答，改成全部在同一段回答
 - PDF 預覽功能 [#7062](https://redmine.kingkit.codes/issues/7062)
+- 已分享的小書僮，在清單顯示 icon [#7102](https://redmine.kingkit.codes/issues/7102)
 
 ### Changed
 
