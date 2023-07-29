@@ -5,21 +5,60 @@ declare global {
   }
 }
 import PDF from '../waPDF_ts.js';
-const myPDF = new PDF();
+const pdf = new PDF();
 
 onMounted(() => {
   const ele = document.getElementById('pdfContainer');
-  myPDF.setViewElement(ele);
-  window.pdf = myPDF;
+  pdf.setViewElement(ele);
+  window.pdf = pdf;
+  pdf.setViewElement(document.getElementById('pdfContainer'), document.getElementById('pageShow'));
+  var searchInput = document.querySelector('.page-tool-input');
+  var flag = false;
+  searchInput.addEventListener('compositionstart', function (ev) {
+    flag = true;
+  });
+  searchInput.addEventListener('compositionupdate', function (ev) {
+    flag = true;
+  });
+  searchInput.addEventListener('compositionend', function (ev) {
+    handleInput(ev.data);
+    flag = false;
+  });
+  searchInput.addEventListener('input', function (ev) {
+    if (!flag) handleInput(ev.data);
+  });
+  function handleInput(value) {
+    console.log('find:', searchInput.value);
+    pdf.mark(searchInput.value);
+  }
 });
 </script>
 
 <template>
-  <div id="pdfContainer"></div>
+  <div id="pdfObj">
+    <div class="page-tool">
+      <div class="page-tool-item" onclick="pdf.zoom(0.7)">整頁</div>
+      <div class="page-tool-item" onclick="pdf.lastPage()">上一頁</div>
+      <div id="pageShow" class="page-tool-item"></div>
+      <div class="page-tool-item" onclick="pdf.nextPage()">下一頁</div>
+      <div class="page-tool-item" onclick="pdf.zoomIn(0.2)">放大</div>
+      <div class="page-tool-item" onclick="pdf.zoomOut(0.2)">缩小</div>
+      <div class="page-tool-item">
+        <input type="text" class="page-tool-input" placeholder="輸入內容" />
+      </div>
+    </div>
+    <div id="pdfContainer"></div>
+  </div>
 </template>
 <style>
+#pdfObj {
+  overflow-y: auto;
+}
+
 #pdfContainer {
-  overflow-y: scroll;
+  height: calc(100vh - 120px);
+  overflow: auto;
+  #border: solid;
 }
 
 .pdfContainer-highlight {
@@ -41,11 +80,47 @@ onMounted(() => {
 }
 
 .pdfContainer-loading {
-  position: relative;
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
   text-align: center;
   font-size: 1.6em;
   width: 100%;
+}
+
+.page-tool {
+  top: 70px;
+  position: fixed;
+  padding-left: 12px;
+  padding-right: 12px;
+  display: flex;
+  align-items: center;
+  background: rgb(227, 227, 227);
+  color: rgb(40, 40, 40);
+  #border-radius: 15px;
+  z-index: 1000;
+  cursor: pointer;
+  left: 85%;
+  width: 620px;
+  transform: translateX(-80%);
+  user-select: none;
+}
+
+.page-tool-item {
+  cursor: pointer;
+  padding: 8px 15px;
+  padding-left: 10px;
+  transition: background-color 0.3s;
+}
+
+.page-tool-item:active {
+  background-color: #ddd;
+}
+
+.page-tool-input {
+  border: #ccc solid;
+  background: none;
+  outline: none;
+  color: rgb(0, 0, 0);
 }
 </style>

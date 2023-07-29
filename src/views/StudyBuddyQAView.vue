@@ -287,7 +287,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
         </v-card-item>
       </v-card>
-      <ThePDFViewer class="mx-8 my-6 custom-pdf-viewer" :value="referenceData" />
+      <ThePDFViewer class="custom-pdf-viewer" :value="referenceData" />
     </pane>
   </splitpanes>
 </template>
@@ -299,15 +299,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
     overflow-y: auto;
   }
 }
-
 .right-panel {
-  max-height: 100vh;
-  overflow-y: auto;
-}
-.custom-pdf-viewer {
   height: calc(100vh - 165px);
 }
-
+.custom-pdf-viewer {
+  height: calc(100vh - 120px);
+  position: relative;
+}
 .image-container {
   display: flex;
   align-items: center;
