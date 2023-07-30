@@ -54,7 +54,7 @@ class PDF {
     this.selectedText = '';
     // Initialize PDF.js settings
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      //'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.js';
+      //  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.js';
       'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
     this.pdfContainer.addEventListener('scroll', () => {
       // Get all page elements
@@ -77,29 +77,29 @@ class PDF {
       this.pdfContainer.innerHTML = '';
       this.showMsg('PDF loading...', pdfUrl);
       this.loadingEffect(true);
-      // Start loading the PDF
-      this.pdfDoc = await pdfjsLib.getDocument({
+      let loadingTask = pdfjsLib.getDocument({
         url: this.pdfUrl,
         cMapUrl: '/public/cmaps/',
-        //useSystemFonts: true,
-      }).promise;
-      this._nowPage = await this.pdfDoc.getPage(1);
-      this.pdfContainer.innerHTML = '';
-      // Get the viewport for the page at scale 1
-      const unscaledViewport = this._nowPage.getViewport({ scale: this.scale });
-      // Calculate the scale necessary to fit the page width to the container width
-      this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
-      await new Promise((r) => setTimeout(r, 500));
-      //
-      for (let pageNum = 1; pageNum <= this.pdfDoc.numPages; pageNum++) {
-        await this.renderPage(pageNum);
-      }
+        rangeChunkSize: 65536,
+        //disableRange: false,
+      });
+      loadingTask.promise.then(async (pdf) => {
+        console.log('download completed.');
+        this.pdfDoc = pdf;
+        const unscaledViewport = (await pdf.getPage(1)).getViewport({ scale: 1 });
+        this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
+        let lastPromise = Promise.resolve(); // Start with a promise that always resolves
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          lastPromise = lastPromise.then(() => this.renderPage(pdf, pageNum)); // Chain the promises
+          //this.renderPage(pdf, pageNum);
+        }
+      });
     } catch (error) {
       // Handle any errors that occur during loading
       console.error('Error loading PDF:', error);
     }
     this.loadingEffect(false);
-    this.showPage();
+    //this.showPage();
     this.showMsg('PDF loading...done.');
   }
 
@@ -273,10 +273,10 @@ class PDF {
     await page.render(renderContext).promise;
   }
 
-  async renderPage(pageNum) {
+  async renderPage(pdf, pageNum) {
     var self = this;
     this.showMsg('load :', this.scale);
-    const page = await this.pdfDoc.getPage(pageNum);
+    const page = await pdf.getPage(pageNum);
     var viewport = page.getViewport({ scale: this.scale }); // Use the current scale
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
@@ -324,13 +324,12 @@ class PDF {
     pageDiv.appendChild(canvas);
     pageDiv.appendChild(textLayerDiv);
 
-    // Retrieve the text content and render it onto the textLayer
-    const textContent = await page.getTextContent();
-
     // Render the page onto the canvas
     await page.render(renderContext).promise;
 
-    // Render the text layer
+    /*/ Render the text layer
+    // Retrieve the text content and render it onto the textLayer
+    const textContent = await page.getTextContent();
     pdfjsLib.renderTextLayer({
       textContentSource: textContent,
       container: textLayerDiv,
@@ -339,10 +338,11 @@ class PDF {
       enhanceTextSelection: true,
       textContentStream: true,
     });
+    /*/
     // Append the rendered page to the container
     this.pdfContainer.appendChild(pageDiv);
     // Add event listener for text selection
-    textLayerDiv.addEventListener('mouseup', function (event) {
+    textLayerDiv.addEventListener('___mouseup', function (event) {
       var selectedRange = window.getSelection().getRangeAt(0);
       this.selectedText = selectedRange.toString().trim();
       setTimeout(function () {
@@ -350,7 +350,7 @@ class PDF {
       }, 1000);
     });
 
-    textLayerDiv.addEventListener('mouseover', function (event) {
+    textLayerDiv.addEventListener('___mouseover', function (event) {
       //console.log('event:', event);
       if (this.highlightTimeout) clearTimeout(this.highlightTimeout);
 
