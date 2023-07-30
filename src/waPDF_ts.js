@@ -40,14 +40,18 @@ export default class PDF {
   }
 
   async load_and_find(url, keyword) {
+    var self = this;
     if (this.pdfUrl != url) {
-      await this.load(url);
+      this.load(url, async function () {
+        self.showMsg('find:[' + keyword + ']');
+        await self.page(await self.mark(keyword));
+      });
+    } else {
+      await self.page(await self.mark(keyword));
     }
-    this.showMsg('find:[' + keyword + ']');
-    await this.page(await this.mark(keyword));
   }
 
-  async load(pdfUrl) {
+  async load(pdfUrl, callback) {
     if (typeof pdfUrl == 'undefined' || pdfUrl == '') return;
     this.pdfUrl = pdfUrl;
     this.highlightTimeout = 0;
@@ -89,10 +93,11 @@ export default class PDF {
         this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
         let lastPromise = Promise.resolve(); // Start with a promise that always resolves
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          lastPromise = lastPromise.then(() => this.renderPage(pdf, pageNum)); // Chain the promises
-          //this.renderPage(pdf, pageNum);
+          //lastPromise = lastPromise.then(() => this.renderPage(pdf, pageNum)); // Chain the promises
+          await this.renderPage(pdf, pageNum);
         }
         this.loadingEffect(false);
+        callback();
       });
     } catch (error) {
       // Handle any errors that occur during loading
@@ -326,7 +331,7 @@ export default class PDF {
     // Render the page onto the canvas
     await page.render(renderContext).promise;
 
-    /*/ Render the text layer
+    //*/ Render the text layer
     // Retrieve the text content and render it onto the textLayer
     const textContent = await page.getTextContent();
     pdfjsLib.renderTextLayer({
@@ -337,7 +342,7 @@ export default class PDF {
       enhanceTextSelection: true,
       textContentStream: true,
     });
-    /*/
+    //*/
     // Append the rendered page to the container
     this.pdfContainer.appendChild(pageDiv);
     // Add event listener for text selection
