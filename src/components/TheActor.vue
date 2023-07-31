@@ -61,16 +61,11 @@ const emit = defineEmits<{
           </template>
 
           <v-list>
-            <v-list-item :value="props.data.id">
-              <v-list-item-title
-                v-if="props.data.createdBy === user?.id && props.data.shared"
-                @click="onClick(props.data)"
-              >
+            <v-list-item :value="props.data.id" @click="emit('copy', props.data)">
+              <v-list-item-title v-if="props.data.createdBy === user?.id && props.data.shared">
                 停止分享
               </v-list-item-title>
-              <v-list-item-title v-else @click="onClick(props.data)">
-                複製分享連結
-              </v-list-item-title>
+              <v-list-item-title v-else> 複製分享連結 </v-list-item-title>
             </v-list-item>
             <v-list-item
               :value="props.data.id"
