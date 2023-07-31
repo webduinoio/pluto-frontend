@@ -60,13 +60,13 @@ const onClick = async (actor: Actor) => {
           </div>
           <v-tooltip location="top" v-if="props.data.shared">
             <template v-slot:activator="{ props }">
-              <v-icon size="x-small" v-bind="props"> mdi-earth </v-icon>
+              <v-icon size="x-small" color="#6D6D6D" v-bind="props"> mdi-earth </v-icon>
             </template>
             <span>公開</span>
           </v-tooltip>
           <v-tooltip location="top" v-else>
             <template v-slot:activator="{ props }">
-              <v-icon size="x-small" v-bind="props"> mdi-lock </v-icon>
+              <v-icon size="x-small" color="#6D6D6D" v-bind="props"> mdi-lock </v-icon>
             </template>
             <span>不公開</span>
           </v-tooltip>
