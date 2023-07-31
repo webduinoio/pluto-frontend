@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { ACTOR_TYPE } from '@/enums';
-import { toggleShareActor } from '@/services';
-import { useNotificationStore } from '@/stores/notification';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
 
-const notification = useNotificationStore();
 const oauth = useOAuthStore();
 const user = oauth.user;
 const props = withDefaults(
@@ -21,30 +17,8 @@ const emit = defineEmits<{
   (e: 'edit', data: Actor): void;
   (e: 'open', data: Actor): void;
   (e: 'delete', id: number): void;
+  (e: 'copy', actor: Actor): void;
 }>();
-
-const onClick = async (actor: Actor) => {
-  const mapping = {
-    [ACTOR_TYPE.TUTORIAL]: 'qa',
-    [ACTOR_TYPE.SHEET]: 'google-sheet',
-    [ACTOR_TYPE.QUIZ]: 'generate-question',
-
-    // TODO: 名稱待確認，要符合 router 的命名。
-    [ACTOR_TYPE.WEBBIT]: 'webbit',
-    [ACTOR_TYPE.PYTHON]: 'python',
-  };
-
-  if (props.data.createdBy === user?.id) {
-    await toggleShareActor(actor.id);
-    actor.shared = !actor.shared;
-  }
-
-  if (actor.shared) {
-    await navigator.clipboard.writeText(`${location.origin}/${mapping[actor.type]}/${actor.id}`);
-  }
-
-  notification.fire(actor.shared ? '分享連結已複製' : '已停止分享', 'top');
-};
 </script>
 
 <template>

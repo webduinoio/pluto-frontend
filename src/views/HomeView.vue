@@ -3,12 +3,17 @@ import TheActor from '@/components/TheActor.vue';
 import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { deleteActor, getActors } from '@/services';
+import { deleteActor, getActors, toggleShareActor } from '@/services';
+import { useNotificationStore } from '@/stores/notification';
+import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
 import { set } from '@vueuse/core';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
+const notification = useNotificationStore();
+const oauth = useOAuthStore();
+const user = oauth.user;
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
@@ -62,6 +67,21 @@ const onDelete = async (id: number) => {
     });
   }
 };
+
+const onCopy = async (actor: Actor) => {
+  if (actor.createdBy === user?.id) {
+    await toggleShareActor(actor.id);
+    actor.shared = !actor.shared;
+  }
+
+  if (actor.shared) {
+    await navigator.clipboard.writeText(
+      `${location.origin}/${getRouterName(actor.type)}/${actor.id}`
+    );
+  }
+
+  notification.fire(actor.shared ? '分享連結已複製' : '已停止分享', 'top');
+};
 </script>
 
 <template>
@@ -90,6 +110,7 @@ const onDelete = async (id: number) => {
               @edit="onEdit"
               @open="onOpen"
               @delete="onDelete"
+              @copy="onCopy"
             />
           </v-row>
         </v-container>
