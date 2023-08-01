@@ -40,6 +40,18 @@ const getRouterName = (type: ACTOR_TYPE) => {
   return ROUTER_NAME.STUDY_BUDDY_QA;
 };
 
+const getRouterPath = (type: ACTOR_TYPE) => {
+  return {
+    [ACTOR_TYPE.TUTORIAL]: 'qa',
+    [ACTOR_TYPE.SHEET]: 'google-sheet',
+    [ACTOR_TYPE.QUIZ]: 'generate-question',
+
+    // TODO: 名稱待確認，要符合 router 的命名。
+    [ACTOR_TYPE.WEBBIT]: 'webbit',
+    [ACTOR_TYPE.PYTHON]: 'python',
+  }[type];
+};
+
 const onOpen = (data: Actor) => {
   router.push({
     name: getRouterName(data.type),
@@ -76,7 +88,7 @@ const onCopy = async (actor: Actor) => {
 
   if (actor.shared) {
     await navigator.clipboard.writeText(
-      `${location.origin}/${getRouterName(actor.type)}/${actor.id}`
+      `${location.origin}/${getRouterPath(actor.type)}/${actor.id}`
     );
   }
 
