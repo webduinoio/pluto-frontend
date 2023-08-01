@@ -8,6 +8,7 @@ import { generateMqttUserId } from '@/hooks/useUtil';
 import { getDatasets, trainActor, validateUrl } from '@/services';
 import { deleteDataset } from '@/services/dataset';
 import type { Actor, Dataset, Response } from '@/types';
+import { mdiMagnify, mdiPencil, mdiTrashCan } from '@mdi/js';
 import { get, set } from '@vueuse/core';
 import { AxiosError } from 'axios';
 
@@ -171,7 +172,7 @@ onMounted(async () => {
           <v-text-field
             variant="solo"
             label="Search text"
-            append-inner-icon="mdi-magnify"
+            :append-inner-icon="mdiMagnify"
             density="comfortable"
             single-line
             hide-details
@@ -199,10 +200,10 @@ onMounted(async () => {
             <template v-slot:append>
               <DatasetForm title="編輯 Q & A" :edit-item="item" @update="loadDataset">
                 <template #default="{ props }">
-                  <v-btn icon="mdi-pencil" variant="text" v-bind="props"></v-btn>
+                  <v-btn :icon="mdiPencil" variant="text" v-bind="props"></v-btn>
                 </template>
               </DatasetForm>
-              <v-btn icon="mdi-trash-can" variant="text" @click="onDeleteDataset(item)"></v-btn>
+              <v-btn :icon="mdiTrashCan" variant="text" @click="onDeleteDataset(item)"></v-btn>
             </template>
           </v-list-item>
           <v-divider></v-divider>

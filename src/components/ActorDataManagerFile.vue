@@ -6,6 +6,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { trainActor, validateUrl } from '@/services';
 import type { Actor, Response } from '@/types';
+import { mdiOpenInNew } from '@mdi/js';
 import { set } from '@vueuse/core';
 import { AxiosError } from 'axios';
 
@@ -110,7 +111,7 @@ const onTrain = async () => {
               href="https://docs.google.com/document/d/1faGhiXiscEq5UJhNYN1O0PUdPizCXv5sXAirfMe5qDc/edit?usp=sharing"
               target="_blank"
               class="text-primary"
-              >訓練資料說明 <v-icon icon="mdi-open-in-new" size="x-small"></v-icon
+              >訓練資料說明 <v-icon :icon="mdiOpenInNew" size="x-small"></v-icon
             ></a>
           </div>
         </v-col>

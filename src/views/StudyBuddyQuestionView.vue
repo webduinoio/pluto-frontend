@@ -7,6 +7,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { createForm, getActors } from '@/services';
 import type { Actor, ChoiceType, QAType } from '@/types';
+import { mdiAccountBox, mdiChevronRightBox, mdiHome, mdiRobot, mdiTrashCanOutline } from '@mdi/js';
 import { get, set, useClipboard } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
@@ -278,7 +279,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
     <pane min-size="30" size="30">
       <div class="d-flex flex-column h-100 left-panel overflow-auto">
         <v-card class="flex-shrink-0">
-          <v-card-item prepend-icon="mdi-home">
+          <v-card-item :prepend-icon="mdiHome">
             <v-card-subtitle>伴學小書僮</v-card-subtitle>
             <v-card-title>出題小書僮</v-card-title>
           </v-card-item>
@@ -314,7 +315,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                 <v-container fluid>
                   <v-row>
                     <v-col cols="auto">
-                      <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                      <v-icon :icon="msg.type === 'ai' ? mdiRobot : mdiAccountBox"></v-icon>
                     </v-col>
                     <v-col>
                       <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
@@ -398,7 +399,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <template v-slot:append-inner>
             <v-icon
               color="primary"
-              icon="mdi-chevron-right-box"
+              :icon="mdiChevronRightBox"
               :style="{
                 cursor: !assistant ? 'not-allowed' : 'pointer',
                 opacity: !assistant ? '' : 'unset',
@@ -432,7 +433,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <v-app-bar>
             <v-app-bar-title class="text-grey-darken-1 font-weight-bold">題目預覽</v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn icon="mdi-trash-can-outline" @click="onTrash"></v-btn>
+            <v-btn :icon="mdiTrashCanOutline" @click="onTrash"></v-btn>
           </v-app-bar>
 
           <v-main>
