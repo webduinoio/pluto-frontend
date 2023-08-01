@@ -7,6 +7,7 @@ import { deleteActor, getActors, toggleShareActor } from '@/services';
 import { useNotificationStore } from '@/stores/notification';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
+import { mdiPlus } from '@mdi/js';
 import { set } from '@vueuse/core';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
@@ -103,7 +104,7 @@ const onCopy = async (actor: Actor) => {
         <div class="text-h4">我的小書僮</div>
         <v-btn
           color="primary"
-          prepend-icon="mdi-plus"
+          :prepend-icon="mdiPlus"
           @click="router.push({ name: ROUTER_NAME.ACTOR_CREATION })"
         >
           新增小書僮

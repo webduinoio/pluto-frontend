@@ -7,6 +7,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor } from '@/services';
 import type { Actor } from '@/types/actors';
+import { mdiAccountBox, mdiChevronRightBox } from '@mdi/js';
 import { get, set } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
@@ -227,7 +228,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                       <v-col cols="auto">
                         <v-icon v-if="msgIdx !== 0"></v-icon>
                         <template v-else>
-                          <v-icon v-if="actor.type !== 'ai'">mdi-account-box</v-icon>
+                          <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
                           <v-icon v-else>
                             <img class="icon-image" :src="get(actorData)?.image" />
                           </v-icon>
@@ -261,7 +262,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <template v-slot:append-inner>
             <v-icon
               color="primary"
-              icon="mdi-chevron-right-box"
+              :icon="mdiChevronRightBox"
               :style="{
                 cursor: prompt ? 'pointer' : 'not-allowed',
                 opacity: prompt ? 'unset' : '',

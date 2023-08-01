@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useSweetAlert } from '@/hooks/useSweetAlert';
+import { mdiMicrophone, mdiMicrophoneOff, mdiMicrophoneOutline } from '@mdi/js';
 import { useSpeechRecognition } from '@vueuse/core';
 
 const props = withDefaults(
@@ -67,9 +68,9 @@ const onVoiceInput = () => {
         :icon="
           speech.isSupported.value
             ? speech.isListening.value
-              ? 'mdi-microphone'
-              : 'mdi-microphone-outline'
-            : 'mdi-microphone-off'
+              ? mdiMicrophone
+              : mdiMicrophoneOutline
+            : mdiMicrophoneOff
         "
         color="secondary"
         size="x-large"

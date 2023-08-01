@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
+import { mdiDotsVertical, mdiEarth, mdiLock } from '@mdi/js';
 
 const oauth = useOAuthStore();
 const user = oauth.user;
@@ -26,7 +27,7 @@ const emit = defineEmits<{
     <v-toolbar color="rgba(0, 0, 0, 0)">
       <v-toolbar-title>
         <div class="d-flex align-center" style="gap: 5px">
-          <div class="text-h6 text-truncate" style="max-width: 210px">
+          <div class="text-h6 text-truncate" style="max-width: 200px">
             {{ props.data.name }}
             <v-tooltip v-if="props.data.name.length > 19" activator="parent" location="top">
               {{ props.data.name }}
@@ -34,20 +35,20 @@ const emit = defineEmits<{
           </div>
           <v-tooltip location="top" v-if="props.data.shared">
             <template v-slot:activator="{ props }">
-              <v-icon size="x-small" color="#6D6D6D" v-bind="props"> mdi-earth </v-icon>
+              <v-icon :icon="mdiEarth" size="x-small" color="#6D6D6D" v-bind="props"> </v-icon>
             </template>
             <span>公開</span>
           </v-tooltip>
           <v-tooltip location="top" v-else>
             <template v-slot:activator="{ props }">
-              <v-icon size="x-small" color="#6D6D6D" v-bind="props"> mdi-lock </v-icon>
+              <v-icon :icon="mdiLock" size="x-small" color="#6D6D6D" v-bind="props"> </v-icon>
             </template>
             <span>不公開</span>
           </v-tooltip>
           <!-- TODO: 如果是指定分享，則用這個 icon -->
           <!-- <v-tooltip location="end" >
             <template v-slot:activator="{ props }">
-              <v-icon size="x-small" v-bind="props"> mdi-account-multiple </v-icon>
+              <v-icon :icon="mdiAccountMultiple" size="x-small" v-bind="props"></v-icon>
             </template>
             <span>指定分享</span>
           </v-tooltip> -->
@@ -57,7 +58,7 @@ const emit = defineEmits<{
       <template v-slot:append>
         <v-menu min-width="200px" rounded>
           <template v-slot:activator="{ props }">
-            <v-btn icon="mdi-dots-vertical" v-bind="props"></v-btn>
+            <v-btn :icon="mdiDotsVertical" v-bind="props"></v-btn>
           </template>
 
           <v-list>

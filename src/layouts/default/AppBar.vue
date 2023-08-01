@@ -2,6 +2,7 @@
 import { ROUTER_NAME } from '@/enums';
 import { logout } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
+import { mdiAccountCircle } from '@mdi/js';
 
 const router = useRouter();
 const oauth = useOAuthStore();
@@ -24,7 +25,7 @@ const user = oauth.user;
       <template v-slot:activator="{ props }">
         <v-btn icon v-bind="props">
           <v-avatar>
-            <v-icon color="blue-grey-lighten-4" icon="mdi-account-circle" size="x-large"></v-icon>
+            <v-icon color="blue-grey-lighten-4" :icon="mdiAccountCircle" size="x-large"></v-icon>
           </v-avatar>
         </v-btn>
       </template>
@@ -32,7 +33,7 @@ const user = oauth.user;
         <v-card-text>
           <div class="mx-9 text-center">
             <v-avatar>
-              <v-icon color="grey" icon="mdi-account-circle" size="x-large"></v-icon>
+              <v-icon color="grey" :icon="mdiAccountCircle" size="x-large"></v-icon>
             </v-avatar>
             <p class="text-caption mt-1">
               {{ user?.email }}
