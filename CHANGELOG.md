@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - 小書僮 Q&A 無法編輯 [#7085](https://redmine.kingkit.codes/issues/7085)
+- 小書僮 icon 亂碼 [#7111](https://redmine.kingkit.codes/issues/7111)
 
 ## [1.0.0-alpha] - 2023-07-11
 
