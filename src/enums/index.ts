@@ -17,13 +17,6 @@ export enum GENERATE_QUESTION_TYPE {
   QA = 'Q&A',
 }
 
-// TODO: 後續需要根據正式機/測試機進行調整
-// export enum MQTT_TOPIC {
-//   KN = import.meta.env.VITE_MQTT_TOPIC_KN, // 小書僮
-//   CODE = import.meta.env.VITE_MQTT_TOPIC_CODE, // 思維工具
-//   PROC = import.meta.env.VITE_MQTT_TOPIC_PROC, // actorId 處理訊息通報
-// }
-
 export const MQTT_TOPIC: Readonly<{
   KN: string;
   CODE: string;
