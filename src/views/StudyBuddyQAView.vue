@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import ThePDFViewer from '@/components/ThePDFViewer.vue';
+import TheMarkdown from '@/components/TheMarkdown.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
@@ -88,37 +88,6 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
-const onReferenceMessage = (endMsg: string) => {
-  var info: Array<object> = JSON.parse(endMsg);
-  var links = '<div style="text-align:right">';
-  var idxLink = 1;
-  var keywordAmt = 0;
-  for (var i in info) {
-    var idx = parseInt(i);
-    var item = info[idx] as { score: number; content: string; url: string };
-    if (idx > 0 && item.score < 0.8) continue;
-    var content = item.content.split('\n');
-    var keyword = '';
-    for (var line in content) {
-      if (
-        content[line].trim() != '' &&
-        !content[line].trim().startsWith('#') &&
-        !content[line].trim().startsWith('https://')
-      ) {
-        keyword = content[line];
-        break;
-      }
-    }
-    if (keyword != '') {
-      keywordAmt++;
-      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
-      links += `<a href="#" onclick="${link}">[${idxLink++}]</a> `;
-    }
-  }
-  links += '</div>';
-  return keywordAmt == 0 ? '' : links;
-};
-
 onMounted(async () => {
   await loadData();
 });
@@ -152,15 +121,14 @@ mqtt.init((msg: string, isEnd: boolean) => {
   if (isEnd) {
     // 其中包含 uuid 的部份，在這裡暫時無用
     const uuid = msg.split('\n\n$UUID$')[1];
-    let endMsg = msg;
+    let newMsg = msg;
     if (uuid) {
-      endMsg = msg.split('\n\n$UUID$')[0];
+      newMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    var linkInfo = onReferenceMessage(endMsg);
-    if (linkInfo != '') respMsg.push(linkInfo);
     actors.value = [...actors.value];
     respMsg = [];
+    set(referenceData, newMsg);
     set(mqttLoading, false);
   } else {
     if (respMsg.length == 0) {
@@ -288,7 +256,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
         </v-card-item>
       </v-card>
-      <ThePDFViewer class="custom-pdf-viewer" :value="referenceData" />
+      <TheMarkdown class="mx-8 my-6" :value="referenceData" />
     </pane>
   </splitpanes>
 </template>
@@ -302,10 +270,6 @@ mqtt.init((msg: string, isEnd: boolean) => {
 }
 .right-panel {
   height: calc(100vh - 165px);
-}
-.custom-pdf-viewer {
-  height: calc(100vh - 120px);
-  position: relative;
 }
 .image-container {
   display: flex;
