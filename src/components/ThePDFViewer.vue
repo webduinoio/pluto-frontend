@@ -88,7 +88,7 @@ onMounted(() => {
 }
 
 .page-tool {
-  top: 70px;
+  top: 270px;
   position: fixed;
   padding-left: 12px;
   padding-right: 12px;

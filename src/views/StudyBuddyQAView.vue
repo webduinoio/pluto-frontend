@@ -1,7 +1,6 @@
 <script lang="ts" setup>
+//import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheQAViewToolBar from '@/components/TheQAViewToolBar.vue';
-
-import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
@@ -295,15 +294,15 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </div>
     </pane>
     <pane size="60" class="h-100 right-panel">
+      <!--
       <v-card>
-        <!--
         <v-card-item>
           <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
         </v-card-item>
-        -->
-        <TheQAViewToolBar></TheQAViewToolBar>
+      <ThePDFViewer class="custom-pdf-viewer" :value="referenceData" />  
       </v-card>
-      <ThePDFViewer class="custom-pdf-viewer" :value="referenceData" />
+      -->
+      <TheQAViewToolBar :value="referenceData"></TheQAViewToolBar>
     </pane>
   </splitpanes>
 </template>

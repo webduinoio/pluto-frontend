@@ -9,6 +9,7 @@ export default class PDF {
   setViewElement(pdfContainer, pageShow) {
     this.pdfContainer = pdfContainer;
     this.elePageShow = pageShow;
+    window.qq = this.elePageShow;
   }
 
   setMsgElement(ele) {
@@ -218,7 +219,11 @@ export default class PDF {
   }
 
   showPage() {
-    this.elePageShow.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
+    if (typeof this.elePageShow.value == 'number') {
+      this.elePageShow.value = this.nowPageNum;
+    } else {
+      this.elePageShow.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
+    }
   }
 
   page(pageNum) {
