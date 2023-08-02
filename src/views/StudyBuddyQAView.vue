@@ -163,6 +163,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
     respMsg = [];
     set(mqttLoading, false);
   } else {
+    msg = msg.replace(
+      /!\[.*?\]\((.*?)\)/g,
+      "<img src='$1' width='50%' style='border-radius: 10px'>"
+    );
     if (respMsg.length == 0) {
       respMsg.push(msg);
       actors.value.push({

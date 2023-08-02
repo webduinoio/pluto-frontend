@@ -28,7 +28,7 @@ onMounted(() => {
     if (!flag) handleInput(ev.data);
   });
   function handleInput(value: string) {
-    console.log('find:', value, searchInput.value);
+    //console.log('find:', value, searchInput.value);
     pdf.mark(searchInput.value);
   }
 });
