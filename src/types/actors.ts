@@ -27,6 +27,7 @@ export interface Actor {
   modifiedAt: number;
   createdBy: number;
   name: string;
+  shared: boolean;
   description: string;
   url: string;
   image: string;

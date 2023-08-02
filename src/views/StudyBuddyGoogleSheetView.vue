@@ -6,6 +6,7 @@ import { useMqtt } from '@/hooks/useMqtt';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getGoogleSheetData } from '@/services/googleSheet';
 import type { ChoiceType, QAType } from '@/types';
+import { mdiAccountBox, mdiChevronRightBox, mdiHome, mdiRefresh, mdiRobot } from '@mdi/js';
 import { get, set, useDebounceFn } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
@@ -168,7 +169,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
     <pane min-size="30" size="30">
       <div class="d-flex flex-column h-100 left-panel">
         <v-card class="flex-shrink-0">
-          <v-card-item prepend-icon="mdi-home">
+          <v-card-item :prepend-icon="mdiHome">
             <v-card-subtitle>伴學小書僮</v-card-subtitle>
             <v-card-title>試算表小書僮</v-card-title>
           </v-card-item>
@@ -201,7 +202,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                 <v-container fluid>
                   <v-row>
                     <v-col cols="auto">
-                      <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
+                      <v-icon :icon="msg.type === 'ai' ? mdiRobot : mdiAccountBox"></v-icon>
                     </v-col>
                     <v-col>
                       <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
@@ -261,7 +262,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <template v-slot:append-inner>
             <v-icon
               color="primary"
-              icon="mdi-chevron-right-box"
+              :icon="mdiChevronRightBox"
               size="x-large"
               :style="{
                 cursor: sheetValue.length && prompt ? 'pointer' : 'not-allowed',
@@ -289,7 +290,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
               試算表內容
             </v-app-bar-title>
             <v-spacer></v-spacer>
-            <v-btn prepend-icon="mdi-refresh" color="grey-darken-1" size="large" @click="onRefresh">
+            <v-btn :prepend-icon="mdiRefresh" color="grey-darken-1" size="large" @click="onRefresh">
               重新整理
             </v-btn>
           </v-app-bar>

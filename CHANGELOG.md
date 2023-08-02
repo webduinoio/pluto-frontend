@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- PDF 預覽功能 [#7062](https://redmine.kingkit.codes/issues/7062)
+
+## [1.0.0-alpha.1] - 2023-08-02
+
+### Added
+
+- 小書僮狀態 [#7032](https://redmine.kingkit.codes/issues/7032)
+- 顯示小書僮 ID [#7059](https://redmine.kingkit.codes/issues/7059)
+- 上傳檔案限制 [#7061](https://redmine.kingkit.codes/issues/7061)
+- 小書僮小地方優化 [#7080](https://redmine.kingkit.codes/issues/7080)
+- 已分享的小書僮，在清單顯示 icon [#7102](https://redmine.kingkit.codes/issues/7102)
+
+>>>>>>>
+### Fixed
+
+- 小書僮 Q&A 無法編輯 [#7085](https://redmine.kingkit.codes/issues/7085)
+- 小書僮 icon 亂碼 [#7111](https://redmine.kingkit.codes/issues/7111)
+
 ## [1.0.0-alpha] - 2023-07-11
 
 ### Added
@@ -20,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 編輯書僮 - 設定 ui [#6959](https://redmine.kingkit.codes/issues/6959)
 - 編輯書僮 - 進階設定 ui [#6960](https://redmine.kingkit.codes/issues/6960)
 - 聊天畫面放範例 prompt [#7002](https://redmine.kingkit.codes/issues/7002)
+- 分享連結 [#6949](https://redmine.kingkit.codes/issues/6949)
 
 ### Changed
 
@@ -30,5 +51,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.0.0-alpha...HEAD
+[1.0.0-alpha.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.0.0-alpha...v1.0.0-alpha.1
 [1.0.0-alpha]: https://github.com/webduinoio/pluto-frontend/releases/tag/v1.0.0-alpha

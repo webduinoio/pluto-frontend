@@ -1,13 +1,20 @@
 <script lang="ts" setup>
 import TheActor from '@/components/TheActor.vue';
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { deleteActor, getActors } from '@/services';
+import { deleteActor, getActors, toggleShareActor } from '@/services';
+import { useNotificationStore } from '@/stores/notification';
+import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
+import { mdiPlus } from '@mdi/js';
 import { set } from '@vueuse/core';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
+const notification = useNotificationStore();
+const oauth = useOAuthStore();
+const user = oauth.user;
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
@@ -34,6 +41,18 @@ const getRouterName = (type: ACTOR_TYPE) => {
   return ROUTER_NAME.STUDY_BUDDY_QA;
 };
 
+const getRouterPath = (type: ACTOR_TYPE) => {
+  return {
+    [ACTOR_TYPE.TUTORIAL]: 'qa',
+    [ACTOR_TYPE.SHEET]: 'google-sheet',
+    [ACTOR_TYPE.QUIZ]: 'generate-question',
+
+    // TODO: 名稱待確認，要符合 router 的命名。
+    [ACTOR_TYPE.WEBBIT]: 'webbit',
+    [ACTOR_TYPE.PYTHON]: 'python',
+  }[type];
+};
+
 const onOpen = (data: Actor) => {
   router.push({
     name: getRouterName(data.type),
@@ -57,9 +76,24 @@ const onDelete = async (id: number) => {
       icon: 'error',
       text: err.message,
       showConfirmButton: false,
-      timer: 1500,
+      timer: NOTIFICATION_TIMEOUT,
     });
   }
+};
+
+const onCopy = async (actor: Actor) => {
+  if (actor.createdBy === user?.id) {
+    await toggleShareActor(actor.id);
+    actor.shared = !actor.shared;
+  }
+
+  if (actor.shared) {
+    await navigator.clipboard.writeText(
+      `${location.origin}/${getRouterPath(actor.type)}/${actor.id}`
+    );
+  }
+
+  notification.fire(actor.shared ? '分享連結已複製' : '已停止分享', 'top');
 };
 </script>
 
@@ -70,7 +104,7 @@ const onDelete = async (id: number) => {
         <div class="text-h4">我的小書僮</div>
         <v-btn
           color="primary"
-          prepend-icon="mdi-plus"
+          :prepend-icon="mdiPlus"
           @click="router.push({ name: ROUTER_NAME.ACTOR_CREATION })"
         >
           新增小書僮
@@ -89,6 +123,7 @@ const onDelete = async (id: number) => {
               @edit="onEdit"
               @open="onOpen"
               @delete="onDelete"
+              @copy="onCopy"
             />
           </v-row>
         </v-container>

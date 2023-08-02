@@ -5,6 +5,7 @@ import TheActorSetting from '@/components/TheActorSetting.vue';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { getActor } from '@/services/actors';
 import type { Actor } from '@/types';
+import { mdiChevronLeft, mdiOpenInNew } from '@mdi/js';
 import { set } from '@vueuse/core';
 
 const router = useRouter();
@@ -38,6 +39,10 @@ const onOpen = () => {
   });
   window.open(location.href, '_blank');
 };
+
+const onSave = (value: Actor) => {
+  set(actor, value);
+};
 </script>
 
 <template>
@@ -48,14 +53,14 @@ const onOpen = () => {
         @click.stop.prevent="onBack"
       >
         <template v-slot:prepend>
-          <v-icon icon="mdi-chevron-left"></v-icon>
+          <v-icon :icon="mdiChevronLeft"></v-icon>
         </template>
       </v-breadcrumbs>
       <v-main>
         <v-toolbar class="bg-transparent">
           <v-toolbar-title class="text-h4 font-weight-bold">
             {{ actor?.name }}
-            <v-btn icon="mdi-open-in-new" color="grey-darken-1" @click="onOpen"></v-btn>
+            <v-btn :icon="mdiOpenInNew" color="grey-darken-1" @click="onOpen"></v-btn>
           </v-toolbar-title>
 
           <template v-slot:extension>
@@ -69,7 +74,7 @@ const onOpen = () => {
         <v-divider :thickness="2" class="divider"></v-divider>
 
         <v-window v-model="tab">
-          <TheActorSetting value="setting" :actor="actor" />
+          <TheActorSetting value="setting" :actor="actor" @save="onSave" />
           <TheActorDataManager value="dataManager" :actor="actor" />
           <TheActorAdvanced value="advanced" :actor="actor" />
         </v-window>

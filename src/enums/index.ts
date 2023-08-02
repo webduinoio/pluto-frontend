@@ -17,10 +17,14 @@ export enum GENERATE_QUESTION_TYPE {
   QA = 'Q&A',
 }
 
-// TODO: 後續需要根據正式機/測試機進行調整
-export enum MQTT_TOPIC {
-  KN = 'kn@chat', // 小書僮
-  CODE = 'code@chat', // 思維工具
+export const MQTT_TOPIC: Readonly<{
+  KN: string;
+  CODE: string;
+  PROC: string;
+}> = {
+  KN: import.meta.env.VITE_MQTT_TOPIC_KN, // 小書僮
+  CODE: import.meta.env.VITE_MQTT_TOPIC_CODE, // 思維工具
+  PROC: import.meta.env.VITE_MQTT_TOPIC_PROC, // actorId 處理訊息通報
 }
 
 export enum ACTOR_TYPE {
@@ -49,6 +53,9 @@ export enum ERROR_CODE {
   NOT_FOUND_ERROR = 5,
   DUPLICATE_ERROR = 6,
   FOLDER_NOT_VIEWABLE_ERROR = 7,
+  FOLDER_WRONG_URL_ERROR = 8,
+  TOO_LARGE_ERROR = 9,
+  TOO_MANY_FILES_ERROR = 10,
 }
 
 // export enum MARKDOWN_TYPE {

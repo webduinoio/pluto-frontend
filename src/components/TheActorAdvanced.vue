@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { NOTIFICATION_TIMEOUT } from '@/config';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
 import type { Actor } from '@/types';
@@ -58,7 +59,7 @@ const onSubmit = handleSubmit(async (values) => {
     await fire({
       title: '更新完成',
       icon: 'success',
-      timer: 1500,
+      timer: NOTIFICATION_TIMEOUT,
       showConfirmButton: false,
     });
   } catch (err: any) {

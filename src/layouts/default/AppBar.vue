@@ -2,6 +2,7 @@
 import { ROUTER_NAME } from '@/enums';
 import { logout } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
+import { mdiAccountCircle } from '@mdi/js';
 
 const router = useRouter();
 const oauth = useOAuthStore();
@@ -17,12 +18,14 @@ const user = oauth.user;
       inline
       @click="router.push({ name: ROUTER_NAME.HOME })"
     ></v-img>
-    <v-toolbar-title class="title"> 伴學小書僮 </v-toolbar-title>
+    <v-toolbar-title class="title clickable" @click="router.push({ name: ROUTER_NAME.HOME })">
+      伴學小書僮
+    </v-toolbar-title>
     <v-menu min-width="200px" rounded open-on-hover>
       <template v-slot:activator="{ props }">
         <v-btn icon v-bind="props">
           <v-avatar>
-            <v-icon color="blue-grey-lighten-4" icon="mdi-account-circle" size="x-large"></v-icon>
+            <v-icon color="blue-grey-lighten-4" :icon="mdiAccountCircle" size="x-large"></v-icon>
           </v-avatar>
         </v-btn>
       </template>
@@ -30,7 +33,7 @@ const user = oauth.user;
         <v-card-text>
           <div class="mx-9 text-center">
             <v-avatar>
-              <v-icon color="grey" icon="mdi-account-circle" size="x-large"></v-icon>
+              <v-icon color="grey" :icon="mdiAccountCircle" size="x-large"></v-icon>
             </v-avatar>
             <p class="text-caption mt-1">
               {{ user?.email }}
@@ -57,6 +60,9 @@ const user = oauth.user;
   font-size: 1.875rem !important;
   line-height: 2.25rem !important;
   font-weight: 800 !important;
+}
+.clickable {
+  cursor: pointer;
 }
 
 .logo {

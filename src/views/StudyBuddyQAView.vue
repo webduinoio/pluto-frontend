@@ -1,23 +1,27 @@
 <script lang="ts" setup>
 import TheMarkdown from '@/components/TheMarkdown.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
-import { MQTT_TOPIC } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor } from '@/services';
 import type { Actor } from '@/types/actors';
+import { mdiAccountBox, mdiChevronRightBox } from '@mdi/js';
 import { get, set } from '@vueuse/core';
+import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 
 const route = useRoute();
+const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const messages = ref<{ type: string; message: string }[]>([]);
+const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-const markdownValue = ref('');
+const referenceData = ref('');
+
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
@@ -32,6 +36,7 @@ const hintItems = ref([
   { title: '題目解析', value: '[你的題目和選項]\n盡可能詳細解釋為什麼這題答案是[正確選項]' },
 ]);
 let _promptTemp: String = '';
+let respMsg: string[] = [];
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -40,6 +45,15 @@ const loadData = async () => {
     const { data }: { data: Actor } = await getActor(Number(get(actorOpenID)));
     set(actorData, data);
   } catch (err: any) {
+    if (axios.isAxiosError(err)) {
+      const code = err.response?.data.code;
+
+      if (code === ERROR_CODE.NOT_FOUND_ERROR) {
+        await fire({ title: '沒有檢視權限', icon: 'warning' });
+        router.push({ name: ROUTER_NAME.HOME });
+        return;
+      }
+    }
     fire({ title: '發生錯誤', text: err.message, icon: 'error' });
   }
 };
@@ -50,9 +64,9 @@ const onSubmit = () => {
   set(mqttLoading, true);
   set(uid, '');
   mqtt.publish(`${get(actorData)?.uuid}:${get(prompt)}`);
-  messages.value.push({
+  actors.value.push({
     type: 'user',
-    message: get(prompt),
+    messages: [get(prompt)],
   });
 };
 
@@ -74,7 +88,9 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
-loadData();
+onMounted(async () => {
+  await loadData();
+});
 
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
@@ -85,13 +101,13 @@ watch(hintSelect, (val) => {
 });
 
 watch(
-  messages,
+  actors,
   () => {
     nextTick(() => {
       if (messageScrollTarget.value) {
         messageScrollTarget.value.$el.querySelector('.v-sheet:last-child').scrollIntoView({
           behavior: 'smooth',
-          block: 'start',
+          block: 'end',
           inline: 'nearest',
         });
       }
@@ -103,7 +119,6 @@ watch(
 mqtt.init((msg: string, isEnd: boolean) => {
   if (!msg || msg.trim().length === 0) return;
   if (isEnd) {
-    set(mqttLoading, false);
     // 其中包含 uuid 的部份，在這裡暫時無用
     const uuid = msg.split('\n\n$UUID$')[1];
     let newMsg = msg;
@@ -111,24 +126,40 @@ mqtt.init((msg: string, isEnd: boolean) => {
       newMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    set(markdownValue, newMsg);
+    actors.value = [...actors.value];
+    respMsg = [];
+    set(referenceData, newMsg);
+    set(mqttLoading, false);
   } else {
-    messages.value.push({
-      type: 'ai',
-      message: msg,
-    });
+    if (respMsg.length == 0) {
+      respMsg.push(msg);
+      actors.value.push({
+        type: 'ai',
+        messages: respMsg,
+      });
+    } else {
+      respMsg.push(msg);
+      actors.value = [...actors.value];
+    }
   }
 });
 </script>
 
 <template>
   <splitpanes class="default-theme">
-    <pane min-size="30" size="30">
+    <pane min-size="40" size="40">
       <div class="d-flex flex-column h-100 left-panel overflow-auto">
         <v-card class="flex-shrink-0">
-          <v-card-item prepend-icon="mdi-home">
-            <v-card-subtitle>問答小書僮</v-card-subtitle>
-            <v-card-title>{{ actorData?.name }}</v-card-title>
+          <v-card-item>
+            <v-row fluid>
+              <v-col cols="auto" class="image-container">
+                <img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
+              </v-col>
+              <v-col>
+                <v-card-subtitle>問答小書僮</v-card-subtitle>
+                <v-card-title>{{ actorData?.name }}</v-card-title>
+              </v-col>
+            </v-row>
           </v-card-item>
         </v-card>
 
@@ -151,25 +182,33 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
           <div class="w-100">
             <v-container class="pa-2 pt-0" ref="messageScrollTarget">
-              <v-sheet
-                border
-                rounded
-                class="text-body-1 mx-auto mt-2"
-                v-for="(msg, index) in messages"
-                :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-                :key="index"
-              >
-                <v-container fluid>
-                  <v-row>
-                    <v-col cols="auto">
-                      <v-icon :icon="msg.type === 'ai' ? 'mdi-robot' : 'mdi-account-box'"></v-icon>
-                    </v-col>
-                    <v-col>
-                      <p class="mb-4" v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-sheet>
+              <div>
+                <v-sheet
+                  border
+                  rounded
+                  class="text-body-1 mx-auto mt-2"
+                  v-for="(actor, index) in actors"
+                  :color="actor.type === 'ai' ? 'grey-lighten-1' : ''"
+                  :key="index"
+                >
+                  <v-container>
+                    <v-row fluid v-for="(msg, msgIdx) in actor.messages" :key="msgIdx">
+                      <v-col cols="auto">
+                        <v-icon v-if="msgIdx !== 0"></v-icon>
+                        <template v-else>
+                          <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
+                          <v-icon v-else>
+                            <img class="icon-image" :src="get(actorData)?.image" />
+                          </v-icon>
+                        </template>
+                      </v-col>
+                      <v-col style="padding: 12px 12px 3px 12px">
+                        <div v-html="msg"></div>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-sheet>
+              </div>
             </v-container>
           </div>
         </v-layout>
@@ -191,7 +230,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <template v-slot:append-inner>
             <v-icon
               color="primary"
-              icon="mdi-chevron-right-box"
+              :icon="mdiChevronRightBox"
               :style="{
                 cursor: prompt ? 'pointer' : 'not-allowed',
                 opacity: prompt ? 'unset' : '',
@@ -211,15 +250,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
         </div>
       </div>
     </pane>
-    <pane size="80">
-      <div class="h-100 right-panel">
-        <v-card>
-          <v-card-item>
-            <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
-          </v-card-item>
-        </v-card>
-        <TheMarkdown class="mx-8 my-6" :value="markdownValue" />
-      </div>
+    <pane size="60" class="h-100 right-panel">
+      <v-card>
+        <v-card-item>
+          <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
+        </v-card-item>
+      </v-card>
+      <TheMarkdown class="mx-8 my-6" :value="referenceData" />
     </pane>
   </splitpanes>
 </template>
@@ -231,10 +268,18 @@ mqtt.init((msg: string, isEnd: boolean) => {
     overflow-y: auto;
   }
 }
-
 .right-panel {
-  max-height: calc(100vh - 64px);
-  overflow-y: auto;
+  height: calc(100vh - 165px);
+}
+.image-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rounded-image {
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 @keyframes micAnimation {
@@ -245,7 +290,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
     opacity: 0;
   }
 }
-
+.icon-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
 .mic-icon-working {
   animation-name: micAnimation;
   animation-duration: 0.8s;
