@@ -18,10 +18,20 @@ export enum GENERATE_QUESTION_TYPE {
 }
 
 // TODO: 後續需要根據正式機/測試機進行調整
-export enum MQTT_TOPIC {
-  KN = 'kn@chat-staging', // 小書僮
-  CODE = 'code@chat-staging', // 思維工具
-  PROC = 'chat-staging' // actorId 處理訊息通報
+// export enum MQTT_TOPIC {
+//   KN = import.meta.env.VITE_MQTT_TOPIC_KN, // 小書僮
+//   CODE = import.meta.env.VITE_MQTT_TOPIC_CODE, // 思維工具
+//   PROC = import.meta.env.VITE_MQTT_TOPIC_PROC, // actorId 處理訊息通報
+// }
+
+export const MQTT_TOPIC: Readonly<{
+  KN: string;
+  CODE: string;
+  PROC: string;
+}> = {
+  KN: import.meta.env.VITE_MQTT_TOPIC_KN, // 小書僮
+  CODE: import.meta.env.VITE_MQTT_TOPIC_CODE, // 思維工具
+  PROC: import.meta.env.VITE_MQTT_TOPIC_PROC, // actorId 處理訊息通報
 }
 
 export enum ACTOR_TYPE {
