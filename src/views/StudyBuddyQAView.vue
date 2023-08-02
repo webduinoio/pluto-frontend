@@ -90,10 +90,11 @@ const onVoiceMessage = async (value: string) => {
 
 const onReferenceMessage = (endMsg: string) => {
   var info: Array<object> = JSON.parse(endMsg);
-  var links = '<div style="text-align:right">';
+  var links = '<div style="text-align:left">';
   var idxLink = 1;
   var keywordAmt = 0;
   for (var i in info) {
+    //console.log('reference:', info);
     var idx = parseInt(i);
     var item = info[idx] as { score: number; content: string; url: string };
     if (idx > 0 && item.score < 0.8) continue;
@@ -103,16 +104,21 @@ const onReferenceMessage = (endMsg: string) => {
       if (
         content[line].trim() != '' &&
         !content[line].trim().startsWith('#') &&
-        !content[line].trim().startsWith('https://')
+        !content[line].trim().startsWith('![圖片連結](https://')
       ) {
         keyword = content[line];
         break;
       }
     }
     if (keyword != '') {
+      console.log('keyword:', keyword);
+      var linkInfo = keyword;
       keywordAmt++;
       let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
-      links += `<a href="#" onclick="${link}">[${idxLink++}]</a> `;
+      links += `<div class="tooltip">
+  <a href="#" onclick="${link}">[${idxLink++}]</a>
+  <span class="tooltiptext">${linkInfo}</span>
+</div>`;
     }
   }
   links += '</div>';
@@ -342,5 +348,39 @@ mqtt.init((msg: string, isEnd: boolean) => {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
+}
+</style>
+
+<style lang="scss">
+/* Tooltip container */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer; /* If you want a pointer cursor on hover */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 0.8em;
+  z-index: 1;
+  /* Position the tooltip text */
+  position: absolute;
+  bottom: 100%; /* Place tooltip above the element */
+  left: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show tooltip text on hover */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }
 </style>
