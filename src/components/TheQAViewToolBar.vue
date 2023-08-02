@@ -14,11 +14,11 @@
 
     <v-btn icon @click="prevPage"><v-icon>mdi-chevron-left</v-icon></v-btn>
     <div style="width: 60px; display: flex; align-items: center">
-      <v-text-field v-model="currentPage" :max="totalPages" class="page-number-field">
-        <template v-slot:input="{ on, attrs }">
-          <input v-bind="attrs" v-on="on" class="page-number-input" />
-        </template>
-      </v-text-field>
+      <v-text-field
+        v-model="currentPage"
+        :max="totalPages"
+        class="page-number-field"
+      ></v-text-field>
     </div>
     <span class="page-number-text">/</span>
     <span class="page-number-text">{{ totalPages }}</span>
@@ -44,32 +44,29 @@
   </v-toolbar>
 </template>
 
-<script>
-export default {
-  data: () => ({
-    items: [{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }],
-    selectedItem: { title: '1.pdf' },
-    totalPages: 200,
-    currentPage: 1,
-    searchText: '',
-  }),
-  methods: {
-    search() {
-      console.log(`search....${this.searchText}`);
-    },
-    adjustUI(operation) {
-      console.log(operation);
-    },
-    selectItem(item) {
-      this.selectedItem = item;
-    },
-    prevPage() {
-      if (this.currentPage > 1) this.currentPage--;
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) this.currentPage++;
-    },
-  },
+<script lang="ts" setup>
+import { ref } from 'vue';
+
+const items = ref([{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }]);
+const selectedItem = ref({ title: '1.pdf' });
+const totalPages = ref(200);
+const currentPage = ref(1);
+const searchText = ref('');
+
+const search = () => {
+  console.log(`search....${searchText.value}`);
+};
+const adjustUI = (operation: string) => {
+  console.log(operation);
+};
+const selectItem = (item: { title: string }) => {
+  selectedItem.value = item;
+};
+const prevPage = () => {
+  if (currentPage.value > 1) currentPage.value--;
+};
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++;
 };
 </script>
 
