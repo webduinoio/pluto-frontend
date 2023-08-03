@@ -90,7 +90,8 @@ const onVoiceMessage = async (value: string) => {
 
 const onReferenceMessage = (endMsg: string) => {
   var info: Array<object> = JSON.parse(endMsg);
-  var links = '<div style="text-align:left">';
+  var links =
+    '<div style="text-align:left"><span class="mdi mdi-text-box-multiple" style="padding-right:5px"></span>';
   var idxLink = 1;
   var keywordAmt = 0;
   for (var i in info) {
@@ -112,11 +113,11 @@ const onReferenceMessage = (endMsg: string) => {
     }
     if (keyword != '') {
       console.log('keyword:', keyword);
-      var linkInfo = keyword;
+      var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
       keywordAmt++;
       let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
       links += `<div class="tooltip">
-  <a href="#" onclick="${link}">[${idxLink++}]</a>
+  <a href="#" onclick="${link}">${idxLink++}</a>
   <span class="tooltiptext">${linkInfo}</span>
 </div>`;
     }
@@ -230,7 +231,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   rounded
                   class="text-body-1 mx-auto mt-2"
                   v-for="(actor, index) in actors"
-                  :color="actor.type === 'ai' ? 'grey-lighten-1' : ''"
+                  :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
                   :key="index"
                 >
                   <v-container>
@@ -293,12 +294,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </div>
     </pane>
     <pane size="60" class="h-100 right-panel">
-      <v-card>
-        <v-card-item>
-          <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
-        </v-card-item>
-      </v-card>
-      <ThePDFViewer class="custom-pdf-viewer" :value="referenceData" />
+      <ThePDFViewer :value="referenceData"></ThePDFViewer>
     </pane>
   </splitpanes>
 </template>
@@ -354,6 +350,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <style lang="scss">
 /* Tooltip container */
 .tooltip {
+  left: 10px;
   position: relative;
   display: inline-block;
   cursor: pointer; /* If you want a pointer cursor on hover */
@@ -366,7 +363,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
   background-color: #555;
   color: #fff;
 
-  padding: 5px 0;
+  padding: 5px;
   border-radius: 6px;
   font-size: 0.8em;
   z-index: 1;
@@ -380,6 +377,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
 /* Show tooltip text on hover */
 .tooltip:hover .tooltiptext {
+  margin: 2px;
   visibility: visible;
   opacity: 1;
 }

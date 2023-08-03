@@ -2,56 +2,49 @@
   <div id="pdfObj">
     <div>
       <v-toolbar density="compact" :elevation="3">
-        <span class="page-number-text">
-          <v-select
-            hide-details
-            v-model="selectedItem"
-            style="width: 300px"
-            :items="items"
-            item-text="title"
-            return-object
-            outlined
-          >
-            <template v-slot:selection="{ item }">
-              <span class="d-flex justify-center" style="width: 100%; font-size: 1.3em">
-                {{ item.title }}
-              </span>
-            </template>
-          </v-select>
-        </span>
+        <v-btn color="primary" style="min-width: 200px">
+          {{ selectedItem.title }}
+          <v-menu activator="parent" style="min-width: 200px">
+            <v-list>
+              <v-list-item v-for="(item, index) in items" :key="index" @click="selectItem(item)">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
         <v-divider vertical></v-divider>
 
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
-        <span class="page-number-text" style="width: 60px">
-          <v-text-field
-            variant="underlined"
-            class="centered-input"
-            v-model="currentPage"
-            :max="totalPages"
-          ></v-text-field>
-        </span>
-        <span class="page-number-text" style="width: 30px">/</span>
-        <span class="page-number-text" style="width: 40px">{{ totalPages }}</span>
+        <v-text-field
+          variant="underlined"
+          class="centered-input"
+          v-model="currentPage"
+          :max="totalPages"
+        ></v-text-field>
+        <span class="page-number-text">/</span>
+        <span class="page-number-text">{{ totalPages }}</span>
         <v-btn :icon="mdiChevronRight" @click="nextPage"></v-btn>
         <v-divider vertical></v-divider>
         <v-btn :icon="mdiMinus" @click="adjustUI('-')"></v-btn>
         <span @click="fitSize" class="clickable">滿版</span>
         <v-btn :icon="mdiPlus" @click="adjustUI('+')"></v-btn>
         <v-divider vertical></v-divider>
-        <v-text-field
-          v-model="searchText"
-          density="compact"
-          variant="solo"
-          label="全文檢索"
-          :append-inner-icon="mdiMagnify"
-          single-line
-          rounded
-          hide-details
-          @keyup.enter="search"
-          @click:append-inner="search"
-          style="margin: 20px"
-        >
-        </v-text-field>
+
+        <div class="search-container">
+          <v-text-field
+            v-model="searchText"
+            density="compact"
+            variant="solo"
+            label="全文檢索"
+            :append-inner-icon="mdiMagnify"
+            single-line
+            rounded
+            hide-details
+            @keyup.enter="search"
+            @click:append-inner="search"
+          >
+          </v-text-field>
+        </div>
       </v-toolbar>
     </div>
     <div id="pdfContainer"></div>
@@ -82,11 +75,12 @@ onMounted(() => {
 });
 
 const search = () => {
+  console.log(`search....${searchText.value}`);
   pdf.mark(searchText.value);
   searchText.value = '';
 };
 const fitSize = () => {
-  pdf.zoom(-1);
+  console.log('fit size');
 };
 const adjustUI = (operation: string) => {
   if (operation == '-') {
@@ -94,6 +88,7 @@ const adjustUI = (operation: string) => {
   } else if (operation == '+') {
     pdf.zoomIn(0.2);
   }
+  console.log(operation);
 };
 const selectItem = (item: { title: string }) => {
   selectedItem.value = item;
@@ -113,21 +108,30 @@ const nextPage = () => {
 </script>
 
 <style scoped>
-::v-deep(.centered-select .v-select__selection) {
-  text-align: center;
-}
 ::v-deep(.centered-input input) {
   text-align: center;
 }
+
+.search-container {
+  position: relative;
+  width: 250px;
+}
+
+.search-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 ::v-deep(.select-page-field) {
   width: 50px !important;
 }
+
 .clickable {
   cursor: pointer;
 }
-</style>
 
-<style>
 #pdfObj {
   overflow-y: auto;
 }
@@ -136,6 +140,7 @@ const nextPage = () => {
   height: calc(100vh - 120px);
   overflow: auto;
 }
+
 .pdfContainer-highlight {
   background-color: rgb(239, 248, 0);
 }
@@ -155,11 +160,49 @@ const nextPage = () => {
 }
 
 .pdfContainer-loading {
-  position: relative;
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
   text-align: center;
   font-size: 1.6em;
   width: 100%;
+}
+
+.page-tool {
+  top: 270px;
+  position: fixed;
+  padding-left: 12px;
+  padding-right: 12px;
+  display: flex;
+  align-items: center;
+  background: rgb(227, 227, 227);
+  color: rgb(40, 40, 40);
+  z-index: 1000;
+  cursor: pointer;
+  left: 85%;
+  width: 620px;
+  transform: translateX(-80%);
+  user-select: none;
+}
+
+.page-tool-item {
+  cursor: pointer;
+  padding: 8px 15px;
+  padding-left: 10px;
+  transition: background-color 0.3s;
+}
+
+.page-tool-item:active {
+  background-color: #ddd;
+}
+
+.page-tool-input {
+  border: #ccc solid;
+  background: none;
+  outline: none;
+  color: rgb(0, 0, 0);
+}
+.custom-width {
+  width: 100px !important;
 }
 </style>
