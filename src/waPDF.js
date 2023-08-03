@@ -9,6 +9,7 @@ class PDF {
   setViewElement(pdfContainer, pageShow) {
     this.pdfContainer = pdfContainer;
     this.elePageShow = pageShow;
+    window.qq = this.elePageShow;
   }
 
   setMsgElement(ele) {
@@ -97,7 +98,7 @@ class PDF {
           await this.renderPage(pdf, pageNum);
         }
         this.loadingEffect(false);
-        callback();
+        if (typeof callback != 'undefined') callback();
       });
     } catch (error) {
       // Handle any errors that occur during loading
@@ -354,9 +355,38 @@ class PDF {
     // Append the rendered page to the container
     this.pdfContainer.appendChild(pageDiv);
     // Add event listener for text selection
-    textLayerDiv.addEventListener('___mouseup', function (event) {
+    textLayerDiv.addEventListener('mouseup', function (event) {
       var selectedRange = window.getSelection().getRangeAt(0);
       this.selectedText = selectedRange.toString().trim();
+      console.log('>>>>', this.selectedText);
+      if (this.selectedText.trim() == '') return;
+      // 移除現有的圖標，如果有的話
+      var existingIcon = document.getElementById('clickable-icon');
+      if (existingIcon) {
+        existingIcon.remove();
+      }
+
+      // 創建一個新的圖標元素
+      var icon = document.createElement('span');
+      icon.id = 'clickable-icon';
+      icon.className = 'mdi mdi-text-box-multiple';
+      icon.innerHTML = ' '; // 你可以使用任何想要的圖標或圖片
+      icon.style.position = 'absolute';
+      icon.style.cursor = 'pointer'; // 讓它看起來是可點擊的
+      icon.style.color = '#000';
+      icon.style.left =
+        event.pageX - textLayerDiv.getBoundingClientRect().left + window.scrollX + 'px'; // 考虑滚动和容器偏移
+      icon.style.top =
+        event.pageY - textLayerDiv.getBoundingClientRect().top + window.scrollY + 'px'; // 考虑滚动和容器偏移
+
+      // 添加點擊事件處理器
+      icon.addEventListener('click', function () {
+        console.log('OK');
+      });
+
+      // 將圖標附加到textLayerDiv
+      textLayerDiv.appendChild(icon);
+
       setTimeout(function () {
         self.showMsg(self.selectedText);
       }, 1000);
