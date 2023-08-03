@@ -21,7 +21,13 @@ const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
 //const referenceData = ref('');
-const pdfViewer = ref(null);
+interface PDFViewerType {
+  pdf: {
+    setInjectAskPrompt: (callback: (ask: string) => void) => void;
+  };
+}
+
+const pdfViewer = ref<PDFViewerType | null>(null);
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
