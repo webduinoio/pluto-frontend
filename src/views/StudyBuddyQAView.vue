@@ -231,7 +231,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   rounded
                   class="text-body-1 mx-auto mt-2"
                   v-for="(actor, index) in actors"
-                  :color="actor.type === 'ai' ? 'grey-lighten-1' : ''"
+                  :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
                   :key="index"
                 >
                   <v-container>
@@ -350,6 +350,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <style lang="scss">
 /* Tooltip container */
 .tooltip {
+  left: 10px;
   position: relative;
   display: inline-block;
   cursor: pointer; /* If you want a pointer cursor on hover */
