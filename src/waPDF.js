@@ -72,7 +72,7 @@ class PDF {
       // Update this.nowPageNum
       if (visiblePageElement) {
         this.nowPageNum = parseInt(visiblePageElement.id.split('-')[1]);
-        this.showMsg('Page:', this.nowPageNum);
+        //this.showMsg('Page:', this.nowPageNum);
         this.showPage(this.nowPageNum);
       }
     });
@@ -91,7 +91,7 @@ class PDF {
         this.pdfDoc = pdf;
         const unscaledViewport = (await pdf.getPage(1)).getViewport({ scale: 1 });
         this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
-        let lastPromise = Promise.resolve(); // Start with a promise that always resolves
+        //let lastPromise = Promise.resolve(); // Start with a promise that always resolves
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           //lastPromise = lastPromise.then(() => this.renderPage(pdf, pageNum)); // Chain the promises
           await this.renderPage(pdf, pageNum);
@@ -218,7 +218,11 @@ class PDF {
   }
 
   showPage() {
-    this.elePageShow.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
+    if (typeof this.elePageShow.value == 'number') {
+      this.elePageShow.value = this.nowPageNum;
+    } else {
+      this.elePageShow.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
+    }
   }
 
   page(pageNum) {
@@ -249,6 +253,10 @@ class PDF {
 
   async setPageScale(pageNum) {
     const page = await this.pdfDoc.getPage(pageNum);
+    if (this.scale == -1) {
+      const unscaledViewport = (await this.pdfDoc.getPage(1)).getViewport({ scale: 1 });
+      this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
+    }
     var viewport = page.getViewport({ scale: this.scale });
     var pageDiv = document.getElementById('page-' + pageNum);
     var canvas = pageDiv.children[0];
@@ -279,7 +287,7 @@ class PDF {
 
   async renderPage(pdf, pageNum) {
     var self = this;
-    this.showMsg('load :', this.scale);
+    //this.showMsg('load :', this.scale);
     const page = await pdf.getPage(pageNum);
     var viewport = page.getViewport({ scale: this.scale }); // Use the current scale
     var canvas = document.createElement('canvas');

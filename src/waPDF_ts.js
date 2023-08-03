@@ -92,7 +92,7 @@ export default class PDF {
         this.pdfDoc = pdf;
         const unscaledViewport = (await pdf.getPage(1)).getViewport({ scale: 1 });
         this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
-        let lastPromise = Promise.resolve(); // Start with a promise that always resolves
+        //let lastPromise = Promise.resolve(); // Start with a promise that always resolves
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           //lastPromise = lastPromise.then(() => this.renderPage(pdf, pageNum)); // Chain the promises
           await this.renderPage(pdf, pageNum);
@@ -254,6 +254,10 @@ export default class PDF {
 
   async setPageScale(pageNum) {
     const page = await this.pdfDoc.getPage(pageNum);
+    if (this.scale == -1) {
+      const unscaledViewport = (await this.pdfDoc.getPage(1)).getViewport({ scale: 1 });
+      this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
+    }
     var viewport = page.getViewport({ scale: this.scale });
     var pageDiv = document.getElementById('page-' + pageNum);
     var canvas = pageDiv.children[0];
