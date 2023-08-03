@@ -72,7 +72,7 @@ export default class PDF {
       // Update this.nowPageNum
       if (visiblePageElement) {
         this.nowPageNum = parseInt(visiblePageElement.id.split('-')[1]);
-        this.showMsg('Page:', this.nowPageNum);
+        //this.showMsg('Page:', this.nowPageNum);
         this.showPage(this.nowPageNum);
       }
     });
@@ -279,7 +279,7 @@ export default class PDF {
 
   async renderPage(pdf, pageNum) {
     var self = this;
-    this.showMsg('load :', this.scale);
+    //this.showMsg('load :', this.scale);
     const page = await pdf.getPage(pageNum);
     var viewport = page.getViewport({ scale: this.scale }); // Use the current scale
     var canvas = document.createElement('canvas');
