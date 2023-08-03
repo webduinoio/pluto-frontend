@@ -20,8 +20,14 @@ const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-const referenceData = ref('');
+//const referenceData = ref('');
+interface PDFViewerType {
+  pdf: {
+    setInjectAskPrompt: (callback: (ask: string) => void) => void;
+  };
+}
 
+const pdfViewer = ref<PDFViewerType | null>(null);
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
@@ -128,6 +134,9 @@ const onReferenceMessage = (endMsg: string) => {
 
 onMounted(async () => {
   await loadData();
+  pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
+    set(prompt, ask);
+  });
 });
 
 watch(mqttLoading, (val) => {
@@ -294,7 +303,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </div>
     </pane>
     <pane size="60" class="h-100 right-panel">
-      <ThePDFViewer :value="referenceData"></ThePDFViewer>
+      <ThePDFViewer ref="pdfViewer"></ThePDFViewer>
     </pane>
   </splitpanes>
 </template>
