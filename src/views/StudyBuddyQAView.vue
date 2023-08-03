@@ -351,6 +351,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 /* Tooltip container */
 .tooltip {
   left: 10px;
+  margin-right: 10px;
   position: relative;
   display: inline-block;
   cursor: pointer; /* If you want a pointer cursor on hover */
