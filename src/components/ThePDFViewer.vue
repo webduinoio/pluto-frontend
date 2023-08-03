@@ -80,7 +80,6 @@ onMounted(() => {
   const ele = document.getElementById('pdfContainer');
   pdf.setViewElement(ele, currentPage);
 });
-
 const search = () => {
   pdf.mark(searchText.value);
   searchText.value = '';
@@ -95,9 +94,6 @@ const adjustUI = (operation: string) => {
     pdf.zoomIn(0.2);
   }
 };
-const selectItem = (item: { title: string }) => {
-  selectedItem.value = item;
-};
 const prevPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--;
@@ -110,6 +106,7 @@ const nextPage = () => {
     pdf.nextPage();
   }
 };
+defineExpose({ pdf });
 </script>
 
 <style scoped>
@@ -136,6 +133,7 @@ const nextPage = () => {
   height: calc(100vh - 120px);
   overflow: auto;
 }
+
 .pdfContainer-highlight {
   background-color: rgb(239, 248, 0);
 }
