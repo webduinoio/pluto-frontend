@@ -2,27 +2,36 @@
   <div id="pdfObj">
     <div>
       <v-toolbar density="compact" :elevation="3">
-        <v-btn block rounded="0" color="primary" style="min-width: 200px">
-          {{ selectedItem.title }}
-          <v-menu activator="parent" style="min-width: 180px">
-            <v-list>
-              <v-list-item v-for="(item, index) in items" :key="index" @click="selectItem(item)">
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-btn>
+        <span class="page-number-text">
+          <v-select
+            hide-details
+            v-model="selectedItem"
+            style="width: 300px"
+            :items="items"
+            item-text="title"
+            return-object
+            outlined
+          >
+            <template v-slot:selection="{ item }">
+              <span class="d-flex justify-center" style="width: 100%; font-size: 1.3em">
+                {{ item.title }}
+              </span>
+            </template>
+          </v-select>
+        </span>
         <v-divider vertical></v-divider>
 
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
-        <v-text-field
-          variant="underlined"
-          class="centered-input"
-          v-model="currentPage"
-          :max="totalPages"
-        ></v-text-field>
-        <span class="page-number-text">/</span>
-        <span class="page-number-text">{{ totalPages }}</span>
+        <span class="page-number-text" style="width: 60px">
+          <v-text-field
+            variant="underlined"
+            class="centered-input"
+            v-model="currentPage"
+            :max="totalPages"
+          ></v-text-field>
+        </span>
+        <span class="page-number-text" style="width: 30px">/</span>
+        <span class="page-number-text" style="width: 40px">{{ totalPages }}</span>
         <v-btn :icon="mdiChevronRight" @click="nextPage"></v-btn>
         <v-divider vertical></v-divider>
         <v-btn :icon="mdiMinus" @click="adjustUI('-')"></v-btn>
@@ -77,7 +86,7 @@ const search = () => {
   searchText.value = '';
 };
 const fitSize = () => {
-  pdf.zoom(1.5);
+  pdf.zoom(-1);
 };
 const adjustUI = (operation: string) => {
   if (operation == '-') {
@@ -104,19 +113,15 @@ const nextPage = () => {
 </script>
 
 <style scoped>
+::v-deep(.centered-select .v-select__selection) {
+  text-align: center;
+}
 ::v-deep(.centered-input input) {
   text-align: center;
 }
-
-.search-container {
-  position: relative;
-  width: 250px;
-}
-
 ::v-deep(.select-page-field) {
   width: 50px !important;
 }
-
 .clickable {
   cursor: pointer;
 }
