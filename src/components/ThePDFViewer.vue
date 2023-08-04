@@ -1,55 +1,129 @@
-<script setup lang="ts">
+<template>
+  <div id="pdfObj">
+    <div>
+      <v-toolbar density="compact" :elevation="3">
+        <span class="page-number-text">
+          <v-select
+            hide-details
+            v-model="selectedItem"
+            style="width: 300px"
+            :items="items"
+            item-text="title"
+            return-object
+            outlined
+          >
+            <template v-slot:selection="{ item }">
+              <span class="d-flex justify-center" style="width: 100%; font-size: 1.3em">
+                {{ item.title }}
+              </span>
+            </template>
+          </v-select>
+        </span>
+        <v-divider vertical></v-divider>
+
+        <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
+        <span class="page-number-text" style="width: 60px">
+          <v-text-field
+            variant="underlined"
+            class="centered-input"
+            v-model="currentPage"
+            :max="totalPages"
+          ></v-text-field>
+        </span>
+        <span class="page-number-text" style="width: 30px">/</span>
+        <span class="page-number-text" style="width: 40px">{{ totalPages }}</span>
+        <v-btn :icon="mdiChevronRight" @click="nextPage"></v-btn>
+        <v-divider vertical></v-divider>
+        <v-btn :icon="mdiMinus" @click="adjustUI('-')"></v-btn>
+        <span @click="fitSize" class="clickable">滿版</span>
+        <v-btn :icon="mdiPlus" @click="adjustUI('+')"></v-btn>
+        <v-divider vertical></v-divider>
+        <v-text-field
+          v-model="searchText"
+          density="compact"
+          variant="solo"
+          label="全文檢索"
+          :append-inner-icon="mdiMagnify"
+          single-line
+          rounded
+          hide-details
+          @keyup.enter="search"
+          @click:append-inner="search"
+          style="margin: 20px"
+        >
+        </v-text-field>
+      </v-toolbar>
+    </div>
+    <div id="pdfContainer"></div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { mdiChevronLeft, mdiChevronRight, mdiMagnify, mdiMinus, mdiPlus } from '@mdi/js';
+import { ref } from 'vue';
+import PDF from '../waPDF_ts.js';
+
 declare global {
   interface Window {
     pdf: any;
   }
 }
-import PDF from '../waPDF_ts.js';
 const pdf = new PDF();
+const totalPages = ref(200);
+const currentPage = ref(1);
+const searchText = ref('');
+const selectedItem = ref({ title: '1.pdf' });
+const items = ref([{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }]);
 
 onMounted(() => {
-  const ele = document.getElementById('pdfContainer');
-  pdf.setViewElement(ele);
   window.pdf = pdf;
-  pdf.setViewElement(document.getElementById('pdfContainer'), document.getElementById('pageShow'));
-  var searchInput = document.querySelector('.page-tool-input') as HTMLInputElement;
-  var flag = false;
-  searchInput.addEventListener('compositionstart', function () {
-    flag = true;
-  });
-  searchInput.addEventListener('compositionupdate', function () {
-    flag = true;
-  });
-  searchInput.addEventListener('compositionend', function (ev) {
-    handleInput(ev.data);
-    flag = false;
-  });
-  (searchInput as any).addEventListener('input', (ev: any) => {
-    if (!flag) handleInput(ev.data);
-  });
-  function handleInput(value: string) {
-    console.log('find:', value, searchInput.value);
-    pdf.mark(searchInput.value);
-  }
+  const ele = document.getElementById('pdfContainer');
+  pdf.setViewElement(ele, currentPage);
 });
+const search = () => {
+  pdf.mark(searchText.value);
+  searchText.value = '';
+};
+const fitSize = () => {
+  pdf.zoom(-1);
+};
+const adjustUI = (operation: string) => {
+  if (operation == '-') {
+    pdf.zoomOut(0.2);
+  } else if (operation == '+') {
+    pdf.zoomIn(0.2);
+  }
+};
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    pdf.lastPage();
+  }
+};
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    pdf.nextPage();
+  }
+};
+defineExpose({ pdf });
 </script>
 
-<template>
-  <div id="pdfObj">
-    <div class="page-tool">
-      <div class="page-tool-item" onclick="pdf.zoom(0.7)">整頁</div>
-      <div class="page-tool-item" onclick="pdf.lastPage()">上一頁</div>
-      <div id="pageShow" class="page-tool-item"></div>
-      <div class="page-tool-item" onclick="pdf.nextPage()">下一頁</div>
-      <div class="page-tool-item" onclick="pdf.zoomIn(0.2)">放大</div>
-      <div class="page-tool-item" onclick="pdf.zoomOut(0.2)">缩小</div>
-      <div class="page-tool-item">
-        <input type="text" class="page-tool-input" placeholder="輸入內容" />
-      </div>
-    </div>
-    <div id="pdfContainer"></div>
-  </div>
-</template>
+<style scoped>
+::v-deep(.centered-select .v-select__selection) {
+  text-align: center;
+}
+::v-deep(.centered-input input) {
+  text-align: center;
+}
+::v-deep(.select-page-field) {
+  width: 50px !important;
+}
+.clickable {
+  cursor: pointer;
+}
+</style>
+
 <style>
 #pdfObj {
   overflow-y: auto;
@@ -79,46 +153,11 @@ onMounted(() => {
 }
 
 .pdfContainer-loading {
-  position: absolute;
+  position: relative;
   top: 50%;
   transform: translateY(-50%);
   text-align: center;
   font-size: 1.6em;
   width: 100%;
-}
-
-.page-tool {
-  top: 70px;
-  position: fixed;
-  padding-left: 12px;
-  padding-right: 12px;
-  display: flex;
-  align-items: center;
-  background: rgb(227, 227, 227);
-  color: rgb(40, 40, 40);
-  z-index: 1000;
-  cursor: pointer;
-  left: 85%;
-  width: 620px;
-  transform: translateX(-80%);
-  user-select: none;
-}
-
-.page-tool-item {
-  cursor: pointer;
-  padding: 8px 15px;
-  padding-left: 10px;
-  transition: background-color 0.3s;
-}
-
-.page-tool-item:active {
-  background-color: #ddd;
-}
-
-.page-tool-input {
-  border: #ccc solid;
-  background: none;
-  outline: none;
-  color: rgb(0, 0, 0);
 }
 </style>

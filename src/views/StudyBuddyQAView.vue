@@ -20,8 +20,14 @@ const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-const referenceData = ref('');
+//const referenceData = ref('');
+interface PDFViewerType {
+  pdf: {
+    setInjectAskPrompt: (callback: (ask: string) => void) => void;
+  };
+}
 
+const pdfViewer = ref<PDFViewerType | null>(null);
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
@@ -90,10 +96,12 @@ const onVoiceMessage = async (value: string) => {
 
 const onReferenceMessage = (endMsg: string) => {
   var info: Array<object> = JSON.parse(endMsg);
-  var links = '<div style="text-align:right">';
+  var links =
+    '<div style="text-align:left"><span class="mdi mdi-text-box-multiple" style="padding-right:5px"></span>';
   var idxLink = 1;
   var keywordAmt = 0;
   for (var i in info) {
+    //console.log('reference:', info);
     var idx = parseInt(i);
     var item = info[idx] as { score: number; content: string; url: string };
     if (idx > 0 && item.score < 0.8) continue;
@@ -103,16 +111,21 @@ const onReferenceMessage = (endMsg: string) => {
       if (
         content[line].trim() != '' &&
         !content[line].trim().startsWith('#') &&
-        !content[line].trim().startsWith('https://')
+        !content[line].trim().startsWith('![圖片連結](https://')
       ) {
         keyword = content[line];
         break;
       }
     }
     if (keyword != '') {
+      console.log('keyword:', keyword);
+      var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
       keywordAmt++;
       let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
-      links += `<a href="#" onclick="${link}">[${idxLink++}]</a> `;
+      links += `<div class="tooltip">
+  <a href="#" onclick="${link}">${idxLink++}</a>
+  <span class="tooltiptext">${linkInfo}</span>
+</div>`;
     }
   }
   links += '</div>';
@@ -121,6 +134,9 @@ const onReferenceMessage = (endMsg: string) => {
 
 onMounted(async () => {
   await loadData();
+  pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
+    set(prompt, ask);
+  });
 });
 
 watch(mqttLoading, (val) => {
@@ -163,6 +179,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
     respMsg = [];
     set(mqttLoading, false);
   } else {
+    msg = msg.replace(
+      /(!?)\[.*?\]\((.*?)\)/g,
+      "<img src='$2' width='50%' style='border-radius: 10px'>"
+    );
     if (respMsg.length == 0) {
       respMsg.push(msg);
       actors.value.push({
@@ -220,7 +240,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   rounded
                   class="text-body-1 mx-auto mt-2"
                   v-for="(actor, index) in actors"
-                  :color="actor.type === 'ai' ? 'grey-lighten-1' : ''"
+                  :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
                   :key="index"
                 >
                   <v-container>
@@ -283,12 +303,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </div>
     </pane>
     <pane size="60" class="h-100 right-panel">
-      <v-card>
-        <v-card-item>
-          <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
-        </v-card-item>
-      </v-card>
-      <ThePDFViewer class="custom-pdf-viewer" :value="referenceData" />
+      <ThePDFViewer ref="pdfViewer"></ThePDFViewer>
     </pane>
   </splitpanes>
 </template>
@@ -338,5 +353,42 @@ mqtt.init((msg: string, isEnd: boolean) => {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
+}
+</style>
+
+<style lang="scss">
+/* Tooltip container */
+.tooltip {
+  left: 10px;
+  margin-right: 10px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer; /* If you want a pointer cursor on hover */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+
+  padding: 5px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  z-index: 1;
+  /* Position the tooltip text */
+  position: absolute;
+  bottom: 100%; /* Place tooltip above the element */
+  left: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show tooltip text on hover */
+.tooltip:hover .tooltiptext {
+  margin: 2px;
+  visibility: visible;
+  opacity: 1;
 }
 </style>
