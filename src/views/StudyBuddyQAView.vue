@@ -104,7 +104,7 @@ const onReferenceMessage = (endMsg: string) => {
     //console.log('reference:', info);
     var idx = parseInt(i);
     var item = info[idx] as { score: number; content: string; url: string };
-    if (idx > 0 && item.score < 0.8) continue;
+    if (idx > 0 && item.score < 0.7) continue;
     var content = item.content.split('\n');
     var keyword = '';
     for (var line in content) {
@@ -117,6 +117,7 @@ const onReferenceMessage = (endMsg: string) => {
         break;
       }
     }
+
     if (keyword != '') {
       console.log('keyword:', keyword);
       var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
