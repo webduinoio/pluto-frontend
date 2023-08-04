@@ -97,7 +97,7 @@ const onVoiceMessage = async (value: string) => {
 const onReferenceMessage = (endMsg: string) => {
   var info: Array<object> = JSON.parse(endMsg);
   var links =
-    '<div style="text-align:left"><span class="mdi mdi-text-box-multiple" style="padding-right:5px"></span>';
+    '<div style="text-align:left"><img src="/public/ref.png" style="width:16px;position:relative;top:3px">';
   var idxLink = 1;
   var keywordAmt = 0;
   for (var i in info) {
