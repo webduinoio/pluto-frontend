@@ -22,7 +22,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 小書僮小地方優化 [#7080](https://redmine.kingkit.codes/issues/7080)
 - 已分享的小書僮，在清單顯示 icon [#7102](https://redmine.kingkit.codes/issues/7102)
 
->>>>>>>
 ### Fixed
 
 - 小書僮 Q&A 無法編輯 [#7085](https://redmine.kingkit.codes/issues/7085)
