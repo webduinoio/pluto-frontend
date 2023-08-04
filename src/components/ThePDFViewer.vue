@@ -4,13 +4,13 @@
       <v-toolbar density="compact" :elevation="3">
         <span class="page-number-text">
           <v-select
+            density="compact"
             hide-details
             v-model="selectedItem"
-            style="width: 300px"
+            style="position: relative; width: 200px; height: 20px; bottom: 15px"
             :items="items"
-            item-text="title"
             return-object
-            outlined
+            variant="outlined"
           >
             <template v-slot:selection="{ item }">
               <span class="d-flex justify-center" style="width: 100%; font-size: 1.3em">
@@ -22,9 +22,10 @@
         <v-divider vertical></v-divider>
 
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
-        <span class="page-number-text" style="width: 60px">
+        <span class="page-number-text" style="width: 60px; margin: 5px">
           <v-text-field
-            variant="underlined"
+            variant="solo-filled"
+            density="compact"
             class="centered-input"
             v-model="currentPage"
             :max="totalPages"
@@ -40,6 +41,7 @@
         <v-divider vertical></v-divider>
         <v-text-field
           v-model="searchText"
+          clearable
           density="compact"
           variant="solo"
           label="全文檢索"
@@ -72,8 +74,9 @@ const pdf = new PDF();
 const totalPages = ref(200);
 const currentPage = ref(1);
 const searchText = ref('');
-const selectedItem = ref({ title: '1.pdf' });
-const items = ref([{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }]);
+const selectedItem = ref({ title: '參考文件' });
+//const items = ref([{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }]);
+const items = ref([{ title: '參考文件' }]);
 
 onMounted(() => {
   window.pdf = pdf;
@@ -82,7 +85,6 @@ onMounted(() => {
 });
 const search = () => {
   pdf.mark(searchText.value);
-  searchText.value = '';
 };
 const fitSize = () => {
   pdf.zoom(-1);
@@ -113,6 +115,13 @@ defineExpose({ pdf });
 ::v-deep(.centered-select .v-select__selection) {
   text-align: center;
 }
+
+.centered-input {
+  position: relative;
+  top: 10px;
+  width: 58px;
+}
+
 ::v-deep(.centered-input input) {
   text-align: center;
 }
