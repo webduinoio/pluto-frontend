@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import TheMarkdown from '@/components/TheMarkdown.vue';
+import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
@@ -20,8 +20,14 @@ const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-const referenceData = ref('');
+//const referenceData = ref('');
+interface PDFViewerType {
+  pdf: {
+    setInjectAskPrompt: (callback: (ask: string) => void) => void;
+  };
+}
 
+const pdfViewer = ref<PDFViewerType | null>(null);
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
@@ -88,8 +94,49 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
+const onReferenceMessage = (endMsg: string) => {
+  var info: Array<object> = JSON.parse(endMsg);
+  var links =
+    '<div style="text-align:left"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAGAAAAAARDxiuAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgoZXuEHAAACLUlEQVRIDaXVTW4TQRAFYJtAAggCQigsEAdgBSfhJJDDRLkI5wCxisSSTZAQCxBB4idg4H2NKzT22J7Ak95Md3V1/XbPTCfLmEb0M7wU3ghnIdkY2LcVfgi/hdPFjRYZfBQehldCm8aC7oXwS/g4fBo2MLw9H4v8dUj5f3ic/du8gahP22gyuZW3yIHM2ljQ/TpX3sl792IeysSoyN+ElH6EQAbvQ7LqD9kiBHszZBPoz0x2w+ehqO+F30MlAwYZfxC+DUVVzjNsYFjUe+GL8HYI9k45oGDxKkE4BEZ79nr6ZM17CRxY0PXqR69ko7RfhoMGOmVOr4VKXBU4qxfjQw4iblkpzRj0mTX9asiqzZzqwf1QDxzlxUzoqMCd8CisHmT4p+NtsuYhg8vhkIPqo0Ny7gzG9MAnQVYycSIHexD5P0HEDkGPv0o4tgcPY6G/B6Kts/8sY8dcJnUxM/yNTQ5KT9roEooQjck4g6X6Ew45KAPWN/WAUWcfBm0NCV2SioYDEV4PV4FOX/cas7FV6dlsgcN34ecQzHudJlx4WO9ZfXA3TvoM1NNZ/hTuhwfzOceVUYZrwQZdxp+EpyaO2avQJXILK/oM22e8NplvgoCVWBXaL7MvgVPhv2DRl5Wjj+HY6GXKaIGjmc1qJoO74UlYZeubHfFKaLJPiXvivvhpqUb7QzLGqx/0YejIWeC4fqEZrgUHyijjysC8gSGUnkwcRxvOCzbsUwG2zvALNZiPb44hnCMAAAAASUVORK5CYII=" style="width:16px;position:relative;top:3px">';
+  var idxLink = 1;
+  var keywordAmt = 0;
+  for (var i in info) {
+    //console.log('reference:', info);
+    var idx = parseInt(i);
+    var item = info[idx] as { score: number; content: string; url: string };
+    if (idx > 0 && item.score < 0.8) continue;
+    var content = item.content.split('\n');
+    var keyword = '';
+    for (var line in content) {
+      if (
+        content[line].trim() != '' &&
+        !content[line].trim().startsWith('#') &&
+        !content[line].trim().startsWith('![圖片連結](https://')
+      ) {
+        keyword = content[line];
+        break;
+      }
+    }
+    if (keyword != '') {
+      console.log('keyword:', keyword);
+      var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
+      keywordAmt++;
+      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
+      links += `<div class="tooltip">
+  <a href="#" onclick="${link}">${idxLink++}</a>
+  <span class="tooltiptext">${linkInfo}</span>
+</div>`;
+    }
+  }
+  links += '</div>';
+  return keywordAmt == 0 ? '' : links;
+};
+
 onMounted(async () => {
   await loadData();
+  pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
+    set(prompt, ask);
+  });
 });
 
 watch(mqttLoading, (val) => {
@@ -121,16 +168,21 @@ mqtt.init((msg: string, isEnd: boolean) => {
   if (isEnd) {
     // 其中包含 uuid 的部份，在這裡暫時無用
     const uuid = msg.split('\n\n$UUID$')[1];
-    let newMsg = msg;
+    let endMsg = msg;
     if (uuid) {
-      newMsg = msg.split('\n\n$UUID$')[0];
+      endMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
+    var linkInfo = onReferenceMessage(endMsg);
+    if (linkInfo != '') respMsg.push(linkInfo);
     actors.value = [...actors.value];
     respMsg = [];
-    set(referenceData, newMsg);
     set(mqttLoading, false);
   } else {
+    msg = msg.replace(
+      /(!?)\[.*?\]\((.*?)\)/g,
+      "<img src='$2' width='50%' style='border-radius: 10px'>"
+    );
     if (respMsg.length == 0) {
       respMsg.push(msg);
       actors.value.push({
@@ -188,7 +240,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   rounded
                   class="text-body-1 mx-auto mt-2"
                   v-for="(actor, index) in actors"
-                  :color="actor.type === 'ai' ? 'grey-lighten-1' : ''"
+                  :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
                   :key="index"
                 >
                   <v-container>
@@ -251,12 +303,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </div>
     </pane>
     <pane size="60" class="h-100 right-panel">
-      <v-card>
-        <v-card-item>
-          <v-card-title class="text-grey-darken-1 font-weight-bold">參考資料</v-card-title>
-        </v-card-item>
-      </v-card>
-      <TheMarkdown class="mx-8 my-6" :value="referenceData" />
+      <ThePDFViewer ref="pdfViewer"></ThePDFViewer>
     </pane>
   </splitpanes>
 </template>
@@ -270,6 +317,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
 }
 .right-panel {
   height: calc(100vh - 165px);
+}
+.custom-pdf-viewer {
+  height: calc(100vh - 120px);
+  position: relative;
 }
 .image-container {
   display: flex;
@@ -302,5 +353,42 @@ mqtt.init((msg: string, isEnd: boolean) => {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
+}
+</style>
+
+<style lang="scss">
+/* Tooltip container */
+.tooltip {
+  left: 10px;
+  margin-right: 10px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer; /* If you want a pointer cursor on hover */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+
+  padding: 5px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  z-index: 1;
+  /* Position the tooltip text */
+  position: absolute;
+  bottom: 100%; /* Place tooltip above the element */
+  left: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show tooltip text on hover */
+.tooltip:hover .tooltiptext {
+  margin: 2px;
+  visibility: visible;
+  opacity: 1;
 }
 </style>
