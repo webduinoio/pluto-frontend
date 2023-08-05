@@ -11,6 +11,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - PDF 預覽功能 [#7062](https://redmine.kingkit.codes/issues/7062)
+- PDF 縮放、跳頁、全文檢索（ UI 優化 ）[#7112](https://redmine.kingkit.codes/issues/7112)
+- PDF 自動擷取整段落反白功能[#7089](https://redmine.kingkit.codes/issues/7089)
+- PDF 字模糊(參考資料)[#7088](https://redmine.kingkit.codes/issues/7113)
+- PDF 索引斷字問題 (找不到索引資料)[#7086](https://redmine.kingkit.codes/issues/7086)
+- PDF 檔案下載加速[#7087](https://redmine.kingkit.codes/issues/7087)
+- 讓圖片可以顯示在小書僮回答中 [#7113](https://redmine.kingkit.codes/issues/7113)
+- 小書僮閒置一段時間會斷線[#7065](https://redmine.kingkit.codes/issues/7065)
+- 小書僮圖片可以顯示在凱比臉上[#7060](https://redmine.kingkit.codes/issues/7060)
 
 ## [1.0.0-alpha.1] - 2023-08-02
 
