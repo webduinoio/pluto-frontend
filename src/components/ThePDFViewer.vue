@@ -1,44 +1,43 @@
 <template>
   <div id="pdfObj">
     <div>
-      <v-toolbar density="compact" :elevation="3">
-        <span class="page-number-text">
+      <v-toolbar density="compact" :elevation="13">
+        <span>
           <v-select
             density="compact"
             hide-details
             v-model="selectedItem"
-            style="position: relative; width: 200px; height: 20px; bottom: 15px"
             :items="items"
             return-object
             variant="outlined"
           >
             <template v-slot:selection="{ item }">
-              <span class="d-flex justify-center" style="width: 100%; font-size: 1.3em">
+              <span style="width: 100%; font-size: 1em">
                 {{ item.title }}
               </span>
             </template>
           </v-select>
         </span>
-        <v-divider vertical></v-divider>
-
+        <v-divider vertical length="25" style="margin-top: 15px"></v-divider>
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
-        <span class="page-number-text" style="width: 60px; margin: 5px">
+        <span style="width: 60px; margin: 5px">
           <v-text-field
             variant="solo-filled"
             density="compact"
             class="centered-input"
             v-model="currentPage"
             :max="totalPages"
+            @keyup.enter="checkPageNumber"
           ></v-text-field>
         </span>
-        <span class="page-number-text" style="width: 30px">/</span>
-        <span class="page-number-text" style="width: 40px">{{ totalPages }}</span>
+        <span style="width: 30px">/</span>
+        <span style="width: 40px">{{ totalPages }}</span>
         <v-btn :icon="mdiChevronRight" @click="nextPage"></v-btn>
-        <v-divider vertical></v-divider>
+        <v-divider vertical length="25" style="margin-top: 15px"></v-divider>
         <v-btn :icon="mdiMinus" @click="adjustUI('-')"></v-btn>
         <span @click="fitSize" class="clickable">滿版</span>
         <v-btn :icon="mdiPlus" @click="adjustUI('+')"></v-btn>
-        <v-divider vertical></v-divider>
+        <v-divider vertical length="25" style="margin-top: 15px"></v-divider>
         <v-text-field
           v-model="searchText"
           clearable
@@ -71,8 +70,8 @@ declare global {
   }
 }
 const pdf = new PDF();
-const totalPages = ref(200);
-const currentPage = ref(1);
+const currentPage = ref(0);
+const totalPages = ref(0);
 const searchText = ref('');
 const selectedItem = ref({ title: '參考文件' });
 //const items = ref([{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }]);
@@ -81,7 +80,7 @@ const items = ref([{ title: '參考文件' }]);
 onMounted(() => {
   window.pdf = pdf;
   const ele = document.getElementById('pdfContainer');
-  pdf.setViewElement(ele, currentPage);
+  pdf.setViewElement(ele, currentPage, totalPages);
 });
 const search = () => {
   pdf.mark(searchText.value);
@@ -97,15 +96,22 @@ const adjustUI = (operation: string) => {
   }
 };
 const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-    pdf.lastPage();
-  }
+  pdf.lastPage(function (pageNum: number) {
+    currentPage.value = pageNum;
+  });
 };
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-    pdf.nextPage();
+  pdf.nextPage(function (pageNum: number) {
+    currentPage.value = pageNum;
+  });
+};
+const checkPageNumber = () => {
+  if (currentPage.value < 1 || currentPage.value > totalPages.value) {
+    alert('Page number is out of range. Please enter a valid number.');
+  } else {
+    pdf.page(currentPage.value, function (pageNum: number) {
+      currentPage.value = pageNum;
+    });
   }
 };
 defineExpose({ pdf });
