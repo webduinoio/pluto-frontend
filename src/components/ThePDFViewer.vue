@@ -1,7 +1,7 @@
 <template>
   <div id="pdfObj">
     <div>
-      <v-toolbar density="compact" :elevation="13">
+      <v-toolbar density="compact" :elevation="3">
         <span>
           <v-select
             density="compact"
