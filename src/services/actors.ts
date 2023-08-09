@@ -132,6 +132,17 @@ export function trainActor(id: number) {
 }
 
 /**
+ * 取得角色擁有文件
+ * @param id
+ */
+export function getActorDocuments(id: number) {
+  const config = {
+    method: 'get',
+  };
+  return instance(`/${id}/document`, config);
+}
+
+/**
  * 切換小書僮分享的狀態
  * @param id
  */

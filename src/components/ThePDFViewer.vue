@@ -1,15 +1,16 @@
 <template>
   <div id="pdfObj">
     <div>
-      <v-toolbar density="compact" :elevation="3">
-        <span>
+      <v-toolbar color="white" border elevation="5">
+        <span style="width: 250px">
           <v-select
             density="compact"
             hide-details
             v-model="selectedItem"
             :items="items"
             return-object
-            variant="outlined"
+            variant="solo"
+            style="margin: 20px"
           >
             <template v-slot:selection="{ item }">
               <span style="width: 100%; font-size: 1em">
@@ -20,9 +21,9 @@
         </span>
         <v-divider vertical length="25" style="margin-top: 15px"></v-divider>
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
-        <span style="width: 60px; margin: 5px">
+        <span style="width: 70px; margin: 5px">
           <v-text-field
-            variant="solo-filled"
+            variant="outlined"
             density="compact"
             class="centered-input"
             v-model="currentPage"
@@ -30,8 +31,8 @@
             @keyup.enter="checkPageNumber"
           ></v-text-field>
         </span>
-        <span style="width: 30px">/</span>
-        <span style="width: 40px">{{ totalPages }}</span>
+        <span style="width: 20px">/</span>
+        <span style="width: 20px">{{ totalPages }}</span>
         <v-btn :icon="mdiChevronRight" @click="nextPage"></v-btn>
         <v-divider vertical length="25" style="margin-top: 15px"></v-divider>
         <v-btn :icon="mdiMinus" @click="adjustUI('-')"></v-btn>
@@ -50,7 +51,7 @@
           hide-details
           @keyup.enter="search"
           @click:append-inner="search"
-          style="margin: 20px"
+          style="margin: 30px"
         >
         </v-text-field>
       </v-toolbar>
@@ -61,7 +62,7 @@
 
 <script lang="ts" setup>
 import { mdiChevronLeft, mdiChevronRight, mdiMagnify, mdiMinus, mdiPlus } from '@mdi/js';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import PDF from '../waPDF_ts.js';
 
 declare global {
@@ -69,25 +70,51 @@ declare global {
     pdf: any;
   }
 }
+
 const pdf = new PDF();
 const currentPage = ref(0);
 const totalPages = ref(0);
 const searchText = ref('');
-const selectedItem = ref({ title: '參考文件' });
-//const items = ref([{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }]);
-const items = ref([{ title: '參考文件' }]);
+const selectedItem = ref({ title: '讀取中...', value: '' });
+
+// 定義 props 和 emits
+const props = defineProps<{
+  items: Array<{ title: string; value: string }>;
+}>();
+
+// 使用 watch 来监听 items 的变化
+watch(
+  () => props.items,
+  (newItems) => {
+    if (newItems.length > 0) {
+      selectedItem.value = newItems[0];
+    }
+  },
+  { deep: true } // immediate 使得 watcher 在初始化时立即执行一次
+);
+
+watch(
+  () => selectedItem.value,
+  (newValue, oldValue) => {
+    console.log('Selected item has changed!', newValue.value);
+    // 這裡可以執行您想要的操作
+  }
+);
 
 onMounted(() => {
   window.pdf = pdf;
   const ele = document.getElementById('pdfContainer');
   pdf.setViewElement(ele, currentPage, totalPages);
 });
+
 const search = () => {
   pdf.mark(searchText.value);
 };
+
 const fitSize = () => {
   pdf.zoom(-1);
 };
+
 const adjustUI = (operation: string) => {
   if (operation == '-') {
     pdf.zoomOut(0.2);
@@ -95,16 +122,19 @@ const adjustUI = (operation: string) => {
     pdf.zoomIn(0.2);
   }
 };
+
 const prevPage = () => {
   pdf.lastPage(function (pageNum: number) {
     currentPage.value = pageNum;
   });
 };
+
 const nextPage = () => {
   pdf.nextPage(function (pageNum: number) {
     currentPage.value = pageNum;
   });
 };
+
 const checkPageNumber = () => {
   if (currentPage.value < 1 || currentPage.value > totalPages.value) {
     alert('Page number is out of range. Please enter a valid number.');
@@ -114,6 +144,8 @@ const checkPageNumber = () => {
     });
   }
 };
+
+// 暴露所需方法和屬性給 template
 defineExpose({ pdf });
 </script>
 
@@ -145,7 +177,7 @@ defineExpose({ pdf });
 }
 
 #pdfContainer {
-  height: calc(100vh - 120px);
+  height: calc(100vh - 130px);
   overflow: auto;
 }
 
