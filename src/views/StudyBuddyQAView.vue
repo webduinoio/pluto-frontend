@@ -66,8 +66,12 @@ const loadData = async () => {
       data: { data },
     } = await getActorDocuments(actor.id);
     let folderId = actor.url.substring(actor.url.indexOf('/folders/') + 9);
+    folderId = folderId.replace('?usp=sharing', '');
 
     for (var i in data) {
+      if (data[i].endsWith('.pdf')) {
+        data[i] = data[i].substring(0, data[i].length - 4);
+      }
       var link = {
         ns: folderId,
         file: data[i] + '.pdf',
