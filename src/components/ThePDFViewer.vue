@@ -1,15 +1,16 @@
 <template>
   <div id="pdfObj">
     <div>
-      <v-toolbar density="compact" :elevation="3">
-        <span>
+      <v-toolbar color="white" border elevation="5">
+        <span style="width: 250px">
           <v-select
             density="compact"
             hide-details
             v-model="selectedItem"
             :items="items"
             return-object
-            variant="outlined"
+            variant="solo"
+            style="margin: 20px"
           >
             <template v-slot:selection="{ item }">
               <span style="width: 100%; font-size: 1em">
@@ -20,9 +21,9 @@
         </span>
         <v-divider vertical length="25" style="margin-top: 15px"></v-divider>
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
-        <span style="width: 60px; margin: 5px">
+        <span style="width: 70px; margin: 5px">
           <v-text-field
-            variant="solo-filled"
+            variant="outlined"
             density="compact"
             class="centered-input"
             v-model="currentPage"
@@ -30,8 +31,8 @@
             @keyup.enter="checkPageNumber"
           ></v-text-field>
         </span>
-        <span style="width: 30px">/</span>
-        <span style="width: 40px">{{ totalPages }}</span>
+        <span style="width: 20px">/</span>
+        <span style="width: 20px">{{ totalPages }}</span>
         <v-btn :icon="mdiChevronRight" @click="nextPage"></v-btn>
         <v-divider vertical length="25" style="margin-top: 15px"></v-divider>
         <v-btn :icon="mdiMinus" @click="adjustUI('-')"></v-btn>
@@ -50,7 +51,7 @@
           hide-details
           @keyup.enter="search"
           @click:append-inner="search"
-          style="margin: 20px"
+          style="margin: 30px"
         >
         </v-text-field>
       </v-toolbar>
@@ -145,7 +146,7 @@ defineExpose({ pdf });
 }
 
 #pdfContainer {
-  height: calc(100vh - 120px);
+  height: calc(100vh - 130px);
   overflow: auto;
 }
 
