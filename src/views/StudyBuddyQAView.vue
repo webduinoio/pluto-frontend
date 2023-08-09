@@ -5,14 +5,25 @@ import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
-import { getActor } from '@/services';
+import { getActor, getActorDocuments } from '@/services';
 import type { Actor } from '@/types/actors';
 import { mdiAccountBox, mdiChevronRightBox } from '@mdi/js';
 import { get, set } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+/*
+URL:
+https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFhaFQyWGJuaHlCUE1sS1NpZXlqZWtWazJFT0NueTQzcCIsImZpbGUiOiLlsI/mm7jlg67muKzoqaYtV2ViOkJpdCDmlZnogrLniYgucGRmIn0=
+Base64 decode:
+{"ns":"1ahT2XbnhyBPMlKSieyjekVk2EOCny43p","file":"小書僮測試-Web:Bit 教育版.pdf"}
+//*/
 
+type PDFItem = {
+  title: string;
+  value: string;
+};
+const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
@@ -44,16 +55,39 @@ const hintItems = ref([
 let _promptTemp: String = '';
 let respMsg: string[] = [];
 
+function utf8ToB64(str: string) {
+  return window.btoa(
+    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
+      return String.fromCharCode(parseInt(p1, 16));
+    })
+  );
+}
+
 const loadData = async () => {
   const actorOpenID = route.params.id;
-
   try {
-    const { data }: { data: Actor } = await getActor(Number(get(actorOpenID)));
-    set(actorData, data);
+    const { data: actor }: { data: Actor } = await getActor(Number(get(actorOpenID)));
+    set(actorData, actor);
+
+    const {
+      data: { data },
+    } = await getActorDocuments(actor.id);
+    let folderId = actor.url.substring(actor.url.indexOf('/folders/') + 9);
+
+    for (var i in data) {
+      var link = {
+        ns: folderId,
+        file: data[i] + '.pdf',
+      };
+      var encodedString = utf8ToB64(JSON.stringify(link));
+      console.log('encodedString:', encodedString);
+      pdfViewerItems.value.push({ title: data[i], value: encodedString });
+    }
+
+    console.log('data:', folderId, data);
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
       const code = err.response?.data.code;
-
       if (code === ERROR_CODE.NOT_FOUND_ERROR) {
         await fire({ title: '沒有檢視權限', icon: 'warning' });
         router.push({ name: ROUTER_NAME.HOME });
@@ -119,6 +153,7 @@ const onReferenceMessage = (endMsg: string) => {
     }
 
     if (keyword != '') {
+      console.log('item url:', item.url);
       console.log('keyword:', keyword);
       var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
       keywordAmt++;
@@ -304,7 +339,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </div>
     </pane>
     <pane size="60" class="h-100 right-panel">
-      <ThePDFViewer ref="pdfViewer"></ThePDFViewer>
+      <ThePDFViewer ref="pdfViewer" :items="pdfViewerItems"></ThePDFViewer>
     </pane>
   </splitpanes>
 </template>

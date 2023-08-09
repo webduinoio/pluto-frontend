@@ -62,7 +62,7 @@
 
 <script lang="ts" setup>
 import { mdiChevronLeft, mdiChevronRight, mdiMagnify, mdiMinus, mdiPlus } from '@mdi/js';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import PDF from '../waPDF_ts.js';
 
 declare global {
@@ -70,25 +70,33 @@ declare global {
     pdf: any;
   }
 }
+
+// 定義 props 和 emits
+const props = defineProps<{
+  items: Array<{ title: string }>;
+}>();
+const emit = defineEmits(['update:items']);
+
 const pdf = new PDF();
 const currentPage = ref(0);
 const totalPages = ref(0);
 const searchText = ref('');
 const selectedItem = ref({ title: '參考文件' });
-//const items = ref([{ title: '1.pdf' }, { title: '2.pdf' }, { title: 'Q&A.pdf' }]);
-const items = ref([{ title: '參考文件' }]);
 
 onMounted(() => {
   window.pdf = pdf;
   const ele = document.getElementById('pdfContainer');
   pdf.setViewElement(ele, currentPage, totalPages);
 });
+
 const search = () => {
   pdf.mark(searchText.value);
 };
+
 const fitSize = () => {
   pdf.zoom(-1);
 };
+
 const adjustUI = (operation: string) => {
   if (operation == '-') {
     pdf.zoomOut(0.2);
@@ -96,16 +104,19 @@ const adjustUI = (operation: string) => {
     pdf.zoomIn(0.2);
   }
 };
+
 const prevPage = () => {
   pdf.lastPage(function (pageNum: number) {
     currentPage.value = pageNum;
   });
 };
+
 const nextPage = () => {
   pdf.nextPage(function (pageNum: number) {
     currentPage.value = pageNum;
   });
 };
+
 const checkPageNumber = () => {
   if (currentPage.value < 1 || currentPage.value > totalPages.value) {
     alert('Page number is out of range. Please enter a valid number.');
@@ -115,7 +126,16 @@ const checkPageNumber = () => {
     });
   }
 };
-defineExpose({ pdf });
+
+// 新增項目的功能
+const addNewItem = (newItem: { title: string }) => {
+  const updatedItems = [...props.items, newItem];
+  emit('update:items', updatedItems);
+  console.log('!!!!!!!!!!!', newItem);
+};
+
+// 暴露所需方法和屬性給 template
+defineExpose({ pdf, addNewItem });
 </script>
 
 <style scoped>
