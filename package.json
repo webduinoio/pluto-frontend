@@ -33,6 +33,7 @@
     "sweetalert2": "11.7.12",
     "vee-validate": "4.9.6",
     "vue": "^3.3.4",
+    "vue-authz": "^0.2.0",
     "vue-router": "^4.2.2",
     "vuetify": "3.3.3"
   },
