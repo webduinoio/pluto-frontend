@@ -12,12 +12,6 @@ import { get, set } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
-/*
-URL:
-https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFhaFQyWGJuaHlCUE1sS1NpZXlqZWtWazJFT0NueTQzcCIsImZpbGUiOiLlsI/mm7jlg67muKzoqaYtV2ViOkJpdCDmlZnogrLniYgucGRmIn0=
-Base64 decode:
-{"ns":"1ahT2XbnhyBPMlKSieyjekVk2EOCny43p","file":"小書僮測試-Web:Bit 教育版.pdf"}
-//*/
 
 type PDFItem = {
   title: string;
@@ -31,7 +25,6 @@ const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-//const referenceData = ref('');
 interface PDFViewerType {
   pdf: {
     setInjectAskPrompt: (callback: (ask: string) => void) => void;
@@ -80,11 +73,8 @@ const loadData = async () => {
         file: data[i] + '.pdf',
       };
       var encodedString = utf8ToB64(JSON.stringify(link));
-      console.log('encodedString:', encodedString);
       pdfViewerItems.value.push({ title: data[i], value: encodedString });
     }
-
-    console.log('data:', folderId, data);
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
       const code = err.response?.data.code;

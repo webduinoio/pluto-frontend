@@ -71,17 +71,35 @@ declare global {
   }
 }
 
-// 定義 props 和 emits
-const props = defineProps<{
-  items: Array<{ title: string }>;
-}>();
-const emit = defineEmits(['update:items']);
-
 const pdf = new PDF();
 const currentPage = ref(0);
 const totalPages = ref(0);
 const searchText = ref('');
-const selectedItem = ref({ title: '參考文件' });
+const selectedItem = ref({ title: '讀取中...', value: '' });
+
+// 定義 props 和 emits
+const props = defineProps<{
+  items: Array<{ title: string; value: string }>;
+}>();
+
+// 使用 watch 来监听 items 的变化
+watch(
+  () => props.items,
+  (newItems) => {
+    if (newItems.length > 0) {
+      selectedItem.value = newItems[0];
+    }
+  },
+  { deep: true } // immediate 使得 watcher 在初始化时立即执行一次
+);
+
+watch(
+  () => selectedItem.value,
+  (newValue, oldValue) => {
+    console.log('Selected item has changed!', newValue.value);
+    // 這裡可以執行您想要的操作
+  }
+);
 
 onMounted(() => {
   window.pdf = pdf;
@@ -127,15 +145,8 @@ const checkPageNumber = () => {
   }
 };
 
-// 新增項目的功能
-const addNewItem = (newItem: { title: string }) => {
-  const updatedItems = [...props.items, newItem];
-  emit('update:items', updatedItems);
-  console.log('!!!!!!!!!!!', newItem);
-};
-
 // 暴露所需方法和屬性給 template
-defineExpose({ pdf, addNewItem });
+defineExpose({ pdf });
 </script>
 
 <style scoped>
