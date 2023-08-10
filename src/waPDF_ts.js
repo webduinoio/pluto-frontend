@@ -101,7 +101,7 @@ export default class PDF {
       let loadingTask = pdfjsLib.getDocument({
         url: this.pdfUrl,
         cMapUrl: '/public/cmaps/',
-        rangeChunkSize: 65536,
+        rangeChunkSize: 65536 * 4,
         //disableRange: false,
       });
       loadingTask.promise.then(async (pdf) => {
