@@ -69,9 +69,7 @@ const loadData = async () => {
     folderId = folderId.replace('?usp=sharing', '');
 
     for (var i in data) {
-      if (data[i].endsWith('.pdf')) {
-        data[i] = data[i].substring(0, data[i].length - 4);
-      }
+      data[i] = data[i].substring(0, data[i].lastIndexOf('.'));
       var link = {
         ns: folderId,
         file: data[i] + '.pdf',
