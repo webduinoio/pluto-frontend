@@ -69,7 +69,12 @@ const loadData = async () => {
     folderId = folderId.replace('?usp=sharing', '').replace('?usp=drive_link', '');
 
     for (var i in data) {
-      data[i] = data[i].substring(0, data[i].lastIndexOf('.'));
+      console.log('file:', data[i]);
+      if (data[i].endsWith('.doc') || data[i].endsWith('.pdf')) {
+        data[i] = data[i].substring(0, data[i].length - 4);
+      } else if (data[i].endsWith('.docx')) {
+        data[i] = data[i].substring(0, data[i].length - 5);
+      }
       var link = {
         ns: folderId,
         file: data[i] + '.pdf',
