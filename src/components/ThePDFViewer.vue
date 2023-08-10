@@ -61,6 +61,7 @@
 </template>
 
 <script lang="ts" setup>
+import { MQTT_TOPIC } from '@/enums';
 import { mdiChevronLeft, mdiChevronRight, mdiMagnify, mdiMinus, mdiPlus } from '@mdi/js';
 import { onMounted, ref } from 'vue';
 import PDF from '../waPDF_ts.js';
@@ -96,8 +97,12 @@ watch(
 watch(
   () => selectedItem.value,
   (newValue, oldValue) => {
-    console.log('Selected item has changed!', newValue.value);
-    // 這裡可以執行您想要的操作
+    let hostname = MQTT_TOPIC.KN.replace('kn@chat', 'kn');
+    let pdfHost = 'https://' + hostname + '.nodered.vip/books/docs/' + newValue.value;
+    pdf.load(pdfHost, function () {
+      currentPage.value = 1;
+      totalPages.value = pdf.pdfDoc.numPages;
+    });
   }
 );
 
@@ -136,13 +141,11 @@ const nextPage = () => {
 };
 
 const checkPageNumber = () => {
-  if (currentPage.value < 1 || currentPage.value > totalPages.value) {
-    alert('Page number is out of range. Please enter a valid number.');
-  } else {
-    pdf.page(currentPage.value, function (pageNum: number) {
-      currentPage.value = pageNum;
-    });
-  }
+  if (currentPage.value < 1) currentPage.value = 1;
+  if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
+  pdf.page(currentPage.value, function (pageNum: number) {
+    currentPage.value = pageNum;
+  });
 };
 
 // 暴露所需方法和屬性給 template
