@@ -11,7 +11,7 @@ import { set } from '@vueuse/core';
 import { AxiosError } from 'axios';
 
 const mqtt = useMqtt(generateMqttUserId(), '');
-
+const progressValue = ref(0);
 const props = withDefaults(
   defineProps<{
     value: string;
@@ -37,9 +37,15 @@ const onTrain = async () => {
     set(training, true);
     await mqtt.connect();
     const actorTrainResp = MQTT_TOPIC.PROC + '/' + props.actor?.uuid;
-    mqtt.subscribe(actorTrainResp, async function (msg) {
-      debugLog('msg:' + msg);
-      if (msg.startsWith('true ')) {
+    mqtt.subscribe(actorTrainResp, async function (info) {
+      try {
+        info = JSON.parse(info);
+      } catch (e) {
+        console.log('oldMsg:', info);
+      }
+      progressValue.value = info['progress'];
+      debugLog('info:' + JSON.stringify(info));
+      if (info['code'] == 0 && info['progress'] == 100) {
         set(training, false);
         await fire({
           title: '訓練完成',
@@ -47,11 +53,11 @@ const onTrain = async () => {
           timer: NOTIFICATION_TIMEOUT,
           showConfirmButton: false,
         });
+        progressValue.value = 0;
         await mqtt.disconnect();
       }
     });
     debugLog('mqtt connected.');
-
     if (!props.actor?.id) {
       await fire({
         title: '發生錯誤',
@@ -65,7 +71,6 @@ const onTrain = async () => {
     const {
       data: { code },
     } = await trainActor(props.actor.id);
-
     if (code === ERROR_CODE.INTERNAL_SERVER_ERROR) {
       await fire({
         title: '發生錯誤',
@@ -78,7 +83,6 @@ const onTrain = async () => {
     let message = null;
     if (err instanceof AxiosError && err.response?.data) {
       const data = err.response.data as Response;
-
       if (data.code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
         message = '資料夾權限未分享';
       } else if (data.code === ERROR_CODE.TOO_LARGE_ERROR) {
@@ -140,9 +144,12 @@ const onTrain = async () => {
         </v-col>
         <v-col cols="6">
           <v-progress-linear
+            :key="progressValue"
             :active="training"
-            :indeterminate="training"
+            :model-value="progressValue"
             color="primary"
+            :height="6"
+            class="smooth-transition"
           ></v-progress-linear>
         </v-col>
       </v-row>
@@ -150,4 +157,8 @@ const onTrain = async () => {
   </v-window-item>
 </template>
 
-<style scoped></style>
+<style scoped>
+.v-progress-linear__bar {
+  transition: width 0.5s ease-out;
+}
+</style>

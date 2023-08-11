@@ -1,31 +1,25 @@
 <script lang="ts" setup>
-import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
-import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { createActor } from '@/services';
 import axios from 'axios';
-
 import { useField, useForm } from 'vee-validate';
+import { ref } from 'vue';
 
 const mqtt = useMqtt(generateMqttUserId(), '');
-
 const router = useRouter();
-const { fire, showLoading, hideLoading } = useSweetAlert();
 const { resetForm, handleSubmit } = useForm({
   initialValues: {
     name: '',
     url: '',
   },
-  // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
   validationSchema: {
     name: 'required|max:50',
     url: 'required|url|google_drive|google_drive_valid',
   },
 });
 
-// debug setup
 const debugMsg = ref(true);
 const debugLog = (msg: any) => {
   if (debugMsg.value) {
@@ -33,67 +27,48 @@ const debugLog = (msg: any) => {
   }
 };
 
-const name = useField('name', undefined, {
-  label: '名稱',
-});
-const url = useField('url', undefined, {
-  label: '網址',
-});
+const name = useField('name', undefined, { label: '名稱' });
+const url = useField('url', undefined, { label: '網址' });
+const loadingDialog = ref(false);
+const progressValue = ref(0);
 
-// TODO: 待調整
 const onSubmit = handleSubmit(async (values) => {
   try {
-    showLoading();
+    loadingDialog.value = true;
     let resp = await createActor(values);
     const actorUUID = resp['data']['data']['uuid'];
     await mqtt.connect();
     const actorTrainResp = MQTT_TOPIC.PROC + '/' + actorUUID;
     mqtt.subscribe(actorTrainResp, async function (msg) {
-      debugLog('msg:' + msg);
-      if (msg.startsWith('true ')) {
+      try {
+        msg = JSON.parse(msg);
+      } catch (e) {
+        debugLog('old_msg:' + msg);
+      }
+      if (typeof msg != 'object') return;
+      progressValue.value = msg['progress'];
+      if (progressValue.value >= 100) {
         resetForm();
         await mqtt.disconnect();
-        await fire({
-          title: '建立完成',
-          icon: 'success',
-          timer: NOTIFICATION_TIMEOUT,
-          showConfirmButton: false,
-        });
-        hideLoading();
-        router.push({ name: ROUTER_NAME.HOME });
+        setTimeout(() => {
+          loadingDialog.value = false;
+          progressValue.value = 0;
+          router.push({ name: ROUTER_NAME.HOME });
+        }, 2000);
       }
     });
-    debugLog('mqtt connected.');
   } catch (err: any) {
+    loadingDialog.value = false;
     if (axios.isAxiosError(err)) {
       console.error('error message: ', err.message);
-      hideLoading();
       const code = err.response?.data.code;
 
       if (code === ERROR_CODE.VALIDATION_ERROR) {
-        fire({
-          title: '發生錯誤',
-          icon: 'error',
-          text: '網址不正確',
-          showConfirmButton: false,
-          timer: NOTIFICATION_TIMEOUT,
-        });
+        alert('網址不正確');
       } else if (code === ERROR_CODE.DUPLICATE_ERROR) {
-        fire({
-          title: '發生錯誤',
-          icon: 'error',
-          text: '名稱重複',
-          showConfirmButton: false,
-          timer: NOTIFICATION_TIMEOUT,
-        });
+        alert('名稱重複');
       } else if (code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
-        fire({
-          title: '發生錯誤',
-          icon: 'error',
-          text: '資料夾權限不足',
-          showConfirmButton: false,
-          timer: NOTIFICATION_TIMEOUT,
-        });
+        alert('資料夾權限不足');
       }
     } else {
       console.error('unexpected error: ', err);
@@ -130,6 +105,26 @@ const onSubmit = handleSubmit(async (values) => {
           </div>
         </v-form>
       </v-sheet>
+
+      <!-- Loading dialog with progress circle -->
+      <v-dialog v-model="loadingDialog" persistent max-width="600px">
+        <v-card>
+          <v-card-text class="text-center">
+            <v-progress-circular
+              :key="progressValue"
+              :size="140"
+              :width="30"
+              color="primary"
+              :model-value="progressValue"
+            >
+              <span style="font-size: 1.5em">{{ Math.round(progressValue) }}%</span>
+            </v-progress-circular>
+            <p class="mt-4" style="fontsize: 1.5em">
+              {{ progressValue >= 100 ? '訓練完成' : '訓練中...' }}
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </div>
   </v-container>
 </template>

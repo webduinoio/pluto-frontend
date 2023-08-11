@@ -27,7 +27,7 @@ const training = ref(false);
 const datasets = ref<Dataset[]>([]);
 const search = ref('');
 const loading = ref(false);
-
+const progressValue = ref(0);
 // debug setup
 const debugMsg = ref(true);
 
@@ -84,9 +84,15 @@ const onTrain = async () => {
     set(training, true);
     await mqtt.connect();
     const actorTrainResp = MQTT_TOPIC.PROC + '/' + props.actor?.uuid;
-    mqtt.subscribe(actorTrainResp, async function (msg) {
-      debugLog('msg:' + msg);
-      if (msg.startsWith('true ')) {
+    mqtt.subscribe(actorTrainResp, async function (info) {
+      try {
+        info = JSON.parse(info);
+      } catch (e) {
+        console.log('oldMsg:', info);
+      }
+      progressValue.value = info['progress'];
+      debugLog('info:' + JSON.stringify(info));
+      if (info['code'] == 0 && info['progress'] == 100) {
         set(training, false);
         await fire({
           title: '訓練完成',
@@ -94,6 +100,7 @@ const onTrain = async () => {
           timer: NOTIFICATION_TIMEOUT,
           showConfirmButton: false,
         });
+        progressValue.value = 0;
         await mqtt.disconnect();
       }
     });
@@ -218,9 +225,12 @@ onMounted(async () => {
         </v-col>
         <v-col cols="6">
           <v-progress-linear
+            :key="progressValue"
             :active="training"
-            :indeterminate="training"
+            :model-value="progressValue"
             color="primary"
+            :height="6"
+            class="smooth-transition"
           ></v-progress-linear>
         </v-col>
       </v-row>
@@ -232,4 +242,8 @@ onMounted(async () => {
   </v-window-item>
 </template>
 
-<style scoped></style>
+<style scoped>
+.v-progress-linear__bar {
+  transition: width 0.5s ease-out;
+}
+</style>
