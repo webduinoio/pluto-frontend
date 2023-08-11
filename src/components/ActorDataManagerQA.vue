@@ -90,6 +90,7 @@ const onTrain = async () => {
       } catch (e) {
         console.log('oldMsg:', info);
       }
+      if (typeof info != 'object') return;
       progressValue.value = info['progress'];
       debugLog('info:' + JSON.stringify(info));
       if (info['code'] == 0 && info['progress'] == 100) {
