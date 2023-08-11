@@ -11,10 +11,10 @@ export default class PDF {
     this.injectAskPrompt = callback;
   }
 
-  setViewElement(pdfContainer, pageShow) {
+  setViewElement(pdfContainer, pageShow, totalPages) {
     this.pdfContainer = pdfContainer;
     this.elePageShow = pageShow;
-    window.qq = this.elePageShow;
+    this.totalPages = totalPages;
   }
 
   setMsgElement(ele) {
@@ -49,14 +49,22 @@ export default class PDF {
     var self = this;
     if (this.pdfUrl != url) {
       this.load(url, async function () {
-        self.showMsg('find:[' + keyword + ']');
-        await self.page(await self.mark(keyword));
+        await self.page(await self.mark(keyword), function () {});
         setTimeout(async function () {
-          await self.mark(keyword);
+          var findPage = await self.mark(keyword);
+          self.pdfDoc.nowPage = parseInt(findPage);
+          self.showMsg('find:[' + keyword + '],page:', findPage);
+          await self.page(findPage, function () {
+            self.elePageShow.value = self.pdfDoc.nowPage;
+            self.totalPages.vaue = self.pdfDoc.numPages;
+          });
         }, 0);
       });
     } else {
-      await self.page(await self.mark(keyword));
+      await self.page(await self.mark(keyword), function () {
+        self.elePageShow.value = self.pdfDoc.nowPage;
+        self.totalPages.vaue = self.pdfDoc.numPages;
+      });
     }
   }
 
@@ -93,7 +101,7 @@ export default class PDF {
       let loadingTask = pdfjsLib.getDocument({
         url: this.pdfUrl,
         cMapUrl: '/public/cmaps/',
-        rangeChunkSize: 65536,
+        rangeChunkSize: 65536 * 4,
         //disableRange: false,
       });
       loadingTask.promise.then(async (pdf) => {
@@ -177,8 +185,6 @@ export default class PDF {
         }
       }
       if (kewordNotFound && typeof _spanHighlightMap[idx] != 'undefined') {
-        //console.log('del[2]:', _spanHighlightMap[idx]);
-        //delete _spanHighlightMap[idx];
         _spanHighlightMap = {};
       }
     }
@@ -193,12 +199,6 @@ export default class PDF {
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
       elements[spanIdx].scrollIntoView({ block: 'start' });
-      /*
-      var top = elements[spanIdx].getBoundingClientRect().y;
-      setTimeout(function () {
-        window.scrollBy(0, top < 10 ? -10 : -1 * top + 10);
-      }, 200);
-      //*/
     }
     return findPage;
   }
@@ -214,12 +214,14 @@ export default class PDF {
     this.spanHighlightMap = {};
   }
 
-  lastPage() {
-    this.page(this.nowPage() - 1);
+  lastPage(callback) {
+    var swPage = this.nowPage() - 1;
+    this.page(swPage, callback);
   }
 
-  nextPage() {
-    this.page(this.nowPage() + 1);
+  nextPage(callback) {
+    var swPage = this.nowPage() + 1;
+    this.page(swPage, callback);
   }
 
   nowPage() {
@@ -232,16 +234,23 @@ export default class PDF {
     } else {
       this.elePageShow.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
     }
+    if (typeof this.totalPages.value == 'number') {
+      this.totalPages.value = this.pdfDoc.numPages;
+    }
   }
 
-  page(pageNum) {
+  page(pageNum, callback) {
+    var self = this;
     if (pageNum == '') return;
-    this.nowPageNum = pageNum;
-    // Scroll to the specified page
     var pageDiv = document.getElementById('page-' + pageNum);
-    if (pageDiv) {
-      pageDiv.scrollIntoView({ behavior: 'auto', block: 'start' });
+    if (pageDiv == null) {
+      return;
     }
+    self.nowPageNum = parseInt(pageNum);
+    pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function () {
+      callback(self.nowPageNum);
+    }, 500);
   }
 
   loadingEffect(show) {

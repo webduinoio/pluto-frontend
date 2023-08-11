@@ -6,11 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.3.0] - 2023-08-11
+
+### Fixed
+
+- PDF 放大、縮小、跳頁、全文檢索（ UI 優化 2 ） [#7133](https://redmine.kingkit.codes/issues/7133)
+
 ## [1.2.0] - 2023-08-04
 
 ### Added
 
 - PDF 預覽功能 [#7062](https://redmine.kingkit.codes/issues/7062)
+- PDF 自動擷取整段落反白功能 [#7089](https://redmine.kingkit.codes/issues/7089)
+- 讓圖片可以顯示在小書僮回答中 [#7113](https://redmine.kingkit.codes/issues/7113)
+- 小書僮圖片可以顯示在凱比臉上 [#7060](https://redmine.kingkit.codes/issues/7060)
+
+### Fixed
+
+- 小書僮閒置一段時間會斷線 [#7065](https://redmine.kingkit.codes/issues/7065)
+- PDF 字模糊(參考資料) [#7088](https://redmine.kingkit.codes/issues/7113)
+- PDF 索引斷字問題 (找不到索引資料) [#7086](https://redmine.kingkit.codes/issues/7086)
+- PDF 縮放、跳頁、全文檢索（ UI 優化 ）[#7112](https://redmine.kingkit.codes/issues/7112)
+
+### Changed
+
+- PDF 檔案下載加速 [#7087](https://redmine.kingkit.codes/issues/7087)
 
 ## [1.0.0-alpha.1] - 2023-08-02
 
@@ -22,7 +42,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 小書僮小地方優化 [#7080](https://redmine.kingkit.codes/issues/7080)
 - 已分享的小書僮，在清單顯示 icon [#7102](https://redmine.kingkit.codes/issues/7102)
 
->>>>>>>
 ### Fixed
 
 - 小書僮 Q&A 無法編輯 [#7085](https://redmine.kingkit.codes/issues/7085)
@@ -53,7 +72,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...v1.3.0
 [1.2.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.0.0-alpha.1...v1.2.0
 [1.0.0-alpha.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.0.0-alpha...v1.0.0-alpha.1
 [1.0.0-alpha]: https://github.com/webduinoio/pluto-frontend/releases/tag/v1.0.0-alpha
