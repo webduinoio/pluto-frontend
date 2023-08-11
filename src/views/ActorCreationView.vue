@@ -31,8 +31,10 @@ const name = useField('name', undefined, { label: '名稱' });
 const url = useField('url', undefined, { label: '網址' });
 const loadingDialog = ref(false);
 const progressValue = ref(0);
+const isSubmitting = ref(false); // 用於追蹤是否正在提交
 
 const onSubmit = handleSubmit(async (values) => {
+  isSubmitting.value = true; // 按下按鈕開始提交
   try {
     loadingDialog.value = true;
     let resp = await createActor(values);
@@ -54,6 +56,7 @@ const onSubmit = handleSubmit(async (values) => {
           loadingDialog.value = false;
           progressValue.value = 0;
           router.push({ name: ROUTER_NAME.HOME });
+          isSubmitting.value = false; // 重置提交狀態
         }, 2000);
       }
     });
@@ -73,6 +76,7 @@ const onSubmit = handleSubmit(async (values) => {
     } else {
       console.error('unexpected error: ', err);
     }
+    isSubmitting.value = false; // 重置提交狀態
   }
 });
 </script>
@@ -101,7 +105,9 @@ const onSubmit = handleSubmit(async (values) => {
             :error-messages="url.errorMessage.value"
           ></v-text-field>
           <div class="mt-16 d-flex justify-center">
-            <v-btn type="submit" color="primary" size="large">開始訓練</v-btn>
+            <v-btn type="submit" color="primary" size="large" :disabled="isSubmitting"
+              >開始訓練</v-btn
+            >
           </div>
         </v-form>
       </v-sheet>
@@ -119,7 +125,7 @@ const onSubmit = handleSubmit(async (values) => {
             >
               <span style="font-size: 1.5em">{{ Math.round(progressValue) }}%</span>
             </v-progress-circular>
-            <p class="mt-4" style="fontsize: 1.5em">
+            <p class="mt-4" style="font-size: 1.5em">
               {{ progressValue >= 100 ? '訓練完成' : '訓練中...' }}
             </p>
           </v-card-text>
