@@ -1,10 +1,38 @@
 export default class PDF {
-  constructor() {
+  constructor(selectItem) {
+    this.selectItem = selectItem;
     this.msgEle = null;
     this.spanHighlightMap = {};
     this.nowPageNum = 1;
     this.scale = 1; // Initialize scale
     this.injectAskPrompt = function () {};
+  }
+
+  b64ToUTF8(base64Part) {
+    // Base64解碼
+    let decodedBytes;
+    try {
+      decodedBytes = new Uint8Array(
+        [...atob(base64Part)].map((character) => character.charCodeAt(0))
+      );
+    } catch (e) {
+      return 'err:' + e;
+    }
+    const decoder = new TextDecoder('utf-8');
+    const decodedStr = decoder.decode(decodedBytes);
+    // 將解碼的字串解析為JSON物件
+    let jsonObj;
+    try {
+      jsonObj = JSON.parse(decodedStr);
+    } catch (e) {
+      console.error('JSON parsing failed:', e.message);
+      return;
+    }
+    // 拿到 'file' 的文件名（去除副檔名）
+    const filename = jsonObj['file'];
+    const nameWithoutExtension = filename.substring(0, filename.lastIndexOf('.'));
+    // 返回不包括副檔名的文件名
+    return nameWithoutExtension;
   }
 
   setInjectAskPrompt(callback) {
@@ -13,8 +41,8 @@ export default class PDF {
 
   setViewElement(pdfContainer, pageShow, totalPages) {
     this.pdfContainer = pdfContainer;
-    this.elePageShow = pageShow;
-    this.totalPages = totalPages;
+    this.vueCurrentPage = pageShow;
+    this.vueTotalPages = totalPages;
   }
 
   setMsgElement(ele) {
@@ -46,30 +74,37 @@ export default class PDF {
   }
 
   async load_and_find(url, keyword) {
+    this.selectItem(this.b64ToUTF8(url.split('/books/docs/')[1]));
     var self = this;
     if (this.pdfUrl != url) {
       this.load(url, async function () {
         await self.page(await self.mark(keyword), function () {});
         setTimeout(async function () {
           var findPage = await self.mark(keyword);
+          //console.log(keyword + ':findPage...' + findPage);
           self.pdfDoc.nowPage = parseInt(findPage);
-          self.showMsg('find:[' + keyword + '],page:', findPage);
+          self.vueCurrentPage.value = self.pdfDoc.nowPage;
+          self.showMsg('find:[' + keyword + '],page:' + findPage);
           await self.page(findPage, function () {
-            self.elePageShow.value = self.pdfDoc.nowPage;
-            self.totalPages.vaue = self.pdfDoc.numPages;
+            self.vueCurrentPage.value = self.pdfDoc.nowPage;
+            self.vueTotalPages.vaue = self.pdfDoc.numPages;
           });
         }, 0);
       });
     } else {
-      await self.page(await self.mark(keyword), function () {
-        self.elePageShow.value = self.pdfDoc.nowPage;
-        self.totalPages.vaue = self.pdfDoc.numPages;
-      });
+      var findPage = await self.mark(keyword);
+      if (findPage != '') {
+        findPage = parseInt(findPage);
+        self.vueCurrentPage.value = findPage;
+        setTimeout(async function () {
+          await self.page(findPage, function () {});
+        }, 0);
+      }
     }
   }
 
   async load(pdfUrl, callback) {
-    if (typeof pdfUrl == 'undefined' || pdfUrl == '') return;
+    if (typeof pdfUrl == 'undefined' || pdfUrl == '' || this.pdfUrl == pdfUrl) return;
     this.pdfUrl = pdfUrl;
     this.highlightTimeout = 0;
     this.selectedText = '';
@@ -87,13 +122,11 @@ export default class PDF {
       });
 
       // Update this.nowPageNum
-      if (visiblePageElement) {
+      if (visiblePageElement && visiblePageElement.id != '') {
         this.nowPageNum = parseInt(visiblePageElement.id.split('-')[1]);
-        //this.showMsg('Page:', this.nowPageNum);
         this.showPage(this.nowPageNum);
       }
     });
-
     try {
       this.pdfContainer.innerHTML = '';
       this.showMsg('PDF loading...', pdfUrl);
@@ -104,24 +137,24 @@ export default class PDF {
         rangeChunkSize: 65536 * 4,
         //disableRange: false,
       });
+      this.vueCurrentPage.value = 0;
+      this.vueTotalPages.value = 0;
       loadingTask.promise.then(async (pdf) => {
         this.pdfDoc = pdf;
         const unscaledViewport = (await pdf.getPage(1)).getViewport({ scale: 1 });
         this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
-        //let lastPromise = Promise.resolve(); // Start with a promise that always resolves
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          //lastPromise = lastPromise.then(() => this.renderPage(pdf, pageNum)); // Chain the promises
+          this.vueTotalPages.value = pageNum;
           await this.renderPage(pdf, pageNum);
         }
         this.loadingEffect(false);
+        this.vueCurrentPage.value = 1;
         if (typeof callback != 'undefined') callback();
       });
     } catch (error) {
       // Handle any errors that occur during loading
       console.error('Error loading PDF:', error);
     }
-    //this.showPage();
-    this.showMsg('PDF loading...done.');
   }
 
   async setViewport(scale) {
@@ -198,7 +231,7 @@ export default class PDF {
       var highlightStr = `<span class='pdfContainer-mark'>${replaceStr}</span>`;
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
-      elements[spanIdx].scrollIntoView({ block: 'start' });
+      elements[spanIdx].scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     return findPage;
   }
@@ -229,13 +262,13 @@ export default class PDF {
   }
 
   showPage() {
-    if (typeof this.elePageShow.value == 'number') {
-      this.elePageShow.value = this.nowPageNum;
+    if (typeof this.vueCurrentPage.value == 'number') {
+      this.vueCurrentPage.value = this.nowPageNum;
     } else {
-      this.elePageShow.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
+      this.vueCurrentPage.innerHTML = `${this.nowPageNum} / ${this.pdfDoc.numPages}`;
     }
-    if (typeof this.totalPages.value == 'number') {
-      this.totalPages.value = this.pdfDoc.numPages;
+    if (typeof this.vueTotalPages.value == 'number') {
+      this.vueTotalPages.value = this.pdfDoc.numPages;
     }
   }
 

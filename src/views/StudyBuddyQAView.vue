@@ -8,33 +8,6 @@ function utf8ToB64(str: string) {
   );
 }
 
-function b64ToUTF8(base64Part: string) {
-  // Base64解碼
-  let decodedBytes;
-  try {
-    decodedBytes = new Uint8Array(
-      [...atob(base64Part)].map((character) => character.charCodeAt(0))
-    );
-  } catch (e) {
-    return 'err:' + e;
-  }
-  const decoder = new TextDecoder('utf-8');
-  const decodedStr = decoder.decode(decodedBytes);
-  // 將解碼的字串解析為JSON物件
-  let jsonObj;
-  try {
-    jsonObj = JSON.parse(decodedStr);
-  } catch (e) {
-    console.error('JSON parsing failed:', e.message);
-    return;
-  }
-  // 拿到 'file' 的文件名（去除副檔名）
-  const filename = jsonObj['file'];
-  const nameWithoutExtension = filename.substring(0, filename.lastIndexOf('.'));
-  // 返回不包括副檔名的文件名
-  return nameWithoutExtension;
-}
-
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
@@ -54,7 +27,6 @@ type PDFItem = {
   value: string;
 };
 const pdfViewerItems = ref<PDFItem[]>([]);
-const selectedItem = ref<string>('');
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
@@ -66,7 +38,6 @@ interface PDFViewerType {
   pdf: {
     setInjectAskPrompt: (callback: (ask: string) => void) => void;
   };
-  setSelectItem: (item: string) => void;
 }
 
 const pdfViewer = ref<PDFViewerType | null>(null);
@@ -99,7 +70,6 @@ const loadData = async () => {
     folderId = folderId.replace('?usp=sharing', '').replace('?usp=drive_link', '');
 
     for (var i in data) {
-      console.log('file:', data[i]);
       if (data[i].endsWith('.doc') || data[i].endsWith('.pdf')) {
         data[i] = data[i].substring(0, data[i].length - 4);
       } else if (data[i].endsWith('.docx')) {
@@ -156,10 +126,6 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
-const setSelectItem = (item: string) => {
-  console.log('OKOK:', item);
-};
-
 const onReferenceMessage = (endMsg: string) => {
   var info: Array<object> = JSON.parse(endMsg);
   var links =
@@ -186,9 +152,6 @@ const onReferenceMessage = (endMsg: string) => {
     }
 
     if (keyword != '') {
-      selectedItem.value = b64ToUTF8(item.url.split('/books/docs/')[1]);
-      //pdfViewer.value!.setSelectItem(selectedItem.value);
-      //console.log('>>', pdfViewer.value);
       var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
       keywordAmt++;
       let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}'); })())`;
@@ -373,11 +336,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </div>
     </pane>
     <pane size="60" class="h-100 right-panel">
-      <ThePDFViewer
-        ref="pdfViewer"
-        :items="pdfViewerItems"
-        :selectedItem="{ title: '' }"
-      ></ThePDFViewer>
+      <ThePDFViewer ref="pdfViewer" :items="pdfViewerItems"></ThePDFViewer>
     </pane>
   </splitpanes>
 </template>

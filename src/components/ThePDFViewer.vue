@@ -72,8 +72,17 @@ declare global {
   }
 }
 
-const pdf = new PDF();
-const currentPage = ref(0);
+const setSelectItem = (title: string) => {
+  const matchedItem = props.items.find((item) => item.title === title);
+  if (matchedItem) {
+    selectedItem.value = matchedItem;
+  } else {
+    console.error(`Item with title ${title} not found in items.`);
+  }
+};
+
+const pdf = new PDF(setSelectItem);
+const currentPage = ref(1);
 const totalPages = ref(0);
 const searchText = ref('');
 const selectedItem = ref({ title: '讀取中...', value: '' });
@@ -100,22 +109,15 @@ watch(
     let hostname = MQTT_TOPIC.KN.replace('kn@chat', 'kn');
     let pdfHost = 'https://' + hostname + '.nodered.vip/books/docs/' + newValue.value;
     pdf.load(pdfHost, function () {
-      currentPage.value = 1;
-      totalPages.value = pdf.pdfDoc.numPages;
+      if (pdf.pdfDoc && typeof pdf.pdfDoc.numPages === 'number') {
+        totalPages.value = pdf.pdfDoc.numPages;
+      }
+      //else {
+      //  totalPages.value = 0; // or some other default/fallback value
+      //}
     });
   }
 );
-
-const setSelectItem = (title: string) => {
-  console.log('Got!', title);
-  // 在 items 中尋找與 title 匹配的項目
-  const matchedItem = props.items.find((item) => item.title === title);
-  if (matchedItem) {
-    selectedItem.value = matchedItem;
-  } else {
-    console.error(`Item with title ${title} not found in items.`);
-  }
-};
 
 onMounted(() => {
   window.pdf = pdf;
@@ -160,7 +162,7 @@ const checkPageNumber = () => {
 };
 
 // 暴露所需方法和屬性給 template
-defineExpose({ pdf, setSelectItem });
+defineExpose({ pdf });
 </script>
 
 <style scoped>
