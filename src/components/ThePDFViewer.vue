@@ -106,6 +106,17 @@ watch(
   }
 );
 
+const setSelectItem = (title: string) => {
+  console.log('Got!', title);
+  // 在 items 中尋找與 title 匹配的項目
+  const matchedItem = props.items.find((item) => item.title === title);
+  if (matchedItem) {
+    selectedItem.value = matchedItem;
+  } else {
+    console.error(`Item with title ${title} not found in items.`);
+  }
+};
+
 onMounted(() => {
   window.pdf = pdf;
   const ele = document.getElementById('pdfContainer');
@@ -149,7 +160,7 @@ const checkPageNumber = () => {
 };
 
 // 暴露所需方法和屬性給 template
-defineExpose({ pdf });
+defineExpose({ pdf, setSelectItem });
 </script>
 
 <style scoped>
