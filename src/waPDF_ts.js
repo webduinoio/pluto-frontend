@@ -281,9 +281,6 @@ export default class PDF {
     }
     self.nowPageNum = parseInt(pageNum);
     pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setTimeout(function () {
-      callback(self.nowPageNum);
-    }, 500);
   }
 
   loadingEffect(show) {
