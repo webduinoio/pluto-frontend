@@ -1,4 +1,13 @@
 <script lang="ts" setup>
+// Global function
+function utf8ToB64(str: string) {
+  return window.btoa(
+    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
+      return String.fromCharCode(parseInt(p1, 16));
+    })
+  );
+}
+
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
@@ -48,14 +57,6 @@ const hintItems = ref([
 let _promptTemp: String = '';
 let respMsg: string[] = [];
 
-function utf8ToB64(str: string) {
-  return window.btoa(
-    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
-      return String.fromCharCode(parseInt(p1, 16));
-    })
-  );
-}
-
 const loadData = async () => {
   const actorOpenID = route.params.id;
   try {
@@ -69,7 +70,6 @@ const loadData = async () => {
     folderId = folderId.replace('?usp=sharing', '').replace('?usp=drive_link', '');
 
     for (var i in data) {
-      console.log('file:', data[i]);
       if (data[i].endsWith('.doc') || data[i].endsWith('.pdf')) {
         data[i] = data[i].substring(0, data[i].length - 4);
       } else if (data[i].endsWith('.docx')) {
@@ -145,17 +145,16 @@ const onReferenceMessage = (endMsg: string) => {
         !content[line].trim().startsWith('#') &&
         !content[line].trim().startsWith('![圖片連結](https://')
       ) {
+        // 這邊可以處理 jieba
         keyword = content[line];
         break;
       }
     }
 
     if (keyword != '') {
-      console.log('item url:', item.url);
-      console.log('keyword:', keyword);
       var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
       keywordAmt++;
-      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}')})())`;
+      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}'); })())`;
       links += `<div class="tooltip">
   <a href="#" onclick="${link}">${idxLink++}</a>
   <span class="tooltiptext">${linkInfo}</span>
