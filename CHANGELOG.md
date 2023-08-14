@@ -8,9 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- 小書僮引用資料和回答無關[#7140](https://redmine.kingkit.codes/issues/7140)
-- 點擊引用標籤會讓頁數顯示異常[#7141](https://redmine.kingkit.codes/issues/7141)
-- 點擊引用標籤，下拉選單沒有切換對應檔案[#7142](https://redmine.kingkit.codes/issues/7142)
+- 小書僮引用資料和回答無關 [#7140](https://redmine.kingkit.codes/issues/7140)
+- 點擊引用標籤會讓頁數顯示異常 [#7141](https://redmine.kingkit.codes/issues/7141)
+- 點擊引用標籤，下拉選單沒有切換對應檔案 [#7142](https://redmine.kingkit.codes/issues/7142)
 
 ## [1.3.0] - 2023-08-11
 
