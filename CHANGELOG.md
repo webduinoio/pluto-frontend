@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.3.1] - 2023-08-14
+
 ### Fixed
 
 - 小書僮引用資料和回答無關 [#7140](https://redmine.kingkit.codes/issues/7140)
@@ -78,8 +80,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...HEAD
-[1.3.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...v1.3.0
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...v1.3.1
+[1.3.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.0.0-alpha.1...v1.2.0
 [1.0.0-alpha.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.0.0-alpha...v1.0.0-alpha.1
 [1.0.0-alpha]: https://github.com/webduinoio/pluto-frontend/releases/tag/v1.0.0-alpha
