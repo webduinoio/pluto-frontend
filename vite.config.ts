@@ -40,7 +40,8 @@ export default defineConfig(({ mode }) => {
         inject: {
           data: {
             timestamp: new Date().toISOString(),
-            favicon: env.VITE_FAVICON
+            favicon: env.VITE_FAVICON,
+            title: env.VITE_TITLE,
           },
         },
       }),
