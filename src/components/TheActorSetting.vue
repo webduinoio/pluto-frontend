@@ -22,6 +22,8 @@ const emit = defineEmits<{
 const { fire } = useSweetAlert();
 const notification = useNotificationStore();
 
+const showID = ref(import.meta.env.VITE_HIDE_ACTOR_ID !== 'true');
+
 // TODO: file 格式的檢查，再研究看看，真不行，就混合 vuetify3 的檢查
 const { handleSubmit, setFieldValue } = useForm({
   initialValues: {
@@ -112,17 +114,19 @@ watch(
     <v-container>
       <v-sheet width="400" class="mt-4 bg-transparent">
         <v-form @submit.prevent="onSubmit">
-          <p class="text-subtitle-1">小書僮 ID</p>
-          <v-row align="center">
-            <v-col cols="9">
-              <p class="text-subtitle-2 text-disabled">{{ props.actor?.uuid }}</p>
-            </v-col>
-            <v-col cols="3">
-              <v-btn color="secondary" variant="outlined" size="large" @click="OnClick">
-                複製
-              </v-btn>
-            </v-col>
-          </v-row>
+          <template v-if="showID">
+            <p class="text-subtitle-1">小書僮 ID</p>
+            <v-row align="center">
+              <v-col cols="9">
+                <p class="text-subtitle-2 text-disabled">{{ props.actor?.uuid }}</p>
+              </v-col>
+              <v-col cols="3">
+                <v-btn color="secondary" variant="outlined" size="large" @click="OnClick">
+                  複製
+                </v-btn>
+              </v-col>
+            </v-row>
+          </template>
           <v-text-field
             class="mt-5"
             variant="outlined"
