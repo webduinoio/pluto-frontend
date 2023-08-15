@@ -7,11 +7,14 @@ import { mdiAccountCircle } from '@mdi/js';
 const router = useRouter();
 const oauth = useOAuthStore();
 const user = oauth.user;
+const logoText = ref(import.meta.env.VITE_LOGO_TEXT);
 </script>
 
 <template>
   <v-app-bar class="header px-3" color="secondary">
+    <span class="text-h4 font-weight-black" v-if="logoText">{{ logoText }}</span>
     <v-img
+      v-else
       class="logo"
       src="@/assets/logo.webp"
       :height="48"
