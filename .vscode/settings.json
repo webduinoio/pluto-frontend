@@ -12,6 +12,7 @@
     "blockdefs",
     "blockly",
     "blockmirror",
+    "casbin",
     "CATDICT",
     "CATFUNCTIONS",
     "CATINPUT",
