@@ -81,3 +81,21 @@ export enum ERROR_CODE {
 //   LOCAL = 'local',
 //   SERVER = 'server',
 // }
+
+export enum Action {
+  READ = 'GET',
+  CREATE = 'POST',
+  EDIT = 'PUT',
+  DELETE = 'DELETE',
+  ALL = '*'
+}
+
+export enum Effect {
+  ALLOW = 'allow',
+  DENY = 'deny',
+}
+
+export enum Permission {
+  ACTOR_ADMIN = '/api/v1/actor/',
+  ACTOR_NORMAL = '/api/v1/self/actor/',
+}

@@ -2,24 +2,14 @@
  * 後端，資料集 API
  */
 
-// import { user } from '@/hooks/useUser';
+import { useAuthorizerStore } from '@/stores/authorizer';
 import type { ServiceDataset } from '@/types/dataset';
 import axios from 'axios';
-
-let instance: any;
-
-// watch(
-//   () => user.value,
-//   (val) => {
-//     instance = createInstance(val);
-//   },
-//   { immediate: true }
-// );
 
 // TODO: 之後需再優化
 function createInstance(value: any) {
   return axios.create({
-    baseURL: (import.meta.env.VITE_SERVER_HOST || location.origin) + '/api/v1/dataset',
+    baseURL: (import.meta.env.VITE_SERVER_HOST || location.origin) + '/api/v1',
     headers: {
       Authorization: JSON.stringify(value),
     },
@@ -28,7 +18,7 @@ function createInstance(value: any) {
 }
 
 // TODO: 待調整
-instance = createInstance('');
+const instance = createInstance('');
 
 /**
  * 新增資料集
@@ -36,11 +26,12 @@ instance = createInstance('');
  * @param data
  */
 export function createDataset(data: ServiceDataset) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'post',
     data,
   };
-  return instance('/', config);
+  return instance(`${authorizer.canEditAll ? '' : '/self'}/dataset`, config);
 }
 
 /**
@@ -55,6 +46,7 @@ export function getDatasets(options?: {
   search?: string;
   actorID: number;
 }) {
+  const authorizer = useAuthorizerStore();
   const { lastIndex, count, orderBy, orderDirection, actorID, search } = options || {};
   const config = {
     method: 'get',
@@ -69,19 +61,8 @@ export function getDatasets(options?: {
   if (orderBy !== undefined) config.params.orderBy = orderBy.toString();
   if (orderDirection !== undefined) config.params.orderDirection = orderDirection;
   if (search !== undefined) config.params.search = search;
-  return instance('/', config);
+  return instance(`${authorizer.canEditAll ? '' : '/self'}/dataset`, config);
 }
-
-// /**
-//  * 取得單一角色
-//  * @param id
-//  */
-// export function getActor(id: number) {
-//   const config = {
-//     method: 'get',
-//   };
-//   return instance(`/${id}`, config);
-// }
 
 /**
  * 更新資料集
@@ -89,11 +70,12 @@ export function getDatasets(options?: {
  * @param data
  */
 export function updateDataset(id: number, data: ServiceDataset) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'put',
     data,
   };
-  return instance(`/${id}`, config);
+  return instance(`${authorizer.canEditAll ? '' : '/self'}/dataset/${id}`, config);
 }
 
 /**
@@ -101,23 +83,12 @@ export function updateDataset(id: number, data: ServiceDataset) {
  * @param id
  */
 export function deleteDataset(id: number, actorID: number) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'delete',
     data: {
       actorID
     }
   };
-  return instance(`/${id}`, config);
+  return instance(`${authorizer.canEditAll ? '' : '/self'}/dataset/${id}`, config);
 }
-
-// /**
-//  * 刪除多筆角色
-//  * @param data { ids: number[] }
-//  */
-// export function deleteQuestions(data: { ids: number[] }) {
-//   const config = {
-//     method: 'delete',
-//     data,
-//   };
-//   return instance('/questions', config);
-// }

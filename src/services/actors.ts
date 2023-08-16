@@ -2,24 +2,14 @@
  * 後端，角色 api
  */
 
-// import { user } from '@/hooks/useUser';
+import { useAuthorizerStore } from '@/stores/authorizer';
 import type { ServiceActor } from '@/types';
 import axios from 'axios';
-
-let instance: any;
-
-// watch(
-//   () => user.value,
-//   (val) => {
-//     instance = createInstance(val);
-//   },
-//   { immediate: true }
-// );
 
 // TODO: 之後需再優化
 function createInstance(value: any) {
   return axios.create({
-    baseURL: (import.meta.env.VITE_SERVER_HOST || location.origin) + '/api/v1/actor',
+    baseURL: (import.meta.env.VITE_SERVER_HOST || location.origin) + '/api/v1',
     headers: {
       Authorization: JSON.stringify(value),
     },
@@ -28,7 +18,7 @@ function createInstance(value: any) {
 }
 
 // TODO: 待調整
-instance = createInstance('');
+const instance = createInstance('');
 
 /**
  * 新增角色
@@ -45,7 +35,7 @@ export function createActor(data: ServiceActor) {
     method: 'post',
     data,
   };
-  return instance('/', config);
+  return instance('/actor', config);
 }
 
 /**
@@ -58,6 +48,7 @@ export function getActors(options?: {
   orderBy?: string | string[] | undefined;
   orderDirection?: string;
 }) {
+  const authorizer = useAuthorizerStore();
   const { lastIndex, count, orderBy, orderDirection } = options || {};
   const config = {
     method: 'get',
@@ -70,7 +61,7 @@ export function getActors(options?: {
   };
   if (orderBy !== undefined) config.params.orderBy = orderBy.toString();
   if (orderDirection !== undefined) config.params.orderDirection = orderDirection;
-  return instance('/', config);
+  return instance(`${authorizer.canReadAll ? '' : '/self'}/actor`, config);
 }
 
 /**
@@ -78,10 +69,11 @@ export function getActors(options?: {
  * @param id
  */
 export function getActor(id: number) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'get',
   };
-  return instance(`/${id}`, config);
+  return instance(`${authorizer.canReadAll ? '' : '/self'}/actor/${id}`, config);
 }
 
 /**
@@ -90,11 +82,12 @@ export function getActor(id: number) {
  * @param data
  */
 export function updateActor(id: number, data: any) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'put',
     data,
   };
-  return instance(`/${id}`, config);
+  return instance(`${authorizer.canEditAll ? '' : '/self'}/actor/${id}`, config);
 }
 
 /**
@@ -102,33 +95,23 @@ export function updateActor(id: number, data: any) {
  * @param id
  */
 export function deleteActor(id: number) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'delete',
   };
-  return instance(`/${id}`, config);
+  return instance(`${authorizer.canDeleteAll ? '' : '/self'}/actor/${id}`, config);
 }
-
-// /**
-//  * 刪除多筆角色
-//  * @param data { ids: number[] }
-//  */
-// export function deleteQuestions(data: { ids: number[] }) {
-//   const config = {
-//     method: 'delete',
-//     data,
-//   };
-//   return instance('/questions', config);
-// }
 
 /**
  * 訓練角色
  * @param id
  */
 export function trainActor(id: number) {
+  const authorizer = useAuthorizerStore();
   const config = {
-    method: 'get',
+    method: 'post',
   };
-  return instance(`/${id}/train`, config);
+  return instance(`${authorizer.canEditAll ? '' : '/self'}/actor/${id}/train`, config);
 }
 
 /**
@@ -136,10 +119,11 @@ export function trainActor(id: number) {
  * @param id
  */
 export function getActorDocuments(id: number) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'get',
   };
-  return instance(`/${id}/document`, config);
+  return instance(`${authorizer.canReadAll ? '' : '/self'}/actor/${id}/document`, config);
 }
 
 /**
@@ -147,10 +131,11 @@ export function getActorDocuments(id: number) {
  * @param id
  */
 export function toggleShareActor(id: number) {
+  const authorizer = useAuthorizerStore();
   const config = {
     method: 'put',
   }
-  return instance(`/${id}/shared`, config);
+  return instance(`${authorizer.canEditAll ? '' : '/self'}/actor/${id}/shared`, config);
 }
 
 export function validateUrl(url: string) {
@@ -160,5 +145,5 @@ export function validateUrl(url: string) {
       url
     }
   }
-  return instance(`/validate`, config);
+  return instance('/actor/validate', config);
 }

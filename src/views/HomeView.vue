@@ -4,6 +4,7 @@ import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { deleteActor, getActors, toggleShareActor } from '@/services';
+import { useAuthorizerStore } from '@/stores/authorizer';
 import { useNotificationStore } from '@/stores/notification';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
@@ -14,6 +15,7 @@ const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
 const notification = useNotificationStore();
 const oauth = useOAuthStore();
+const authorizer = useAuthorizerStore();
 const user = oauth.user;
 
 // TODO: 待調整
@@ -82,7 +84,7 @@ const onDelete = async (id: number) => {
 };
 
 const onCopy = async (actor: Actor) => {
-  if (actor.createdBy === user?.id) {
+  if (actor.createdBy === user?.id || authorizer.canEditAll) {
     await toggleShareActor(actor.id);
     actor.shared = !actor.shared;
   }
@@ -106,6 +108,7 @@ const onCopy = async (actor: Actor) => {
           color="primary"
           :prepend-icon="mdiPlus"
           @click="router.push({ name: ROUTER_NAME.ACTOR_CREATION })"
+          v-if="authorizer.canCreate"
         >
           新增小書僮
         </v-btn>
@@ -120,6 +123,10 @@ const onCopy = async (actor: Actor) => {
               width="320"
               class="ma-2 pa-2"
               :data="item"
+              :can-edit="authorizer.canEdit"
+              :can-edit-all="authorizer.canEditAll"
+              :can-delete="authorizer.canDelete"
+              :can-delete-all="authorizer.canDeleteAll"
               @edit="onEdit"
               @open="onOpen"
               @delete="onDelete"
