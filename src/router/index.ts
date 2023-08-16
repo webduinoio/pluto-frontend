@@ -1,6 +1,7 @@
-import { ROUTER_NAME } from '@/enums';
+import { Action, Permission, ROUTER_NAME } from '@/enums';
 import LayoutDefault from '@/layouts/default/Default.vue';
-import { getUser, logout } from '@/services';
+import { getPermissions, getUser, logout } from '@/services';
+import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import { useRouteStore } from '@/stores/route';
 import type { RouteLocationNormalized } from 'vue-router';
@@ -73,6 +74,7 @@ const router = createRouter({
 router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormalized, next) => {
   const route = useRouteStore();
   const oauth = useOAuthStore();
+  const authorizer = useAuthorizerStore();
 
   try {
     if (route.to !== null) {
@@ -85,6 +87,20 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     if (oauth.user === null) {
       const resp = await getUser();
       oauth.user = resp?.data;
+    }
+
+    // TODO: check whether `authorizer.permissions` has value first and reset it before logout
+    if (oauth.user) {
+      const resp = await getPermissions(oauth.user.role.name);
+      authorizer.permissions = resp?.data.data;
+      authorizer.user = oauth.user.role.name;
+      authorizer.canReadAll = authorizer.can(Action.READ, Permission.ACTOR_ADMIN);
+      authorizer.canRead = authorizer.can(Action.READ, Permission.ACTOR_NORMAL);
+      authorizer.canCreate = authorizer.can(Action.CREATE, Permission.ACTOR_ADMIN);
+      authorizer.canEditAll = authorizer.can(Action.EDIT, Permission.ACTOR_ADMIN);
+      authorizer.canEdit = authorizer.can(Action.EDIT, Permission.ACTOR_NORMAL);
+      authorizer.canDeleteAll = authorizer.can(Action.DELETE, Permission.ACTOR_ADMIN);
+      authorizer.canDelete = authorizer.can(Action.DELETE, Permission.ACTOR_NORMAL);
     }
     next();
   } catch (error) {

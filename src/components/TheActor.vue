@@ -8,9 +8,16 @@ const user = oauth.user;
 const props = withDefaults(
   defineProps<{
     data: Actor;
+    canEdit: boolean;
+    canEditAll: boolean;
+    canDelete: boolean;
+    canDeleteAll: boolean;
   }>(),
   {
-    // nothing
+    canEdit: true,
+    canEditAll: false,
+    canDelete: true,
+    canDeleteAll: false,
   }
 );
 
@@ -63,7 +70,9 @@ const emit = defineEmits<{
 
           <v-list>
             <v-list-item :value="props.data.id" @click="emit('copy', props.data)">
-              <v-list-item-title v-if="props.data.createdBy === user?.id && props.data.shared">
+              <v-list-item-title
+                v-if="(props.data.createdBy === user?.id || props.canEditAll) && props.data.shared"
+              >
                 停止分享
               </v-list-item-title>
               <v-list-item-title v-else> 複製分享連結 </v-list-item-title>
@@ -71,7 +80,7 @@ const emit = defineEmits<{
             <v-list-item
               :value="props.data.id"
               @click="emit('delete', props.data.id)"
-              v-if="props.data.createdBy === user?.id"
+              v-if="props.data.createdBy === user?.id ? props.canDelete : props.canDeleteAll"
             >
               <v-list-item-title>刪除</v-list-item-title>
             </v-list-item>
@@ -97,7 +106,7 @@ const emit = defineEmits<{
     </v-card-text>
     <v-card-actions class="d-flex justify-end">
       <v-btn
-        v-if="props.data.createdBy === user?.id"
+        v-if="props.data.createdBy === user?.id ? canEdit : canEditAll"
         variant="outlined"
         color="secondary"
         @click="emit('edit', props.data)"
