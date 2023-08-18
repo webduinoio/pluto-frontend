@@ -1,6 +1,6 @@
 import { Action, Permission, ROUTER_NAME } from '@/enums';
 import LayoutDefault from '@/layouts/default/Default.vue';
-import { getPermissions, getUser, logout } from '@/services';
+import { getPermissions, getUser, getUserPlan, logout } from '@/services';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import { useRouteStore } from '@/stores/route';
@@ -85,8 +85,10 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     }
 
     if (oauth.user === null) {
-      const resp = await getUser();
-      oauth.user = resp?.data;
+      oauth.user = (await getUser()).data;
+    }
+    if (oauth.plan === null) {
+      oauth.plan = (await getUserPlan()).data;
     }
 
     // TODO: check whether `authorizer.permissions` has value first and reset it before logout
