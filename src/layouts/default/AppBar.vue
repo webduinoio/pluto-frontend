@@ -10,7 +10,11 @@ const logoText = ref(import.meta.env.VITE_LOGO_TEXT);
 const isPro = ref(oauth.plan?.name !== 'free');
 const isHidePlanInformation = ref(import.meta.env.VITE_HIDE_PLAN_INFORMATION === 'true');
 
-const onClickPlan = () => {};
+const onClickPlan = () => {
+  location.href = `${import.meta.env.VITE_OAUTH_SERVER_HOST}/voucher?user_id=${
+    oauth.user?.oauthID
+  }&redirect_uri=${location.href}`;
+};
 const onClickResource = () => {
   window.open('https://resource.webduino.io/docs/webduino-aitutor/handbook', '_blank');
 };
@@ -57,8 +61,7 @@ const onClickResource = () => {
         </v-card-text>
       </v-card>
     </v-menu>
-    <v-menu width="250px" v-else persistent>
-      <!-- <v-menu width="250px" open-on-hover open-on-click> -->
+    <v-menu width="250px" open-on-hover open-on-click>
       <template v-slot:activator="{ props }">
         <v-chip
           v-if="isPro"
