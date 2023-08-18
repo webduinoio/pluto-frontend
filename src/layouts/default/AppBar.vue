@@ -2,12 +2,20 @@
 import { ROUTER_NAME } from '@/enums';
 import { logout } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
-import { mdiAccountCircle } from '@mdi/js';
+import { mdiAccountCircle, mdiChevronRight, mdiSchoolOutline } from '@mdi/js';
 
 const router = useRouter();
 const oauth = useOAuthStore();
-const user = oauth.user;
 const logoText = ref(import.meta.env.VITE_LOGO_TEXT);
+const isPro = ref(oauth.plan?.name !== 'free');
+const isHidePlanInformation = ref(import.meta.env.VITE_HIDE_PLAN_INFORMATION === 'true');
+
+const onClickPlan = () => {};
+const onClickResource = () => {
+  window.open('https://resource.webduino.io/docs/webduino-aitutor/handbook', '_blank');
+};
+// const onClickTheme = () => {};
+// const onClickLocation = () => {};
 </script>
 
 <template>
@@ -24,7 +32,7 @@ const logoText = ref(import.meta.env.VITE_LOGO_TEXT);
     <v-toolbar-title class="title clickable" @click="router.push({ name: ROUTER_NAME.HOME })">
       伴學小書僮
     </v-toolbar-title>
-    <v-menu min-width="200px" rounded open-on-hover>
+    <v-menu v-if="isHidePlanInformation" width="250px" open-on-hover open-on-click>
       <template v-slot:activator="{ props }">
         <v-btn icon v-bind="props">
           <v-avatar>
@@ -39,19 +47,100 @@ const logoText = ref(import.meta.env.VITE_LOGO_TEXT);
               <v-icon color="grey" :icon="mdiAccountCircle" size="x-large"></v-icon>
             </v-avatar>
             <p class="text-caption mt-1">
-              {{ user?.email }}
+              {{ oauth.user?.email }}
             </p>
-            <!-- <div class="d-flex flex-column justify-center">
-              <v-btn rounded variant="text"> 方案 </v-btn>
-              <v-btn rounded variant="text"> 語言 </v-btn>
-              <v-btn rounded variant="text"> 我的群組 </v-btn>
-            </div> -->
             <v-divider class="mb-9 mt-1"></v-divider>
             <v-btn variant="outlined" density="comfortable" rounded="lg" @click="logout">
               登出
             </v-btn>
           </div>
         </v-card-text>
+      </v-card>
+    </v-menu>
+    <v-menu width="250px" v-else persistent>
+      <!-- <v-menu width="250px" open-on-hover open-on-click> -->
+      <template v-slot:activator="{ props }">
+        <v-chip
+          v-if="isPro"
+          variant="elevated"
+          pill
+          v-bind="props"
+          color="white"
+          style="opacity: 0.8; box-shadow: none"
+        >
+          <span class="font-weight-bold text-secondary">PRO</span>
+          <v-avatar class="mr-n3">
+            <v-icon color="#F1A23A" size="x-large" :icon="mdiAccountCircle"></v-icon>
+          </v-avatar>
+        </v-chip>
+        <v-btn v-else icon v-bind="props">
+          <v-avatar>
+            <v-icon color="blue-grey-lighten-5" :icon="mdiAccountCircle" size="x-large"></v-icon>
+          </v-avatar>
+        </v-btn>
+      </template>
+      <v-card class="rounded-lg">
+        <v-list>
+          <v-list-item>
+            <template #title>
+              {{ oauth.user?.name }}
+              <v-chip
+                v-if="isPro"
+                class="my-1 mx-2 px-1 font-weight-bold text-caption h-25"
+                color="secondary"
+                variant="outlined"
+                density="compact"
+                label
+              >
+                PRO
+              </v-chip>
+            </template>
+
+            <template #subtitle>
+              <div class="text-truncate">{{ oauth.user?.email }}</div>
+            </template>
+            <template #prepend>
+              <v-avatar v-if="oauth.user?.avatar" :image="oauth.user?.avatar"></v-avatar>
+              <v-avatar v-else>
+                <v-icon color="gray" :icon="mdiAccountCircle" size="x-large"></v-icon>
+              </v-avatar>
+            </template>
+          </v-list-item>
+
+          <v-divider class="ma-2"></v-divider>
+
+          <v-list-item class="mx-1" @click="onClickPlan">
+            <template #title>
+              <template v-if="isPro">
+                <span class="text-secondary font-weight-bold">剩餘天數</span>
+              </template>
+              <template v-else>
+                <v-icon color="secondary" :icon="mdiSchoolOutline"></v-icon>
+                <span class="ml-2 text-secondary font-weight-bold">成為 PRO</span>
+              </template>
+            </template>
+
+            <template #append>
+              <span v-if="isPro" class="text-medium-emphasis">{{
+                `${oauth.getRemindDays()} 天`
+              }}</span>
+              <v-icon class="ml-1" :icon="mdiChevronRight"></v-icon>
+            </template>
+          </v-list-item>
+          <v-list-item class="mx-1" title="學習資源" @click="onClickResource"> </v-list-item>
+          <!-- <v-list-item class="mx-1" title="深色模式" @click="onClickTheme"> </v-list-item>
+          <v-list-item
+            class="mx-1"
+            title="繁體中文"
+            @click="onClickLocation"
+            :appendIcon="mdiChevronRight"
+          >
+          </v-list-item> -->
+
+          <v-divider class="ma-2"></v-divider>
+
+          <v-list-item class="mx-1" title="登出" @click="logout"></v-list-item>
+        </v-list>
       </v-card>
     </v-menu>
   </v-app-bar>

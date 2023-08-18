@@ -28,3 +28,10 @@ export function getUser() {
   };
   return instance('/', config);
 }
+
+export async function getUserPlan() {
+  const config = {
+    method: 'get',
+  }
+  return (await instance('/plan', config)).data;
+}

@@ -20,3 +20,21 @@ export interface User {
   name: string;
   avatar: string;
 }
+
+export interface Subscription {
+  id: number;
+  createdAt: number;
+  period: number;
+}
+
+export interface Plan {
+  id: number;
+  name: string;
+  maxFileSize: number;
+  maxFilePages: number;
+  fileQuota: number;
+  questionQuota: number;
+  actorQuota: number;
+  createdAt: number;
+  subscription: Subscription | null;
+}
