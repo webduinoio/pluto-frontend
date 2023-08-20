@@ -97,6 +97,27 @@ const onCopy = async (actor: Actor) => {
 
   notification.fire(actor.shared ? '分享連結已複製' : '已停止分享', 'top');
 };
+
+const onCreate = () => {
+  const myActors = data.value.filter((datum) => datum.createdBy === oauth.user?.id);
+  if (oauth.plan?.actorQuota && myActors.length >= oauth.plan.actorQuota) {
+    if (oauth.plan.name !== 'free') {
+      notification.fire('小書僮數量已滿', 'top');
+    } else {
+      fire({
+        title: '',
+        icon: 'info',
+        text: '升級 Pro',
+        showConfirmButton: true,
+        confirmButtonText: '了解方案',
+      }).then(() => {
+        location.href = 'https://store.webduino.io/products/ai-tutor';
+      });
+    }
+  } else {
+    router.push({ name: ROUTER_NAME.ACTOR_CREATION });
+  }
+};
 </script>
 
 <template>
@@ -107,7 +128,7 @@ const onCopy = async (actor: Actor) => {
         <v-btn
           color="primary"
           :prepend-icon="mdiPlus"
-          @click="router.push({ name: ROUTER_NAME.ACTOR_CREATION })"
+          @click="onCreate"
           v-if="authorizer.canCreate"
         >
           新增小書僮
