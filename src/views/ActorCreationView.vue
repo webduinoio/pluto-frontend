@@ -72,6 +72,8 @@ const onSubmit = handleSubmit(async (values) => {
         alert('名稱重複');
       } else if (code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
         alert('資料夾權限不足');
+      } else if (code === ERROR_CODE.TOO_MANY_ACTOR_ERROR) {
+        alert('小書僮數量已滿');
       }
     } else {
       console.error('unexpected error: ', err);
