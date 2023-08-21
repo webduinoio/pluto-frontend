@@ -61,7 +61,7 @@ const onClickResource = () => {
         </v-card-text>
       </v-card>
     </v-menu>
-    <v-menu width="250px" open-on-hover open-on-click>
+    <v-menu v-else width="250px" open-on-hover open-on-click>
       <template v-slot:activator="{ props }">
         <v-chip
           v-if="isPro"
