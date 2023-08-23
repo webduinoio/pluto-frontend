@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 小書僮帳號角色區隔 [#7007](https://redmine.kingkit.codes/issues/7007)
 - 小書僮免費、付費版機制 [#7091](https://redmine.kingkit.codes/issues/7091)
+- 自動將文件取摘要前端實作 [#7117](https://redmine.kingkit.codes/issues/7117)
 
 ## [1.3.1] - 2023-08-14
 
