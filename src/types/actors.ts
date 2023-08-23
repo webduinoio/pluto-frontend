@@ -35,6 +35,13 @@ export interface Actor {
   temperature: number;
   type: ACTOR_TYPE;
   uuid: string;
+  recommends: Recommend[]
+}
+
+export interface Recommend {
+  id: number;
+  name: string;
+  createdAt: number;
 }
 
 export interface Actors {

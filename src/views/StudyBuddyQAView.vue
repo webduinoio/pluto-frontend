@@ -63,6 +63,16 @@ const loadData = async () => {
     const { data: actor }: { data: Actor } = await getActor(Number(get(actorOpenID)));
     set(actorData, actor);
 
+    if (actor.recommends.length !== 0) {
+      hintItems.value = actor.recommends.map((recommend) => {
+        // TODO: need to fix `title` too long condition
+        return {
+          title: recommend.name,
+          value: recommend.name,
+        };
+      });
+    }
+
     const {
       data: { data },
     } = await getActorDocuments(actor.id);
