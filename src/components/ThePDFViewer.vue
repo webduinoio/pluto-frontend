@@ -106,7 +106,8 @@ watch(
 watch(
   () => selectedItem.value,
   (newValue, oldValue) => {
-    let hostname = MQTT_TOPIC.KN.replace('kn@chat', 'kn');
+    let _hostname = MQTT_TOPIC.KN.split('@');
+    let hostname = _hostname[1] + '-' + _hostname[0];
     let pdfHost = 'https://' + hostname + '.nodered.vip/books/docs/' + newValue.value;
     pdf.load(pdfHost, function () {
       if (pdf.pdfDoc && typeof pdf.pdfDoc.numPages === 'number') {
