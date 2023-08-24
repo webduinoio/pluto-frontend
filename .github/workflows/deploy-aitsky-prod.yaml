@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Build Application
-        run: npm run build:aitsky-staging
+        run: npm run build:aitsky-production
 
       - uses: jakejarvis/s3-sync-action@master
         name: Upload App to S3 Bucket
