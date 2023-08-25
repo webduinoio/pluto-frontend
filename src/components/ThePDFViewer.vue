@@ -106,7 +106,20 @@ watch(
 watch(
   () => selectedItem.value,
   (newValue, oldValue) => {
-    let hostname = MQTT_TOPIC.KN.replace('@chat', '').replace('@', '');
+    let hostname = '';
+    /* webduino rule
+      kn@chat          https://kn
+      kn@chat-staging  https://kn-staging
+      kn@aitsky        https://aitsky-kn
+    //*/
+    if (MQTT_TOPIC.KN.indexOf('@chat') > 0) {
+      hostname = MQTT_TOPIC.KN.replace('@chat', '').replace('@', '');
+    }
+    // other
+    else {
+      var _host = MQTT_TOPIC.KN.split('@');
+      hostname = _host[1] + '-' + _host[0];
+    }
     let pdfHost = 'https://' + hostname + '.nodered.vip/books/docs/' + newValue.value;
     pdf.load(pdfHost, function () {
       if (pdf.pdfDoc && typeof pdf.pdfDoc.numPages === 'number') {
