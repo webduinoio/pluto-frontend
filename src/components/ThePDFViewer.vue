@@ -106,15 +106,12 @@ watch(
 watch(
   () => selectedItem.value,
   (newValue, oldValue) => {
-    let hostname = MQTT_TOPIC.KN.replace('kn@chat', 'kn');
+    let hostname = MQTT_TOPIC.KN.replace('@chat', '').replace('@', '');
     let pdfHost = 'https://' + hostname + '.nodered.vip/books/docs/' + newValue.value;
     pdf.load(pdfHost, function () {
       if (pdf.pdfDoc && typeof pdf.pdfDoc.numPages === 'number') {
         totalPages.value = pdf.pdfDoc.numPages;
       }
-      //else {
-      //  totalPages.value = 0; // or some other default/fallback value
-      //}
     });
   }
 );
