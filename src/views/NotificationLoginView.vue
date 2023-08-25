@@ -7,7 +7,7 @@ const { fire, showLoading } = useSweetAlert();
 fire({
   title: '登入並開始與小書僮對話',
   text: '即將轉導回登入頁',
-  icon: 'warning',
+  icon: undefined,
   confirmButtonText: '確認',
   timer: 7000,
   timerProgressBar: true,
