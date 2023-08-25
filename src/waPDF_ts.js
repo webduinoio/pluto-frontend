@@ -272,7 +272,7 @@ export default class PDF {
     }
   }
 
-  page(pageNum, callback) {
+  page(pageNum) {
     var self = this;
     if (pageNum == '') return;
     var pageDiv = document.getElementById('page-' + pageNum);

@@ -47,7 +47,7 @@ const onTrain = async () => {
       if (typeof info != 'object') return;
       progressValue.value = info['progress'];
       debugLog('info:' + JSON.stringify(info));
-      if (info['code'] == 0 && info['progress'] == 100) {
+      if (info['progress'] == 100) {
         set(training, false);
         await fire({
           title: '訓練完成',
