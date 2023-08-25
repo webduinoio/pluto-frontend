@@ -164,11 +164,10 @@ const nextPage = () => {
 };
 
 const checkPageNumber = () => {
+  currentPage.value = parseInt('' + currentPage.value);
   if (currentPage.value < 1) currentPage.value = 1;
   if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
-  pdf.page(currentPage.value, function (pageNum: number) {
-    currentPage.value = pageNum;
-  });
+  pdf.page(currentPage.value);
 };
 
 // 暴露所需方法和屬性給 template
