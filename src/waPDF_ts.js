@@ -272,7 +272,7 @@ export default class PDF {
     }
   }
 
-  page(pageNum) {
+  page(pageNum, callback) {
     var self = this;
     if (pageNum == '') return;
     var pageDiv = document.getElementById('page-' + pageNum);
@@ -280,7 +280,10 @@ export default class PDF {
       return;
     }
     self.nowPageNum = parseInt(pageNum);
-    pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function () {
+      pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      callback(self.nowPageNum);
+    }, 10);
   }
 
   loadingEffect(show) {
