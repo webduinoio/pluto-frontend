@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- 輸入頁數會導致頁數顯示異常[#7179](https://redmine.kingkit.codes/issues/7179)
+
 ### Added
 
 - 小書僮帳號角色區隔 [#7007](https://redmine.kingkit.codes/issues/7007)
