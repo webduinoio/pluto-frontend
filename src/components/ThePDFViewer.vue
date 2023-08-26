@@ -23,12 +23,15 @@
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
         <span style="width: 70px; margin: 5px">
           <v-text-field
+            type="text"
             variant="outlined"
             density="compact"
             class="centered-input"
             v-model="currentPage"
             :max="totalPages"
             @keyup.enter="checkPageNumber"
+            @blur="checkPageNumber"
+            @input="ensureNumeric"
           ></v-text-field>
         </span>
         <span style="width: 20px">/</span>
@@ -163,11 +166,18 @@ const nextPage = () => {
   });
 };
 
+const ensureNumeric = () => {
+  var cvt = parseInt('' + currentPage.value);
+  currentPage.value = Number.isNaN(cvt) ? pdf.nowPageNum : currentPage.value;
+};
+
 const checkPageNumber = () => {
   currentPage.value = parseInt('' + currentPage.value);
   if (currentPage.value < 1) currentPage.value = 1;
   if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
-  pdf.page(currentPage.value);
+  pdf.page(currentPage.value, function (page: number) {
+    currentPage.value = page;
+  });
 };
 
 // 暴露所需方法和屬性給 template
