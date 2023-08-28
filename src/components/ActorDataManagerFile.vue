@@ -22,6 +22,7 @@ const props = withDefaults(
 
 const { fire } = useSweetAlert();
 const training = ref(false);
+const showDocument = ref(import.meta.env.VITE_HIDE_TRAINING_DOCUMENT !== 'true');
 
 // debug setup
 const debugMsg = ref(true);
@@ -46,7 +47,7 @@ const onTrain = async () => {
       if (typeof info != 'object') return;
       progressValue.value = info['progress'];
       debugLog('info:' + JSON.stringify(info));
-      if (info['code'] == 0 && info['progress'] == 100) {
+      if (info['progress'] == 100) {
         set(training, false);
         await fire({
           title: '訓練完成',
@@ -113,6 +114,7 @@ const onTrain = async () => {
           <div class="text-body-1 mr-2">
             請開啟雲端硬碟資料夾，更新訓練資料後，點擊再次訓練。
             <a
+              v-if="showDocument"
               href="https://docs.google.com/document/d/1faGhiXiscEq5UJhNYN1O0PUdPizCXv5sXAirfMe5qDc/edit?usp=sharing"
               target="_blank"
               class="text-primary"

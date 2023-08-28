@@ -42,6 +42,7 @@ export enum ROUTER_NAME {
   STUDY_BUDDY_QA = 'StudyBuddyQA',
   STUDY_BUDDY_QUESTION = 'StudyBuddyQuestion',
   STUDY_BUDDY_GOOGLE_SHEET = 'StudyBuddyGoogleSheet',
+  NOTIFICATION_LOGIN = 'NotificationLogin',
 }
 
 export enum ERROR_CODE {
@@ -56,6 +57,7 @@ export enum ERROR_CODE {
   FOLDER_WRONG_URL_ERROR = 8,
   TOO_LARGE_ERROR = 9,
   TOO_MANY_FILES_ERROR = 10,
+  TOO_MANY_ACTOR_ERROR = 11,
 }
 
 // export enum MARKDOWN_TYPE {
@@ -81,3 +83,21 @@ export enum ERROR_CODE {
 //   LOCAL = 'local',
 //   SERVER = 'server',
 // }
+
+export enum Action {
+  READ = 'GET',
+  CREATE = 'POST',
+  EDIT = 'PUT',
+  DELETE = 'DELETE',
+  ALL = '*'
+}
+
+export enum Effect {
+  ALLOW = 'allow',
+  DENY = 'deny',
+}
+
+export enum Permission {
+  ACTOR_ADMIN = '/api/v1/actor/',
+  ACTOR_NORMAL = '/api/v1/self/actor/',
+}

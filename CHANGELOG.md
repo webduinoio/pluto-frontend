@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.4.0] - 2023-08-28
+
+### Fixed
+
+- 輸入頁數會導致頁數顯示異常[#7179](https://redmine.kingkit.codes/issues/7179)
+
+### Added
+
+- 小書僮帳號角色區隔 [#7007](https://redmine.kingkit.codes/issues/7007)
+- 小書僮免費、付費版機制 [#7091](https://redmine.kingkit.codes/issues/7091)
+- 小書僮登入流程優化 [#7118](https://redmine.kingkit.codes/issues/7118)
+- 小書僮埋設 GTM 代碼 [#7153](https://redmine.kingkit.codes/issues/7153)
+
 ## [1.3.1] - 2023-08-14
 
 ### Fixed
@@ -80,7 +93,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.0.0-alpha.1...v1.2.0

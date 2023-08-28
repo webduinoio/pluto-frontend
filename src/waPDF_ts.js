@@ -133,7 +133,8 @@ export default class PDF {
       this.loadingEffect(true);
       let loadingTask = pdfjsLib.getDocument({
         url: this.pdfUrl,
-        cMapUrl: '/public/cmaps/',
+        //cMapUrl: '/public/cmaps/',
+        cMapUrl: '/cmaps/',
         rangeChunkSize: 65536 * 4,
         //disableRange: false,
       });
@@ -280,7 +281,10 @@ export default class PDF {
       return;
     }
     self.nowPageNum = parseInt(pageNum);
-    pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(function () {
+      pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      callback(self.nowPageNum);
+    }, 10);
   }
 
   loadingEffect(show) {
