@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 小書僮帳號角色區隔 [#7007](https://redmine.kingkit.codes/issues/7007)
 - 小書僮免費、付費版機制 [#7091](https://redmine.kingkit.codes/issues/7091)
 - 小書僮登入流程優化 [#7118](https://redmine.kingkit.codes/issues/7118)
+- 小書僮埋設 GTM 代碼 [#7153](https://redmine.kingkit.codes/issues/7153)
 
 ## [1.3.1] - 2023-08-14
 
