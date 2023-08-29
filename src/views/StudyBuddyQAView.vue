@@ -133,9 +133,8 @@ const onReferenceMessage = (endMsg: string) => {
   var idxLink = 1;
   var keywordAmt = 0;
   for (var i in info) {
-    //console.log('reference:', info);
     var idx = parseInt(i);
-    var item = info[idx] as { score: number; content: string; url: string };
+    var item = info[idx] as { score: number; content: string; url: string; page: number };
     if (idx > 0 && item.score < 0.7) continue;
     var content = item.content.split('\n');
     var keyword = '';
@@ -147,6 +146,7 @@ const onReferenceMessage = (endMsg: string) => {
       ) {
         // 這邊可以處理 jieba
         keyword = content[line];
+        keyword = keyword.trim().split(' ')[0];
         break;
       }
     }
@@ -154,7 +154,7 @@ const onReferenceMessage = (endMsg: string) => {
     if (keyword != '') {
       var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
       keywordAmt++;
-      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}'); })())`;
+      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}','${item.page}'); })())`;
       links += `<div class="tooltip">
   <a href="#" onclick="${link}">${idxLink++}</a>
   <span class="tooltiptext">${linkInfo}</span>
