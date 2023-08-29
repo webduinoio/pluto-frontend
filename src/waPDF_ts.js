@@ -73,15 +73,15 @@ export default class PDF {
     await this.setViewport(val);
   }
 
-  async load_and_find(url, keyword) {
-    this.selectItem(this.b64ToUTF8(url.split('/books/docs/')[1]));
+  async load_and_find(url, keyword, page = 0) {
+    var selectItem = this.b64ToUTF8(url.split('/books/docs/')[1]);
+    this.selectItem(selectItem);
     var self = this;
     if (this.pdfUrl != url) {
       this.load(url, async function () {
-        await self.page(await self.mark(keyword), function () {});
+        await self.page(await self.mark(keyword, page), function () {});
         setTimeout(async function () {
-          var findPage = await self.mark(keyword);
-          //console.log(keyword + ':findPage...' + findPage);
+          var findPage = await self.mark(keyword, page);
           self.pdfDoc.nowPage = parseInt(findPage);
           self.vueCurrentPage.value = self.pdfDoc.nowPage;
           self.showMsg('find:[' + keyword + '],page:' + findPage);
@@ -165,7 +165,7 @@ export default class PDF {
     }
   }
 
-  async mark(markStr) {
+  async mark(markStr, page = 0) {
     if (markStr == null) return;
     this.clearMark();
     let verifyLength = markStr.length;
@@ -208,6 +208,7 @@ export default class PDF {
               findPage = parseInt(pageId.substring(5));
             }
             this.spanHighlightMap = _spanHighlightMap;
+            if (page != 0 && page != findPage) continue;
             //console.log(`add[1]:${idx}`, _spanHighlightMap);
             break outerLoop;
           }
