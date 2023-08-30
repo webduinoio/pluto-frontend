@@ -7,7 +7,7 @@ import { mdiAccountCircle, mdiChevronRight, mdiSchoolOutline } from '@mdi/js';
 const router = useRouter();
 const oauth = useOAuthStore();
 const logoText = ref(import.meta.env.VITE_LOGO_TEXT);
-const isPro = ref(oauth.plan?.name !== 'free');
+const isPro = ref(oauth.plan && oauth.plan.name !== 'free');
 const isHidePlanInformation = ref(import.meta.env.VITE_HIDE_PLAN_INFORMATION === 'true');
 
 const onClickPlan = () => {
