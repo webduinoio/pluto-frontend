@@ -93,6 +93,33 @@ const onTrain = async () => {
       if (typeof info != 'object') return;
       progressValue.value = info['progress'];
       debugLog('info:' + JSON.stringify(info));
+      var rtnCode = info['rtnCode'];
+      if (rtnCode < 0) {
+        switch (rtnCode) {
+          case -1:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: info['msg'],
+            });
+            break;
+          case -2:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: `檔案頁數超過上限`,
+            });
+            break;
+          case -3:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: `檔案大小超過上限`,
+            });
+            break;
+        }
+        await mqtt.disconnect();
+      }
       if (info['progress'] == 100) {
         set(training, false);
         await fire({
