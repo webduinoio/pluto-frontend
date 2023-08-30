@@ -31,7 +31,6 @@
             :max="totalPages"
             @keyup.enter="checkPageNumber"
             @blur="checkPageNumber"
-            @input="ensureNumeric"
           ></v-text-field>
         </span>
         <span style="width: 20px">/</span>
@@ -166,15 +165,14 @@ const nextPage = () => {
   });
 };
 
-const ensureNumeric = () => {
-  var cvt = parseInt('' + currentPage.value);
-  currentPage.value = Number.isNaN(cvt) ? pdf.nowPageNum : currentPage.value;
-};
-
 const checkPageNumber = () => {
   currentPage.value = parseInt('' + currentPage.value);
   if (currentPage.value < 1) currentPage.value = 1;
   if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
+
+  var cvt = parseInt('' + currentPage.value);
+  currentPage.value = Number.isNaN(cvt) ? pdf.nowPageNum : currentPage.value;
+
   pdf.page(currentPage.value, function (page: number) {
     currentPage.value = page;
   });
