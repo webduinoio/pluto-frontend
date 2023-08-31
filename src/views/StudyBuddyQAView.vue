@@ -271,7 +271,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
             hide-details="auto"
             color="secondary"
             v-model="hintSelect"
-          ></v-select>
+          >
+            <template v-slot:selection="{ item }">
+              <span class="text-truncate">
+                {{ item.title }}
+              </span>
+            </template>
+          </v-select>
         </v-form>
 
         <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
