@@ -65,7 +65,6 @@ const loadData = async () => {
 
     if (actor.recommends.length !== 0) {
       hintItems.value = actor.recommends.map((recommend) => {
-        // TODO: need to fix `title` too long condition
         return {
           title: recommend.name,
           value: recommend.name,
@@ -143,7 +142,6 @@ const onReferenceMessage = (endMsg: string) => {
   var idxLink = 1;
   var keywordAmt = 0;
   for (var i in info) {
-    //console.log('reference:', info);
     var idx = parseInt(i);
     var item = info[idx] as { score: number; content: string; url: string };
     if (idx > 0 && item.score < 0.7) continue;
