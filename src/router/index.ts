@@ -1,6 +1,6 @@
 import { Action, Permission, ROUTER_NAME } from '@/enums';
 import LayoutDefault from '@/layouts/default/Default.vue';
-import { getPermissions, getUser, getUserPlan, logout } from '@/services';
+import { getPermissions, getUser, getUserPlan } from '@/services';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import { useRouteStore } from '@/stores/route';
@@ -44,6 +44,11 @@ const router = createRouter({
           name: ROUTER_NAME.STUDY_BUDDY_GOOGLE_SHEET,
           component: () => import('@/views/StudyBuddyGoogleSheetView.vue'),
         },
+        {
+          path: 'notification-login',
+          name: ROUTER_NAME.NOTIFICATION_LOGIN,
+          component: () => import('@/views/NotificationLoginView.vue'),
+        }
       ],
     },
     {
@@ -77,6 +82,11 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
   const authorizer = useAuthorizerStore();
 
   try {
+    if (to.name === ROUTER_NAME.NOTIFICATION_LOGIN) {
+      next();
+      return;
+    }
+
     if (route.to !== null) {
       const path = route.to.path as string
       route.to = null;
@@ -108,8 +118,9 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
   } catch (error) {
     console.error(error);
     route.to = to;
-    logout();
-    next(false)
+    next({
+      name: ROUTER_NAME.NOTIFICATION_LOGIN,
+    });
   }
 });
 

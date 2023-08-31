@@ -33,8 +33,10 @@ const onClickResource = () => {
       inline
       @click="router.push({ name: ROUTER_NAME.HOME })"
     ></v-img>
-    <v-toolbar-title class="title clickable" @click="router.push({ name: ROUTER_NAME.HOME })">
-      伴學小書僮
+    <v-toolbar-title class="title">
+      <span style="cursor: pointer" @click="router.push({ name: ROUTER_NAME.HOME })"
+        >伴學小書僮</span
+      >
     </v-toolbar-title>
     <v-menu v-if="isHidePlanInformation" width="250px" open-on-hover open-on-click>
       <template v-slot:activator="{ props }">
@@ -155,9 +157,6 @@ const onClickResource = () => {
   font-size: 1.875rem !important;
   line-height: 2.25rem !important;
   font-weight: 800 !important;
-}
-.clickable {
-  cursor: pointer;
 }
 
 .logo {

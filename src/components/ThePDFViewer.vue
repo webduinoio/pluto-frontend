@@ -23,12 +23,15 @@
         <v-btn :icon="mdiChevronLeft" @click="prevPage"></v-btn>
         <span style="width: 70px; margin: 5px">
           <v-text-field
+            type="text"
             variant="outlined"
             density="compact"
             class="centered-input"
             v-model="currentPage"
             :max="totalPages"
             @keyup.enter="checkPageNumber"
+            @blur="checkPageNumber"
+            @input="ensureNumeric"
           ></v-text-field>
         </span>
         <span style="width: 20px">/</span>
@@ -106,15 +109,25 @@ watch(
 watch(
   () => selectedItem.value,
   (newValue, oldValue) => {
-    let hostname = MQTT_TOPIC.KN.replace('kn@chat', 'kn');
+    let hostname = '';
+    /* webduino rule
+      kn@chat          https://kn
+      kn@chat-staging  https://kn-staging
+      kn@aitsky        https://aitsky-kn
+    //*/
+    if (MQTT_TOPIC.KN.indexOf('@chat') > 0) {
+      hostname = MQTT_TOPIC.KN.replace('@chat', '').replace('@', '');
+    }
+    // other
+    else {
+      var _host = MQTT_TOPIC.KN.split('@');
+      hostname = _host[1] + '-' + _host[0];
+    }
     let pdfHost = 'https://' + hostname + '.nodered.vip/books/docs/' + newValue.value;
     pdf.load(pdfHost, function () {
       if (pdf.pdfDoc && typeof pdf.pdfDoc.numPages === 'number') {
         totalPages.value = pdf.pdfDoc.numPages;
       }
-      //else {
-      //  totalPages.value = 0; // or some other default/fallback value
-      //}
     });
   }
 );
@@ -153,11 +166,17 @@ const nextPage = () => {
   });
 };
 
+const ensureNumeric = () => {
+  var cvt = parseInt('' + currentPage.value);
+  currentPage.value = Number.isNaN(cvt) ? pdf.nowPageNum : currentPage.value;
+};
+
 const checkPageNumber = () => {
+  currentPage.value = parseInt('' + currentPage.value);
   if (currentPage.value < 1) currentPage.value = 1;
   if (currentPage.value > totalPages.value) currentPage.value = totalPages.value;
-  pdf.page(currentPage.value, function (pageNum: number) {
-    currentPage.value = pageNum;
+  pdf.page(currentPage.value, function (page: number) {
+    currentPage.value = page;
   });
 };
 

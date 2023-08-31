@@ -42,6 +42,7 @@ export enum ROUTER_NAME {
   STUDY_BUDDY_QA = 'StudyBuddyQA',
   STUDY_BUDDY_QUESTION = 'StudyBuddyQuestion',
   STUDY_BUDDY_GOOGLE_SHEET = 'StudyBuddyGoogleSheet',
+  NOTIFICATION_LOGIN = 'NotificationLogin',
 }
 
 export enum ERROR_CODE {
