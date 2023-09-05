@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 限制免費版、付費版檔案大小和頁數[#7098](https://redmine.kingkit.codes/issues/7098)
 - 後端自動將文件取摘要[#7116](https://redmine.kingkit.codes/issues/7116)
+- 小書僮支援 Infinity Scroll[#7180](https://redmine.kingkit.codes/issues/7180)
 
 ## [1.4.0] - 2023-08-28
 
