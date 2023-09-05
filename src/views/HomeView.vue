@@ -9,7 +9,7 @@ import { useNotificationStore } from '@/stores/notification';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
 import { mdiCheck, mdiClose, mdiPlus, mdiSchoolOutline } from '@mdi/js';
-import { set } from '@vueuse/core';
+import { get, set } from '@vueuse/core';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
@@ -20,16 +20,8 @@ const user = oauth.user;
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
+const dataLastIndex = ref(1);
 const dialog = ref(false);
-
-onMounted(async () => {
-  try {
-    const { data: value } = await getActors();
-    set(data, value.list || []);
-  } catch (err) {
-    console.error(err);
-  }
-});
 
 const onEdit = (data: Actor) => {
   router.push({
@@ -115,6 +107,36 @@ const onCreate = () => {
 const onClick = () => {
   window.open('https://store.webduino.io/products/ai-tutor', '_blank');
 };
+
+const loadActors = async () => {
+  try {
+    const { data: value } = await getActors({
+      lastIndex: get(dataLastIndex),
+    });
+    if (value.list) {
+      data.value.push(...value.list);
+      set(dataLastIndex, value.lastIndex);
+    }
+    return value;
+  } catch (err) {
+    console.error(err);
+    return { list: null };
+  }
+};
+
+const onLoad = async ({ done }: { done: Function }) => {
+  try {
+    const value = await loadActors();
+    if (value.list) {
+      done('ok');
+    } else {
+      done('empty');
+    }
+  } catch (err) {
+    console.error(err);
+    done('error');
+  }
+};
 </script>
 
 <template>
@@ -133,24 +155,32 @@ const onClick = () => {
       </div>
       <v-main>
         <v-container>
-          <v-row>
-            <TheActor
-              v-for="item in data"
-              :key="item.id"
-              height="380"
-              width="320"
-              class="ma-2 pa-2"
-              :data="item"
-              :can-edit="authorizer.canEdit"
-              :can-edit-all="authorizer.canEditAll"
-              :can-delete="authorizer.canDelete"
-              :can-delete-all="authorizer.canDeleteAll"
-              @edit="onEdit"
-              @open="onOpen"
-              @delete="onDelete"
-              @copy="onCopy"
-            />
-          </v-row>
+          <v-infinite-scroll
+            :items="data"
+            :onLoad="onLoad"
+            class="overflow-x-hidden"
+            empty-text="&nbsp;"
+            min-height="100"
+          >
+            <v-row>
+              <TheActor
+                v-for="item in data"
+                :key="item.id"
+                height="380"
+                width="310"
+                class="ma-2 pa-2"
+                :data="item"
+                :can-edit="authorizer.canEdit"
+                :can-edit-all="authorizer.canEditAll"
+                :can-delete="authorizer.canDelete"
+                :can-delete-all="authorizer.canDeleteAll"
+                @edit="onEdit"
+                @open="onOpen"
+                @delete="onDelete"
+                @copy="onCopy"
+              />
+            </v-row>
+          </v-infinite-scroll>
         </v-container>
       </v-main>
     </v-responsive>
