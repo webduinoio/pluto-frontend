@@ -5,6 +5,7 @@
 import type { ThemeDefinition } from 'vuetify';
 import { createVuetify } from 'vuetify';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
+import { VInfiniteScroll } from 'vuetify/labs/VInfiniteScroll';
 
 // Translations provided by Vuetify
 //  import { en } from 'vuetify/locale';
@@ -66,5 +67,8 @@ export default createVuetify({
     VBtn: {
       rounded: true,
     },
+  },
+  components: {
+    VInfiniteScroll,
   },
 });
