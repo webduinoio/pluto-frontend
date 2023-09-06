@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 後端自動將文件取摘要[#7116](https://redmine.kingkit.codes/issues/7116)
 - 小書僮支援 Infinity Scroll[#7180](https://redmine.kingkit.codes/issues/7180)
 
+### Changed
+
+- 小書僮微調 [#7208](https://redmine.kingkit.codes/issues/7208)
+
 ## [1.4.0] - 2023-08-28
 
 ### Fixed
