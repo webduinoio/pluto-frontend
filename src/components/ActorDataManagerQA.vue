@@ -7,6 +7,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getDatasets, trainActor, validateUrl } from '@/services';
 import { deleteDataset } from '@/services/dataset';
+import { useOAuthStore } from '@/stores/oauth';
 import type { Actor, Dataset, Response } from '@/types';
 import { mdiMagnify, mdiPencil, mdiTrashCan } from '@mdi/js';
 import { get, set } from '@vueuse/core';
@@ -28,6 +29,7 @@ const datasets = ref<Dataset[]>([]);
 const search = ref('');
 const loading = ref(false);
 const progressValue = ref(0);
+const oauth = useOAuthStore();
 // debug setup
 const debugMsg = ref(true);
 
@@ -93,6 +95,33 @@ const onTrain = async () => {
       if (typeof info != 'object') return;
       progressValue.value = info['progress'];
       debugLog('info:' + JSON.stringify(info));
+      var rtnCode = info['rtnCode'];
+      if (rtnCode < 0) {
+        switch (rtnCode) {
+          case -1:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: info['msg'],
+            });
+            break;
+          case -2:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: `檔案頁數超過上限`,
+            });
+            break;
+          case -3:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: `檔案大小超過上限`,
+            });
+            break;
+        }
+        await mqtt.disconnect();
+      }
       if (info['progress'] == 100) {
         set(training, false);
         await fire({
@@ -137,9 +166,9 @@ const onTrain = async () => {
       if (data.code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
         message = '資料夾權限未分享';
       } else if (data.code === ERROR_CODE.TOO_LARGE_ERROR) {
-        message = '單一檔案超過 20 MB';
+        message = `單一檔案超過 ${oauth.plan?.maxFileSize} MB`;
       } else if (data.code === ERROR_CODE.TOO_MANY_FILES_ERROR) {
-        message = '檔案數量不能超過 5 個';
+        message = `檔案數量不能超過 ${oauth.plan?.fileQuota} 個`;
       } else {
         message = '伺服器發生錯誤，請詢問管理員進行處理。';
       }

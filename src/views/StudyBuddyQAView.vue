@@ -63,6 +63,15 @@ const loadData = async () => {
     const { data: actor }: { data: Actor } = await getActor(Number(get(actorOpenID)));
     set(actorData, actor);
 
+    if (actor.recommends.length !== 0) {
+      hintItems.value = actor.recommends.map((recommend) => {
+        return {
+          title: recommend.name,
+          value: recommend.name,
+        };
+      });
+    }
+
     const {
       data: { data },
     } = await getActorDocuments(actor.id);
@@ -133,9 +142,8 @@ const onReferenceMessage = (endMsg: string) => {
   var idxLink = 1;
   var keywordAmt = 0;
   for (var i in info) {
-    //console.log('reference:', info);
     var idx = parseInt(i);
-    var item = info[idx] as { score: number; content: string; url: string };
+    var item = info[idx] as { score: number; content: string; url: string; page: number };
     if (idx > 0 && item.score < 0.7) continue;
     var content = item.content.split('\n');
     var keyword = '';
@@ -147,6 +155,7 @@ const onReferenceMessage = (endMsg: string) => {
       ) {
         // 這邊可以處理 jieba
         keyword = content[line];
+        keyword = keyword.trim().split(' ')[0];
         break;
       }
     }
@@ -154,7 +163,7 @@ const onReferenceMessage = (endMsg: string) => {
     if (keyword != '') {
       var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
       keywordAmt++;
-      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}'); })())`;
+      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}','${item.page}'); })())`;
       links += `<div class="tooltip">
   <a href="#" onclick="${link}">${idxLink++}</a>
   <span class="tooltiptext">${linkInfo}</span>
@@ -261,7 +270,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
             hide-details="auto"
             color="secondary"
             v-model="hintSelect"
-          ></v-select>
+          >
+            <template v-slot:selection="{ item }">
+              <span class="text-truncate">
+                {{ item.title }}
+              </span>
+            </template>
+          </v-select>
         </v-form>
 
         <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">

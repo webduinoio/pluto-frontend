@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.5.0] - 2023-09-06
+
+### Fixed
+
+- 小書僮回答和引用資料不符（張震嶽）[#7156](https://redmine.kingkit.codes/issues/7156)
+- 引用標籤無法點擊[#7159](https://redmine.kingkit.codes/issues/7159)
+- PDF 字型找不到[#7172](https://redmine.kingkit.codes/issues/7172)
+- 點擊引用標籤文件沒有滾到指定段落[#7178](https://redmine.kingkit.codes/issues/7178)
+- PDF Viewer 無法輸入頁數[#7194](https://redmine.kingkit.codes/issues/7194)
+
+### Added
+
+- 限制免費版、付費版檔案大小和頁數[#7098](https://redmine.kingkit.codes/issues/7098)
+- 後端自動將文件取摘要[#7116](https://redmine.kingkit.codes/issues/7116)
+- 小書僮支援 Infinity Scroll[#7180](https://redmine.kingkit.codes/issues/7180)
+
+### Changed
+
+- 小書僮微調 [#7208](https://redmine.kingkit.codes/issues/7208)
+
 ## [1.4.0] - 2023-08-28
 
 ### Fixed
@@ -16,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 小書僮帳號角色區隔 [#7007](https://redmine.kingkit.codes/issues/7007)
 - 小書僮免費、付費版機制 [#7091](https://redmine.kingkit.codes/issues/7091)
+- 自動將文件取摘要前端實作 [#7117](https://redmine.kingkit.codes/issues/7117)
 - 小書僮登入流程優化 [#7118](https://redmine.kingkit.codes/issues/7118)
 - 小書僮埋設 GTM 代碼 [#7153](https://redmine.kingkit.codes/issues/7153)
 
@@ -93,7 +114,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.2.0...v1.3.0

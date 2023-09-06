@@ -67,6 +67,10 @@ const router = createRouter({
           path: 'mqtt',
           component: () => import('@/testViews/MqttView.vue'),
         },
+        {
+          path: 'infinite-scroller',
+          component: () => import('@/testViews/InfiniteScrollerView.vue'),
+        },
       ],
     },
     {

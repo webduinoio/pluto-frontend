@@ -73,26 +73,26 @@ export default class PDF {
     await this.setViewport(val);
   }
 
-  async load_and_find(url, keyword) {
-    this.selectItem(this.b64ToUTF8(url.split('/books/docs/')[1]));
+  async load_and_find(url, keyword, page = 0) {
+    var selectItem = this.b64ToUTF8(url.split('/books/docs/')[1]);
+    this.selectItem(selectItem);
     var self = this;
     if (this.pdfUrl != url) {
       this.load(url, async function () {
-        await self.page(await self.mark(keyword), function () {});
-        setTimeout(async function () {
-          var findPage = await self.mark(keyword);
-          //console.log(keyword + ':findPage...' + findPage);
-          self.pdfDoc.nowPage = parseInt(findPage);
+        var findPage = await self.mark(keyword, page);
+        //await self.page(findPage, function () {});
+        //setTimeout(async function () {
+        self.pdfDoc.nowPage = parseInt(findPage);
+        self.vueCurrentPage.value = self.pdfDoc.nowPage;
+        self.showMsg('find:[' + keyword + '],page:' + findPage);
+        await self.page(findPage, function () {
           self.vueCurrentPage.value = self.pdfDoc.nowPage;
-          self.showMsg('find:[' + keyword + '],page:' + findPage);
-          await self.page(findPage, function () {
-            self.vueCurrentPage.value = self.pdfDoc.nowPage;
-            self.vueTotalPages.vaue = self.pdfDoc.numPages;
-          });
-        }, 0);
+          self.vueTotalPages.vaue = self.pdfDoc.numPages;
+        });
+        //}, 0);
       });
     } else {
-      var findPage = await self.mark(keyword);
+      var findPage = await self.mark(keyword, page);
       if (findPage != '') {
         findPage = parseInt(findPage);
         self.vueCurrentPage.value = findPage;
@@ -165,7 +165,7 @@ export default class PDF {
     }
   }
 
-  async mark(markStr) {
+  async mark(markStr, page = 0) {
     if (markStr == null) return;
     this.clearMark();
     let verifyLength = markStr.length;
@@ -208,6 +208,7 @@ export default class PDF {
               findPage = parseInt(pageId.substring(5));
             }
             this.spanHighlightMap = _spanHighlightMap;
+            if (page != 0 && page != findPage) continue;
             //console.log(`add[1]:${idx}`, _spanHighlightMap);
             break outerLoop;
           }
@@ -223,6 +224,7 @@ export default class PDF {
       }
     }
     // highlight
+    var scrollEle = null;
     for (var spanIdx in this.spanHighlightMap) {
       var cnt = elements[spanIdx].innerHTML;
       var replaceStr = cnt.substring(
@@ -232,9 +234,41 @@ export default class PDF {
       var highlightStr = `<span class='pdfContainer-mark'>${replaceStr}</span>`;
       cnt = cnt.replace(replaceStr, highlightStr);
       elements[spanIdx].innerHTML = cnt;
-      elements[spanIdx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (scrollEle == null) {
+        scrollEle = elements[spanIdx];
+      }
     }
+    //tunning..
+    setTimeout(function () {
+      //console.log('2:');
+      scrollEle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      /*
+      self.onScrollEnd(scrollEle, function () {
+        scrollEle.parentElement.parentElement.parentElement.scrollTop -= 10;
+      });
+      //*/
+    }, 500);
     return findPage;
+  }
+
+  onScrollEnd(element, callback) {
+    let lastScrollTop;
+    let unchangedFrames = 0;
+    const requiredUnchangedFrames = 60;
+    const checkScrollEnd = () => {
+      if (lastScrollTop === element.scrollTop) {
+        unchangedFrames++;
+        if (unchangedFrames >= requiredUnchangedFrames) {
+          callback();
+          return;
+        }
+      } else {
+        unchangedFrames = 0;
+        lastScrollTop = element.scrollTop;
+      }
+      requestAnimationFrame(checkScrollEnd);
+    };
+    requestAnimationFrame(checkScrollEnd);
   }
 
   clearMark() {
@@ -281,10 +315,14 @@ export default class PDF {
       return;
     }
     self.nowPageNum = parseInt(pageNum);
-    setTimeout(function () {
-      pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    self.paging = true;
+    //console.log('1:');
+    pageDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.onScrollEnd(pageDiv, function () {
+      //console.log('1:OK');
+      self.paging = false;
       callback(self.nowPageNum);
-    }, 10);
+    });
   }
 
   loadingEffect(show) {
