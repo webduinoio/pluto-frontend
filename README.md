@@ -15,6 +15,7 @@
   - [部署更新時間](#部署更新時間)
   - [VSCode](#vscode)
   - [Type Support for `.vue` Imports in TS](#type-support-for-vue-imports-in-ts)
+  - [開發分之說明](#開發分之說明)
 
 ## 環境需求
 
@@ -92,3 +93,14 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
     1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
     2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
 2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+
+## 開發分之說明
+
+| 名稱    | 用途              |
+| ------- | ----------------- |
+| develop | 思維工具測試機    |
+| main    | 思維工具正式機    |
+| aitsky  | 思維工具台天版    |
+| egame   | 思維工具 Egame 版 |
+| next    | 小書僮測試機      |
+| tutor   | 小書僮正式機      |

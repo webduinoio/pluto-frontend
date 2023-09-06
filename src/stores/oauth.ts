@@ -11,7 +11,7 @@ export const useOAuthStore = defineStore('user', () => {
 
     if (plan.value !== null) {
       const remindMilliseconds = (plan.value.createdAt + (plan.value.subscription ? plan.value.subscription.period : 0)) - now;
-      return Math.floor(remindMilliseconds / 24 / 60 / 60 / 1000);
+      return Math.ceil(remindMilliseconds / 24 / 60 / 60 / 1000);
     }
     return 0;
   }
