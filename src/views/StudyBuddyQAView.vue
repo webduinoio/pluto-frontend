@@ -11,6 +11,7 @@ function utf8ToB64(str: string) {
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
+import { getCookie } from '@/hooks/useCookie';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
@@ -45,6 +46,7 @@ const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
+const textarea = ref<HTMLTextAreaElement>();
 const hintSelect = ref('');
 const hintItems = ref([
   { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
@@ -110,7 +112,13 @@ const onSubmit = () => {
 
   set(mqttLoading, true);
   set(uid, '');
-  mqtt.publish(`${get(actorData)?.uuid}:${get(prompt)}`);
+  mqtt.publish(
+    JSON.stringify({
+      token: getCookie('oauth_access_token'),
+      actorId: get(actorData)?.uuid,
+      payload: get(prompt),
+    })
+  );
   actors.value.push({
     type: 'user',
     messages: [get(prompt)],
@@ -179,10 +187,13 @@ onMounted(async () => {
   pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
     set(prompt, ask);
   });
+
+  textarea.value && textarea.value.focus();
 });
 
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
+  textarea.value && textarea.value.focus(); // XXX: not working, but I don't know why
 });
 
 watch(hintSelect, (val) => {
@@ -247,7 +258,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <v-card-item>
             <v-row fluid>
               <v-col cols="auto" class="image-container">
-                <img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
+                <v-img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
               </v-col>
               <v-col>
                 <v-card-subtitle>問答小書僮</v-card-subtitle>
@@ -316,6 +327,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-divider class="mt-2"></v-divider>
 
         <v-textarea
+          ref="textarea"
           class="mt-2 mx-7 flex-grow-0"
           rows="3"
           no-resize
