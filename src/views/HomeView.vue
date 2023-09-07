@@ -180,6 +180,7 @@ const onLoad = async ({ done }: { done: Function }) => {
                 @copy="onCopy"
               />
             </v-row>
+            <template v-slot:empty> <span class="mt-5">已經到底了喔！</span> </template>
           </v-infinite-scroll>
         </v-container>
       </v-main>
