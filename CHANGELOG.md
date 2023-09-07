@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- 小書僮清單重複 [#7211](https://redmine.kingkit.codes/issues/7211)
+
 ### Changed
 
 - 串接後端來限制免費版、付費版每日可用問題數 [#7134](https://redmine.kingkit.codes/issues/7134)
