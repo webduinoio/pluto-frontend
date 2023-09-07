@@ -11,6 +11,7 @@ function utf8ToB64(str: string) {
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
+import { getCookie } from '@/hooks/useCookie';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
@@ -110,7 +111,13 @@ const onSubmit = () => {
 
   set(mqttLoading, true);
   set(uid, '');
-  mqtt.publish(`${get(actorData)?.uuid}:${get(prompt)}`);
+  mqtt.publish(
+    JSON.stringify({
+      token: getCookie('oauth_access_token'),
+      actorId: get(actorData)?.uuid,
+      payload: get(prompt),
+    })
+  );
   actors.value.push({
     type: 'user',
     messages: [get(prompt)],
