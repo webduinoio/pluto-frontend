@@ -254,7 +254,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           <v-card-item>
             <v-row fluid>
               <v-col cols="auto" class="image-container">
-                <img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
+                <v-img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
               </v-col>
               <v-col>
                 <v-card-subtitle>問答小書僮</v-card-subtitle>
