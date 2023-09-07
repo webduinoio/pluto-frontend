@@ -46,6 +46,7 @@ const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
+const textarea = ref<HTMLTextAreaElement>();
 const hintSelect = ref('');
 const hintItems = ref([
   { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
@@ -186,10 +187,13 @@ onMounted(async () => {
   pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
     set(prompt, ask);
   });
+
+  textarea.value && textarea.value.focus();
 });
 
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
+  textarea.value && textarea.value.focus(); // XXX: not working, but I don't know why
 });
 
 watch(hintSelect, (val) => {
@@ -323,6 +327,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
         <v-divider class="mt-2"></v-divider>
 
         <v-textarea
+          ref="textarea"
           class="mt-2 mx-7 flex-grow-0"
           rows="3"
           no-resize
