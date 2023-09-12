@@ -2,7 +2,7 @@
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { generateMqttUserId } from '@/hooks/useUtil';
-import { createActor } from '@/services';
+import { createActor, deleteActor } from '@/services';
 import axios from 'axios';
 import { useField, useForm } from 'vee-validate';
 import { ref } from 'vue';
@@ -35,10 +35,12 @@ const isSubmitting = ref(false); // 用於追蹤是否正在提交
 
 const onSubmit = handleSubmit(async (values) => {
   isSubmitting.value = true; // 按下按鈕開始提交
+  let actorID: number = 0;
   try {
     loadingDialog.value = true;
     let resp = await createActor(values);
     const actorUUID = resp['data']['data']['uuid'];
+    actorID = resp.data.data.id;
     await mqtt.connect();
     const actorTrainResp = MQTT_TOPIC.PROC + '/' + actorUUID;
     mqtt.subscribe(actorTrainResp, async function (msg) {
@@ -63,6 +65,7 @@ const onSubmit = handleSubmit(async (values) => {
             break;
         }
         await mqtt.disconnect();
+        await deleteActor(actorID);
         router.push({ name: ROUTER_NAME.HOME });
       }
       if (progressValue.value >= 100) {
@@ -71,7 +74,7 @@ const onSubmit = handleSubmit(async (values) => {
         setTimeout(() => {
           loadingDialog.value = false;
           progressValue.value = 0;
-          router.push({ name: ROUTER_NAME.HOME });
+          router.push({ name: ROUTER_NAME.STUDY_BUDDY_QA, params: { id: actorID } });
           isSubmitting.value = false; // 重置提交狀態
         }, 2000);
       }

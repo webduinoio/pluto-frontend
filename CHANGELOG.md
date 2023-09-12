@@ -6,11 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.6.0] - 2023.09.12
+
 ### Changed
 
 - 串接後端來限制免費版、付費版每日可用問題數 [#7134](https://redmine.kingkit.codes/issues/7134)
+- 小書僮 UI UX 調整 [#7213](https://redmine.kingkit.codes/issues/7213)
 
-## [v1.5.1] - 2023.09.07
+## [1.5.1] - 2023.09.07
 
 ### Fixed
 
@@ -124,7 +127,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.0...v1.5.1
+[1.5.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.3.0...v1.3.1

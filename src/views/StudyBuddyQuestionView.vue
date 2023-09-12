@@ -38,7 +38,7 @@ const ROLE_TYPE = {
   AI: 'ai',
 };
 let _promptTemp: String = '';
-const hintSelect = ref('');
+const hintSelect = ref(null);
 const hintItems = ref([
   { title: '按學生年級出題', value: '按照[年級]學生的程度出題' },
   {
@@ -289,7 +289,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
         <v-form class="ma-4">
           <v-select
-            label="沒靈感嗎？點我選擇範例提示詞"
+            label="沒靈感嗎？點我使用 AI 推薦提問"
             :items="hintItems"
             item-title="title"
             item-value="value"

@@ -10,6 +10,7 @@ import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
 import { mdiCheck, mdiClose, mdiPlus, mdiSchoolOutline } from '@mdi/js';
 import { get, set } from '@vueuse/core';
+import { onActivated, onDeactivated } from 'vue';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
@@ -22,6 +23,23 @@ const user = oauth.user;
 const data = ref<Actor[]>([]);
 const dataLastIndex = ref(1);
 const dialog = ref(false);
+const scrollPosition = ref(0);
+
+onActivated(() => {
+  window.addEventListener('scroll', handleScroll);
+  window.scrollTo({
+    top: scrollPosition.value,
+    behavior: 'auto',
+  });
+});
+
+onDeactivated(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+const handleScroll = () => {
+  set(scrollPosition, window.scrollY);
+};
 
 const onEdit = (data: Actor) => {
   router.push({
