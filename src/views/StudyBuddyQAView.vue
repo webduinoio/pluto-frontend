@@ -295,7 +295,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
         <v-form class="ma-4">
           <v-select
-            label="沒靈感嗎？點我選擇範例提示詞"
+            label="沒靈感嗎？點我使用 AI 推薦提問"
             :items="hintItems"
             item-title="title"
             item-value="value"
