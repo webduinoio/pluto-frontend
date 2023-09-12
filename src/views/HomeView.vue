@@ -29,7 +29,7 @@ onActivated(() => {
   window.addEventListener('scroll', handleScroll);
   window.scrollTo({
     top: scrollPosition.value,
-    behavior: 'instant',
+    behavior: 'auto',
   });
 });
 
