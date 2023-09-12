@@ -16,6 +16,8 @@ import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor, getActorDocuments } from '@/services';
+import { useAuthorizerStore } from '@/stores/authorizer';
+import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
 import { mdiAccountBox, mdiChevronRightBox } from '@mdi/js';
 import { get, set } from '@vueuse/core';
@@ -47,7 +49,7 @@ const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
 const textarea = ref<HTMLTextAreaElement>();
-const hintSelect = ref('');
+const hintSelect = ref(null);
 const hintItems = ref([
   { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
   {
@@ -58,6 +60,9 @@ const hintItems = ref([
 ]);
 let _promptTemp: String = '';
 let respMsg: string[] = [];
+const authorizer = useAuthorizerStore();
+const oauth = useOAuthStore();
+const user = oauth.user;
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -191,6 +196,16 @@ onMounted(async () => {
   textarea.value && textarea.value.focus();
 });
 
+const onEdit = () => {
+  window.open(
+    router.resolve({
+      name: ROUTER_NAME.ACTOR_EDIT,
+      params: { id: actorData.value?.id },
+    }).href,
+    '_blank'
+  );
+};
+
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
   textarea.value && textarea.value.focus(); // XXX: not working, but I don't know why
@@ -263,6 +278,14 @@ mqtt.init((msg: string, isEnd: boolean) => {
               <v-col>
                 <v-card-subtitle>問答小書僮</v-card-subtitle>
                 <v-card-title>{{ actorData?.name }}</v-card-title>
+              </v-col>
+              <v-col
+                v-if="
+                  actorData?.createdBy === user?.id ? authorizer.canEdit : authorizer.canEditAll
+                "
+                class="d-flex align-start justify-end"
+              >
+                <v-btn variant="text" color="primary" @click="onEdit">編輯</v-btn>
               </v-col>
             </v-row>
           </v-card-item>

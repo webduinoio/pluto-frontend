@@ -5,7 +5,11 @@ import TheNotification from '@/components/TheNotification.vue';
 
 <template>
   <v-main>
-    <router-view />
+    <router-view v-slot="{ Component }">
+      <KeepAlive include="HomeView">
+        <component :is="Component"></component>
+      </KeepAlive>
+    </router-view>
     <TheNotification />
   </v-main>
 </template>

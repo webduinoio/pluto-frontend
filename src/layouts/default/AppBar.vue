@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+// imported as URLs using the `?url` suffix, more info: https://github.com/jpkleemans/vite-svg-loader#import-params
+import Logo from '@/assets/logo.svg?url';
 import { ROUTER_NAME } from '@/enums';
 import { logout } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
@@ -18,6 +20,9 @@ const onClickPlan = () => {
 const onClickResource = () => {
   window.open('https://resource.webduino.io/docs/webduino-aitutor/handbook', '_blank');
 };
+const onClickIntroduce = () => {
+  window.open('https://store.webduino.io/products/ai-tutor', '_blank');
+};
 // const onClickTheme = () => {};
 // const onClickLocation = () => {};
 </script>
@@ -28,16 +33,12 @@ const onClickResource = () => {
     <v-img
       v-else
       class="logo"
-      src="@/assets/logo.webp"
+      :src="Logo"
       :height="48"
       inline
       @click="router.push({ name: ROUTER_NAME.HOME })"
     ></v-img>
-    <v-toolbar-title class="title">
-      <span style="cursor: pointer" @click="router.push({ name: ROUTER_NAME.HOME })"
-        >伴學小書僮</span
-      >
-    </v-toolbar-title>
+    <v-spacer></v-spacer>
     <v-menu v-if="isHidePlanInformation" width="250px" open-on-hover open-on-click>
       <template v-slot:activator="{ props }">
         <v-btn icon v-bind="props">
@@ -132,6 +133,7 @@ const onClickResource = () => {
               <v-icon class="ml-1" :icon="mdiChevronRight"></v-icon>
             </template>
           </v-list-item>
+          <v-list-item class="mx-1" title="方案介紹" @click="onClickIntroduce"> </v-list-item>
           <v-list-item class="mx-1" title="學習資源" @click="onClickResource"> </v-list-item>
           <!-- <v-list-item class="mx-1" title="深色模式" @click="onClickTheme"> </v-list-item>
           <v-list-item
@@ -152,13 +154,6 @@ const onClickResource = () => {
 </template>
 
 <style lang="scss" scoped>
-.title {
-  color: #fff;
-  font-size: 1.875rem !important;
-  line-height: 2.25rem !important;
-  font-weight: 800 !important;
-}
-
 .logo {
   cursor: pointer;
 }
