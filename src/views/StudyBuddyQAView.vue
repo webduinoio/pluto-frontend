@@ -47,7 +47,7 @@ const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
 const textarea = ref<HTMLTextAreaElement>();
-const hintSelect = ref('');
+const hintSelect = ref(null);
 const hintItems = ref([
   { title: '條列重點', value: '用條列式列出[知識1]、[知識2]、[知識3]的重點。' },
   {

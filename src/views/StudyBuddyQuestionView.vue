@@ -38,7 +38,7 @@ const ROLE_TYPE = {
   AI: 'ai',
 };
 let _promptTemp: String = '';
-const hintSelect = ref('');
+const hintSelect = ref(null);
 const hintItems = ref([
   { title: '按學生年級出題', value: '按照[年級]學生的程度出題' },
   {
