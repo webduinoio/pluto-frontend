@@ -43,7 +43,7 @@ export function createActor(data: ServiceActor) {
  * @param options
  */
 export function getActors(options?: {
-  lastIndex?: number;
+  lastIndex?: string;
   count?: number;
   orderBy?: string | string[] | undefined;
   orderDirection?: string;
@@ -53,10 +53,8 @@ export function getActors(options?: {
   const config = {
     method: 'get',
     params: {
-      lastIndex: lastIndex || 1,
+      lastIndex: lastIndex || '',
       count: count || 30,
-      orderBy: 'id',
-      orderDirection: 'ASC',
     } as Record<string, string | number>,
   };
   if (orderBy !== undefined) config.params.orderBy = orderBy.toString();

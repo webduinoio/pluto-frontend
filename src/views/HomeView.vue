@@ -21,7 +21,7 @@ const user = oauth.user;
 
 // TODO: 待調整
 const data = ref<Actor[]>([]);
-const dataLastIndex = ref(1);
+const dataLastIndex = ref('');
 const dialog = ref(false);
 const scrollPosition = ref(0);
 
