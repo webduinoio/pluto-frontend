@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- 小書僮清單分類、搜尋 [#7175](https://redmine.kingkit.codes/issues/7175)
+
 ## [1.6.0] - 2023.09.12
 
 ### Changed
