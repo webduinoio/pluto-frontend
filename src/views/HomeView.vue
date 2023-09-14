@@ -4,6 +4,7 @@ import { NOTIFICATION_TIMEOUT } from '@/config';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { deleteActor, getActors, toggleShareActor } from '@/services';
+import { useActorStore } from '@/stores/actor';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useNotificationStore } from '@/stores/notification';
 import { useOAuthStore } from '@/stores/oauth';
@@ -16,6 +17,7 @@ const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
 const notification = useNotificationStore();
 const oauth = useOAuthStore();
+const actorStore = useActorStore();
 const authorizer = useAuthorizerStore();
 const user = oauth.user;
 
@@ -27,14 +29,21 @@ const scrollPosition = ref(0);
 
 onActivated(() => {
   window.addEventListener('scroll', handleScroll);
-  window.scrollTo({
-    top: scrollPosition.value,
-    behavior: 'auto',
-  });
+
+  if (actorStore.refreshActors) {
+    set(data, []);
+    set(dataLastIndex, '');
+  } else {
+    window.scrollTo({
+      top: scrollPosition.value,
+      behavior: 'auto',
+    });
+  }
 });
 
 onDeactivated(() => {
   window.removeEventListener('scroll', handleScroll);
+  actorStore.refreshActors = false;
 });
 
 const handleScroll = () => {
