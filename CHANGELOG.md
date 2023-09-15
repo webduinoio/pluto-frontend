@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - 小書僮清單分類、搜尋 [#7175](https://redmine.kingkit.codes/issues/7175)
+- 保存 UTM 參數 [#7232](https://redmine.kingkit.codes/issues/7232)
 
 ## [1.6.0] - 2023.09.12
 

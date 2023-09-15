@@ -92,9 +92,9 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
     }
 
     if (route.to !== null) {
-      const path = route.to.path as string
+      const location = route.to
       route.to = null;
-      next({ path: path });
+      next(location);
       return;
     }
 
