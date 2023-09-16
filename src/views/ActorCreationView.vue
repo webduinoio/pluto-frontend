@@ -3,10 +3,12 @@ import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { createActor, deleteActor } from '@/services';
+import { useActorStore } from '@/stores/actor';
 import axios from 'axios';
 import { useField, useForm } from 'vee-validate';
 import { ref } from 'vue';
 
+const actorStore = useActorStore();
 const mqtt = useMqtt(generateMqttUserId(), '');
 const router = useRouter();
 const { resetForm, handleSubmit } = useForm({
@@ -74,6 +76,7 @@ const onSubmit = handleSubmit(async (values) => {
         setTimeout(() => {
           loadingDialog.value = false;
           progressValue.value = 0;
+          actorStore.refreshActors = true;
           router.push({ name: ROUTER_NAME.STUDY_BUDDY_QA, params: { id: actorID } });
           isSubmitting.value = false; // 重置提交狀態
         }, 2000);
