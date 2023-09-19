@@ -38,6 +38,7 @@ npm install
 npm run dev
 
 # 打開網址 https://localhost.webduino.io
+# 跳回登入頁，登入後，請再手動將網址改成 https://localhost.webduino.io
 ```
 
 ### 打包
