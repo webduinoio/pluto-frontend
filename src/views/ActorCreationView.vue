@@ -128,10 +128,14 @@ const onSubmit = handleSubmit(async (values) => {
             bg-color="white"
             :error-messages="url.errorMessage.value"
           ></v-text-field>
-          <div class="mt-16 d-flex justify-center">
-            <v-btn type="submit" color="primary" size="large" :disabled="isSubmitting"
-              >開始訓練</v-btn
-            >
+
+          <p class="mt-8 text-caption d-flex justify-center custom-text">
+            請確保上傳的資料不涉及個人隱私或違反智慧財產權，平台保留管理及刪除資料的權利
+          </p>
+          <div class="mt-6 d-flex justify-center">
+            <v-btn type="submit" color="primary" size="large" :disabled="isSubmitting">
+              開始訓練
+            </v-btn>
           </div>
         </v-form>
       </v-sheet>
@@ -159,4 +163,10 @@ const onSubmit = handleSubmit(async (values) => {
   </v-container>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.custom-text {
+  white-space: nowrap;
+  text-align: center;
+  color: #6d6d6d;
+}
+</style>
