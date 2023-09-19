@@ -211,6 +211,39 @@ const onLoad = async ({ done }: { done: Function }) => {
           </v-infinite-scroll>
         </v-container>
       </v-main>
+      <v-footer class="justify-center custom-footer mt-16 text-h6">
+        <a
+          href="https://webduino.io/"
+          target="_blank"
+          class="text-decoration-underline custom-color"
+        >
+          Webduino
+        </a>
+        <span class="mx-1 custom-color">·</span>
+        <a
+          href="https://account.webduino.io/privacy"
+          target="_blank"
+          class="text-decoration-underline custom-color"
+        >
+          Policy
+        </a>
+        <span class="mx-1 custom-color">·</span>
+        <a
+          href="https://www.facebook.com/webduino"
+          target="_blank"
+          class="text-decoration-underline custom-color"
+        >
+          Facebook
+        </a>
+        <span class="mx-1 custom-color">·</span>
+        <a
+          href="https://www.youtube.com/channel/UCUk3U7QZqijQfE-7rAh_INQ"
+          target="_blank"
+          class="text-decoration-underline custom-color"
+        >
+          Youtube
+        </a>
+      </v-footer>
     </v-responsive>
   </v-container>
   <v-dialog v-model="dialog" max-width="729px">
@@ -360,5 +393,13 @@ const onLoad = async ({ done }: { done: Function }) => {
 <style>
 .v-overlay-scroll-blocked {
   padding-inline-end: 0;
+}
+
+.custom-footer {
+  background-color: unset !important;
+}
+
+.custom-color {
+  color: #938f99;
 }
 </style>
