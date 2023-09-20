@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 小書僮 meta data [#7203](https://redmine.kingkit.codes/issues/7203)
 - 增加智財權提醒文字 [#7209](https://redmine.kingkit.codes/issues/7209)
 
+### Changed
+
+- 修改檔案上限的提示文字 [#7244](https://redmine.kingkit.codes/issues/7244)
+
 ## [1.7.0] - 2023.09.16
 
 ### Changed
