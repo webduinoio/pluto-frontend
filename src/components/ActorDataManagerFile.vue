@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { NOTIFICATION_TIMEOUT } from '@/config';
-import { ERROR_CODE, MQTT_TOPIC } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC, RETURN_CODE_FROM_MQTT } from '@/enums';
+import { useMessage } from '@/hooks/useMessage';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
@@ -22,6 +23,7 @@ const props = withDefaults(
 );
 
 const { fire } = useSweetAlert();
+const { getErrorMessageForMqtt } = useMessage();
 const training = ref(false);
 const showDocument = ref(import.meta.env.VITE_HIDE_TRAINING_DOCUMENT !== 'true');
 const oauth = useOAuthStore();
@@ -52,25 +54,19 @@ const onTrain = async () => {
       debugLog('info:' + JSON.stringify(info));
       if (rtnCode < 0) {
         switch (rtnCode) {
-          case -1:
+          case RETURN_CODE_FROM_MQTT.ERROR:
             await fire({
               title: '發生錯誤',
               icon: 'error',
               text: info['msg'],
             });
             break;
-          case -2:
+          case RETURN_CODE_FROM_MQTT.TOO_MANY_PAGES_ERROR:
+          case RETURN_CODE_FROM_MQTT.FILE_TOO_LARGE_ERROR:
             await fire({
               title: '發生錯誤',
               icon: 'error',
-              text: `檔案頁數超過上限`,
-            });
-            break;
-          case -3:
-            await fire({
-              title: '發生錯誤',
-              icon: 'error',
-              text: `檔案大小超過上限`,
+              text: getErrorMessageForMqtt(rtnCode),
             });
             break;
         }

@@ -60,6 +60,12 @@ export enum ERROR_CODE {
   TOO_MANY_ACTOR_ERROR = 11,
 }
 
+export enum RETURN_CODE_FROM_MQTT {
+  ERROR = -1,
+  TOO_MANY_PAGES_ERROR = -2,
+  FILE_TOO_LARGE_ERROR = -3,
+}
+
 // export enum MARKDOWN_TYPE {
 //   NONE = 'none',
 //   MARKDOWN = 'markdown',
