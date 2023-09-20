@@ -227,7 +227,7 @@ const onLoad = async ({ done }: { done: Function }) => {
           target="_blank"
           class="custom-footer-text"
         >
-          Youtube
+          YouTube
         </a>
       </v-footer>
     </v-responsive>
