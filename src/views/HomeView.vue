@@ -212,34 +212,20 @@ const onLoad = async ({ done }: { done: Function }) => {
         </v-container>
       </v-main>
       <v-footer class="justify-center custom-footer mt-16 text-h6">
-        <a
-          href="https://webduino.io/"
-          target="_blank"
-          class="text-decoration-underline custom-color"
-        >
-          Webduino
-        </a>
-        <span class="mx-1 custom-color">·</span>
-        <a
-          href="https://account.webduino.io/privacy"
-          target="_blank"
-          class="text-decoration-underline custom-color"
-        >
+        <a href="https://webduino.io/" target="_blank" class="custom-footer-text"> Webduino </a>
+        <span class="mx-1 custom-footer-text">·</span>
+        <a href="https://account.webduino.io/privacy" target="_blank" class="custom-footer-text">
           Policy
         </a>
-        <span class="mx-1 custom-color">·</span>
-        <a
-          href="https://www.facebook.com/webduino"
-          target="_blank"
-          class="text-decoration-underline custom-color"
-        >
+        <span class="mx-1 custom-footer-text">·</span>
+        <a href="https://www.facebook.com/webduino" target="_blank" class="custom-footer-text">
           Facebook
         </a>
-        <span class="mx-1 custom-color">·</span>
+        <span class="mx-1 custom-footer-text">·</span>
         <a
           href="https://www.youtube.com/channel/UCUk3U7QZqijQfE-7rAh_INQ"
           target="_blank"
-          class="text-decoration-underline custom-color"
+          class="custom-footer-text"
         >
           Youtube
         </a>
@@ -394,12 +380,16 @@ const onLoad = async ({ done }: { done: Function }) => {
 .v-overlay-scroll-blocked {
   padding-inline-end: 0;
 }
+</style>
 
+<style scoped lang="scss">
 .custom-footer {
   background-color: unset !important;
-}
 
-.custom-color {
-  color: #938f99;
+  .custom-footer-text {
+    color: #938f99;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+  }
 }
 </style>
