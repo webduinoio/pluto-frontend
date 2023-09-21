@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC, RETURN_CODE_FROM_MQTT, ROUTER_NAME } from '@/enums';
+import { useMessage } from '@/hooks/useMessage';
 import { useMqtt } from '@/hooks/useMqtt';
+import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { createActor, deleteActor } from '@/services';
 import { useActorStore } from '@/stores/actor';
@@ -29,6 +31,8 @@ const debugLog = (msg: any) => {
   }
 };
 
+const { fire } = useSweetAlert();
+const { getErrorMessageForMqtt } = useMessage();
 const name = useField('name', undefined, { label: '名稱' });
 const url = useField('url', undefined, { label: '網址' });
 const loadingDialog = ref(false);
@@ -55,19 +59,27 @@ const onSubmit = handleSubmit(async (values) => {
       progressValue.value = msg['progress'];
       var rtnCode = msg['rtnCode'];
       if (rtnCode < 0) {
-        switch (rtnCode) {
-          case -1:
-            alert(msg['msg']);
-            break;
-          case -2:
-            alert('檔案頁數超過上限');
-            break;
-          case -3:
-            alert('檔案大小超過上限');
-            break;
-        }
+        // 避免後續再收到錯誤訊息
         await mqtt.disconnect();
         await deleteActor(actorID);
+
+        switch (rtnCode) {
+          case RETURN_CODE_FROM_MQTT.ERROR:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: msg['msg'],
+            });
+            break;
+          case RETURN_CODE_FROM_MQTT.TOO_MANY_PAGES_ERROR:
+          case RETURN_CODE_FROM_MQTT.FILE_TOO_LARGE_ERROR:
+            await fire({
+              title: '發生錯誤',
+              icon: 'error',
+              text: getErrorMessageForMqtt(rtnCode),
+            });
+            break;
+        }
         router.push({ name: ROUTER_NAME.HOME });
       }
       if (progressValue.value >= 100) {
@@ -163,7 +175,7 @@ const onSubmit = handleSubmit(async (values) => {
   </v-container>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .custom-text {
   white-space: nowrap;
   text-align: center;
