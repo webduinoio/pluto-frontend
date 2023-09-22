@@ -13,7 +13,7 @@ export const useMessage = () => {
   const getErrorMessageForMqtt = (code: RETURN_CODE_FROM_MQTT) => {
     switch (code) {
       case RETURN_CODE_FROM_MQTT.TOO_MANY_PAGES_ERROR:
-        return _addSuffix(`檔案超過 ${oauth.plan?.fileQuota} 頁`);
+        return _addSuffix(`檔案超過 ${oauth.plan?.maxFilePages} 頁`);
       case RETURN_CODE_FROM_MQTT.FILE_TOO_LARGE_ERROR:
         return _addSuffix(`單一檔案超過 ${oauth.plan?.maxFileSize} MB`);
     }
