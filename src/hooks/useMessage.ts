@@ -33,7 +33,7 @@ export const useMessage = () => {
   }
 
   const _addSuffix = (msg: string) => {
-    if (msg) return isPro ? `${msg}，請調整後再繼續。` : `${msg}，請升級方案或調整後再繼續。`;
+    if (msg) return isPro.value ? `${msg}，請調整後再繼續。` : `${msg}，請升級方案或調整後再繼續。`;
     return msg;
   }
 
