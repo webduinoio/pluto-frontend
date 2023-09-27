@@ -140,7 +140,7 @@ const onTrain = async () => {
             請開啟雲端硬碟資料夾，更新訓練資料後，點擊再次訓練。
             <a
               v-if="showDocument"
-              href="https://docs.google.com/document/d/1faGhiXiscEq5UJhNYN1O0PUdPizCXv5sXAirfMe5qDc/edit?usp=sharing"
+              href="https://resource.webduino.io/docs/webduino-aitutor/handbook#hd-650bbc6c9eb68"
               target="_blank"
               class="text-primary"
               >訓練資料說明 <v-icon :icon="mdiOpenInNew" size="x-small"></v-icon
