@@ -6,6 +6,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { createActor, deleteActor } from '@/services';
 import { useActorStore } from '@/stores/actor';
+import { set } from '@vueuse/core';
 import axios from 'axios';
 import { useField, useForm } from 'vee-validate';
 import { ref } from 'vue';
@@ -73,11 +74,16 @@ const onSubmit = handleSubmit(async (values) => {
             break;
           case RETURN_CODE_FROM_MQTT.TOO_MANY_PAGES_ERROR:
           case RETURN_CODE_FROM_MQTT.FILE_TOO_LARGE_ERROR:
-            await fire({
-              title: '發生錯誤',
-              icon: 'error',
-              text: getErrorMessageForMqtt(rtnCode),
-            });
+            const errorMessageObject = getErrorMessageForMqtt(rtnCode);
+            if (errorMessageObject) {
+              // 刪除進度條
+              set(loadingDialog, false);
+
+              await fire({
+                title: errorMessageObject.title,
+                text: errorMessageObject.text,
+              });
+            }
             break;
         }
         router.push({ name: ROUTER_NAME.HOME });
