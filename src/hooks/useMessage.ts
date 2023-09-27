@@ -13,9 +13,15 @@ export const useMessage = () => {
   const getErrorMessageForMqtt = (code: RETURN_CODE_FROM_MQTT) => {
     switch (code) {
       case RETURN_CODE_FROM_MQTT.TOO_MANY_PAGES_ERROR:
-        return _addSuffix(`檔案超過 ${oauth.plan?.maxFilePages} 頁`);
+        return {
+          title: `檔案超過 ${oauth.plan?.maxFilePages} 頁`,
+          text: _getText(),
+        };
       case RETURN_CODE_FROM_MQTT.FILE_TOO_LARGE_ERROR:
-        return _addSuffix(`單一檔案超過 ${oauth.plan?.maxFileSize} MB`);
+        return {
+          title: `單一檔案超過 ${oauth.plan?.maxFileSize} MB`,
+          text: _getText(),
+        };
     }
     return '';
   };
@@ -36,6 +42,10 @@ export const useMessage = () => {
     if (msg) return isPro.value ? `${msg}，請調整後再繼續。` : `${msg}，請升級方案或調整後再繼續。`;
     return msg;
   }
+
+  const _getText = () => {
+    return isPro.value ? `請調整後再繼續。` : `請升級方案或調整後再繼續。`;
+  };
 
   return {
     getErrorMessageForMqtt,

@@ -63,11 +63,13 @@ const onTrain = async () => {
             break;
           case RETURN_CODE_FROM_MQTT.TOO_MANY_PAGES_ERROR:
           case RETURN_CODE_FROM_MQTT.FILE_TOO_LARGE_ERROR:
-            await fire({
-              title: '發生錯誤',
-              icon: 'error',
-              text: getErrorMessageForMqtt(rtnCode),
-            });
+            const errorMessageObject = getErrorMessageForMqtt(rtnCode);
+            if (errorMessageObject) {
+              await fire({
+                title: errorMessageObject.title,
+                text: errorMessageObject.text,
+              });
+            }
             break;
         }
         await mqtt.disconnect();
