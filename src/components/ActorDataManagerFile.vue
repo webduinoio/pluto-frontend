@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { NOTIFICATION_TIMEOUT } from '@/config';
-import { ERROR_CODE, MQTT_TOPIC } from '@/enums';
+import { ERROR_CODE, MQTT_TOPIC, RETURN_CODE_FROM_MQTT } from '@/enums';
+import { useMessage } from '@/hooks/useMessage';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
@@ -22,6 +23,7 @@ const props = withDefaults(
 );
 
 const { fire } = useSweetAlert();
+const { getErrorMessageForMqtt } = useMessage();
 const training = ref(false);
 const showDocument = ref(import.meta.env.VITE_HIDE_TRAINING_DOCUMENT !== 'true');
 const oauth = useOAuthStore();
@@ -52,26 +54,22 @@ const onTrain = async () => {
       debugLog('info:' + JSON.stringify(info));
       if (rtnCode < 0) {
         switch (rtnCode) {
-          case -1:
+          case RETURN_CODE_FROM_MQTT.ERROR:
             await fire({
               title: '發生錯誤',
               icon: 'error',
               text: info['msg'],
             });
             break;
-          case -2:
-            await fire({
-              title: '發生錯誤',
-              icon: 'error',
-              text: `檔案頁數超過上限`,
-            });
-            break;
-          case -3:
-            await fire({
-              title: '發生錯誤',
-              icon: 'error',
-              text: `檔案大小超過上限`,
-            });
+          case RETURN_CODE_FROM_MQTT.TOO_MANY_PAGES_ERROR:
+          case RETURN_CODE_FROM_MQTT.FILE_TOO_LARGE_ERROR:
+            const errorMessageObject = getErrorMessageForMqtt(rtnCode);
+            if (errorMessageObject) {
+              await fire({
+                title: errorMessageObject.title,
+                text: errorMessageObject.text,
+              });
+            }
             break;
         }
         await mqtt.disconnect();
@@ -144,7 +142,7 @@ const onTrain = async () => {
             請開啟雲端硬碟資料夾，更新訓練資料後，點擊再次訓練。
             <a
               v-if="showDocument"
-              href="https://docs.google.com/document/d/1faGhiXiscEq5UJhNYN1O0PUdPizCXv5sXAirfMe5qDc/edit?usp=sharing"
+              href="https://resource.webduino.io/docs/webduino-aitutor/handbook#hd-650bbc6c9eb68"
               target="_blank"
               class="text-primary"
               >訓練資料說明 <v-icon :icon="mdiOpenInNew" size="x-small"></v-icon

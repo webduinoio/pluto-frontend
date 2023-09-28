@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.8.0] - 2023.09.28
+
+### Added
+
+- 小書僮 meta data [#7203](https://redmine.kingkit.codes/issues/7203)
+- 增加智財權提醒文字 [#7209](https://redmine.kingkit.codes/issues/7209)
+
+### Changed
+
+- 修改檔案上限的提示文字 [#7244](https://redmine.kingkit.codes/issues/7244)
+- 更改訓練資料說明連結 [#7257](https://redmine.kingkit.codes/issues/7257)
+
 ## [1.7.0] - 2023.09.16
 
 ### Changed
@@ -134,7 +146,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.0...v1.5.1
