@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- RWD - 小助教清單 [#7272](https://redmine.kingkit.codes/issues/7272)
+
 ## [1.8.0] - 2023.09.28
 
 ### Added
@@ -17,7 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 修改檔案上限的提示文字 [#7244](https://redmine.kingkit.codes/issues/7244)
 - 更改訓練資料說明連結 [#7257](https://redmine.kingkit.codes/issues/7257)
-- RWD - 小助教清單 [#7272](https://redmine.kingkit.codes/issues/7272)
 
 ## [1.7.0] - 2023.09.16
 
