@@ -176,7 +176,7 @@ const onLoad = async ({ done }: { done: Function }) => {
         <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
           新增小書僮
         </v-btn>
-        <v-btn color="primary" v-else :icon="mdiPlus" size="small"></v-btn>
+        <v-btn color="primary" v-else :icon="mdiPlus" size="small" @click="onCreate"></v-btn>
       </div>
     </div>
     <v-main>
