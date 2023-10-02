@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - RWD - 小助教清單 [#7272](https://redmine.kingkit.codes/issues/7272)
+- RWD - 建立小助教 [#7273](https://redmine.kingkit.codes/issues/7273)
 
 ## [1.8.0] - 2023.09.28
 
