@@ -12,6 +12,7 @@ import type { Actor } from '@/types';
 import { mdiCheck, mdiClose, mdiPlus, mdiSchoolOutline } from '@mdi/js';
 import { get, set } from '@vueuse/core';
 import { onActivated, onDeactivated } from 'vue';
+import { useDisplay } from 'vuetify';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
@@ -19,6 +20,7 @@ const notification = useNotificationStore();
 const oauth = useOAuthStore();
 const actorStore = useActorStore();
 const authorizer = useAuthorizerStore();
+const { smAndUp } = useDisplay();
 const user = oauth.user;
 
 // TODO: 待調整
@@ -167,12 +169,15 @@ const onLoad = async ({ done }: { done: Function }) => {
 </script>
 
 <template>
-  <v-container class="mb-6" style="max-width: 1024px">
+  <v-container class="mb-6">
     <div class="d-flex justify-space-between mt-15">
       <div class="text-h4">我的小書僮</div>
-      <v-btn color="primary" :prepend-icon="mdiPlus" @click="onCreate" v-if="authorizer.canCreate">
-        新增小書僮
-      </v-btn>
+      <div v-if="authorizer.canCreate">
+        <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
+          新增小書僮
+        </v-btn>
+        <v-btn color="primary" v-else :icon="mdiPlus" size="small"></v-btn>
+      </div>
     </div>
     <v-main>
       <v-container>
@@ -183,23 +188,22 @@ const onLoad = async ({ done }: { done: Function }) => {
           empty-text="&nbsp;"
           min-height="100"
         >
-          <v-row>
-            <TheActor
-              v-for="item in data"
-              :key="item.id"
-              height="380"
-              width="310"
-              class="ma-2 pa-2"
-              :data="item"
-              :can-edit="authorizer.canEdit"
-              :can-edit-all="authorizer.canEditAll"
-              :can-delete="authorizer.canDelete"
-              :can-delete-all="authorizer.canDeleteAll"
-              @edit="onEdit"
-              @open="onOpen"
-              @delete="onDelete"
-              @copy="onCopy"
-            />
+          <v-row justify="center">
+            <v-col v-for="item in data" :key="item.id" cols="auto">
+              <TheActor
+                width="310"
+                height="380"
+                :data="item"
+                :can-edit="authorizer.canEdit"
+                :can-edit-all="authorizer.canEditAll"
+                :can-delete="authorizer.canDelete"
+                :can-delete-all="authorizer.canDeleteAll"
+                @edit="onEdit"
+                @open="onOpen"
+                @delete="onDelete"
+                @copy="onCopy"
+              />
+            </v-col>
           </v-row>
           <template v-slot:empty> <span class="mt-5">已經到底了喔！</span> </template>
         </v-infinite-scroll>
