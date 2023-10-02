@@ -170,8 +170,8 @@ const onLoad = async ({ done }: { done: Function }) => {
 
 <template>
   <v-container class="mb-6">
-    <div class="d-flex justify-space-between mt-15">
-      <div class="text-h4">我的小書僮</div>
+    <div class="d-flex justify-space-between mt-15 px-sm-16">
+      <div class="text-h4 font-weight-bold">我的小書僮</div>
       <div v-if="authorizer.canCreate">
         <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
           新增小書僮
