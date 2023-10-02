@@ -30,7 +30,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <v-card height="380" width="320" class="d-flex flex-column">
+  <v-card width="320" height="380" class="d-flex flex-column">
     <v-toolbar color="rgba(0, 0, 0, 0)">
       <v-toolbar-title>
         <div class="d-flex align-center" style="gap: 5px">

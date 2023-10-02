@@ -12,6 +12,7 @@ import type { Actor } from '@/types';
 import { mdiCheck, mdiClose, mdiPlus, mdiSchoolOutline } from '@mdi/js';
 import { get, set } from '@vueuse/core';
 import { onActivated, onDeactivated } from 'vue';
+import { useDisplay } from 'vuetify';
 
 const { fire, showLoading, hideLoading } = useSweetAlert();
 const router = useRouter();
@@ -19,6 +20,7 @@ const notification = useNotificationStore();
 const oauth = useOAuthStore();
 const actorStore = useActorStore();
 const authorizer = useAuthorizerStore();
+const { smAndUp } = useDisplay();
 const user = oauth.user;
 
 // TODO: 待調整
@@ -167,35 +169,30 @@ const onLoad = async ({ done }: { done: Function }) => {
 </script>
 
 <template>
-  <v-container class="mb-6 d-flex justify-center">
-    <v-responsive max-width="1024">
-      <div class="d-flex justify-space-between mt-15">
-        <div class="text-h4">我的小書僮</div>
-        <v-btn
-          color="primary"
-          :prepend-icon="mdiPlus"
-          @click="onCreate"
-          v-if="authorizer.canCreate"
-        >
+  <v-container class="mb-6">
+    <div class="d-flex justify-space-between mt-15 px-sm-16">
+      <div class="text-h4 font-weight-bold">我的小書僮</div>
+      <div v-if="authorizer.canCreate">
+        <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
           新增小書僮
         </v-btn>
+        <v-btn color="primary" v-else :icon="mdiPlus" size="small"></v-btn>
       </div>
-      <v-main>
-        <v-container>
-          <v-infinite-scroll
-            :items="data"
-            :onLoad="onLoad"
-            class="overflow-x-hidden"
-            empty-text="&nbsp;"
-            min-height="100"
-          >
-            <v-row>
+    </div>
+    <v-main>
+      <v-container>
+        <v-infinite-scroll
+          :items="data"
+          :onLoad="onLoad"
+          class="overflow-x-hidden"
+          empty-text="&nbsp;"
+          min-height="100"
+        >
+          <v-row justify="center">
+            <v-col v-for="item in data" :key="item.id" cols="auto">
               <TheActor
-                v-for="item in data"
-                :key="item.id"
-                height="380"
                 width="310"
-                class="ma-2 pa-2"
+                height="380"
                 :data="item"
                 :can-edit="authorizer.canEdit"
                 :can-edit-all="authorizer.canEditAll"
@@ -206,31 +203,31 @@ const onLoad = async ({ done }: { done: Function }) => {
                 @delete="onDelete"
                 @copy="onCopy"
               />
-            </v-row>
-            <template v-slot:empty> <span class="mt-5">已經到底了喔！</span> </template>
-          </v-infinite-scroll>
-        </v-container>
-      </v-main>
-      <v-footer class="justify-center custom-footer mt-16 text-h6">
-        <a href="https://webduino.io/" target="_blank" class="custom-footer-text"> Webduino </a>
-        <span class="mx-1 custom-footer-text">·</span>
-        <a href="https://account.webduino.io/privacy" target="_blank" class="custom-footer-text">
-          Policy
-        </a>
-        <span class="mx-1 custom-footer-text">·</span>
-        <a href="https://www.facebook.com/webduino" target="_blank" class="custom-footer-text">
-          Facebook
-        </a>
-        <span class="mx-1 custom-footer-text">·</span>
-        <a
-          href="https://www.youtube.com/channel/UCUk3U7QZqijQfE-7rAh_INQ"
-          target="_blank"
-          class="custom-footer-text"
-        >
-          YouTube
-        </a>
-      </v-footer>
-    </v-responsive>
+            </v-col>
+          </v-row>
+          <template v-slot:empty> <span class="mt-5">已經到底了喔！</span> </template>
+        </v-infinite-scroll>
+      </v-container>
+    </v-main>
+    <v-footer class="justify-center custom-footer mt-16 text-h6">
+      <a href="https://webduino.io/" target="_blank" class="custom-footer-text"> Webduino </a>
+      <span class="mx-1 custom-footer-text">·</span>
+      <a href="https://account.webduino.io/privacy" target="_blank" class="custom-footer-text">
+        Policy
+      </a>
+      <span class="mx-1 custom-footer-text">·</span>
+      <a href="https://www.facebook.com/webduino" target="_blank" class="custom-footer-text">
+        Facebook
+      </a>
+      <span class="mx-1 custom-footer-text">·</span>
+      <a
+        href="https://www.youtube.com/channel/UCUk3U7QZqijQfE-7rAh_INQ"
+        target="_blank"
+        class="custom-footer-text"
+      >
+        YouTube
+      </a>
+    </v-footer>
   </v-container>
   <v-dialog v-model="dialog" max-width="729px">
     <v-card class="rounded-lg" color="background">
