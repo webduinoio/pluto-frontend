@@ -191,7 +191,7 @@ const onSubmit = handleSubmit(async (values) => {
           </v-container>
           <v-container class="d-flex align-end justify-center">
             <p class="text-h5">
-              {{ progressValue >= 100 ? '訓練完成' : '訓練中...' }}
+              {{ progressValue >= 100 ? '訓練完成' : '訓練中' }}
             </p>
             <SvgSpinners3DotsBounce v-if="progressValue < 100" class="text-h5 ml-1" />
           </v-container>
