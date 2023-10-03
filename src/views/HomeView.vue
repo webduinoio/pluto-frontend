@@ -91,6 +91,7 @@ const onDelete = async (id: number) => {
 
     const { data: value } = await getActors();
     set(data, value.list || []);
+    set(dataLastIndex, value.lastIndex);
 
     hideLoading();
   } catch (err: any) {
