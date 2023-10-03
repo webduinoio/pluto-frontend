@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import SvgSpinners3DotsBounce from '@/components/SvgSpinners3DotsBounce.vue';
 import { ERROR_CODE, MQTT_TOPIC, RETURN_CODE_FROM_MQTT, ROUTER_NAME } from '@/enums';
 import { useMessage } from '@/hooks/useMessage';
 import { useMqtt } from '@/hooks/useMqtt';
@@ -9,11 +10,12 @@ import { useActorStore } from '@/stores/actor';
 import { set } from '@vueuse/core';
 import axios from 'axios';
 import { useField, useForm } from 'vee-validate';
-import { ref } from 'vue';
+import { useDisplay } from 'vuetify';
 
 const actorStore = useActorStore();
 const mqtt = useMqtt(generateMqttUserId(), '');
 const router = useRouter();
+const { xs } = useDisplay();
 const { resetForm, handleSubmit } = useForm({
   initialValues: {
     name: '',
@@ -124,44 +126,59 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <v-container class="mb-6 h-100">
-    <div class="h-100 d-flex justify-center align-center flex-column">
-      <p class="text-h4">新增小書僮</p>
-      <v-sheet width="342" class="mx-auto mt-14 bg-transparent">
-        <v-form @submit.prevent="onSubmit">
-          <v-text-field
-            label="小書僮名稱"
-            v-model="name.value.value"
-            variant="outlined"
-            color="black"
-            bg-color="white"
-            :error-messages="name.errorMessage.value"
-          ></v-text-field>
-          <v-text-field
-            label="Google 雲端資料網址"
-            class="mt-2"
-            variant="outlined"
-            v-model="url.value.value"
-            color="black"
-            bg-color="white"
-            :error-messages="url.errorMessage.value"
-          ></v-text-field>
+  <v-container class="mb-6 h-100 d-flex flex-column align-center justify-center">
+    <p class="text-h4 font-weight-bold">新增小書僮</p>
+    <v-form @submit.prevent="onSubmit" class="mt-14">
+      <v-sheet max-width="342" class="mx-auto bg-transparent">
+        <v-row no-gutters>
+          <v-col cols="12">
+            <v-text-field
+              label="小書僮名稱"
+              v-model="name.value.value"
+              variant="outlined"
+              color="black"
+              bg-color="white"
+              :error-messages="name.errorMessage.value"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              label="Google 雲端資料網址"
+              class="mt-2"
+              variant="outlined"
+              v-model="url.value.value"
+              color="black"
+              bg-color="white"
+              :error-messages="url.errorMessage.value"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-sheet>
 
-          <p class="mt-8 text-caption d-flex justify-center custom-text">
+      <v-row class="mt-4">
+        <v-col cols="12">
+          <p v-if="xs" class="text-caption d-flex justify-center custom-text">
+            請確保上傳的資料不涉及個人隱私或違反智慧財產權，<br />平台保留管理及刪除資料的權利
+          </p>
+          <p v-else class="text-caption d-flex justify-center custom-text">
             請確保上傳的資料不涉及個人隱私或違反智慧財產權，平台保留管理及刪除資料的權利
           </p>
-          <div class="mt-6 d-flex justify-center">
+        </v-col>
+        <v-col cols="12">
+          <div class="d-flex justify-center">
             <v-btn type="submit" color="primary" size="large" :disabled="isSubmitting">
               開始訓練
             </v-btn>
           </div>
-        </v-form>
-      </v-sheet>
+        </v-col>
+      </v-row>
+    </v-form>
 
-      <!-- Loading dialog with progress circle -->
-      <v-dialog v-model="loadingDialog" persistent max-width="600px">
-        <v-card>
-          <v-card-text class="text-center">
+    <!-- Loading dialog with progress circle -->
+    <v-dialog v-model="loadingDialog" persistent max-width="600">
+      <v-card>
+        <v-card-text>
+          <v-container class="d-flex align-end justify-center">
             <v-progress-circular
               :key="progressValue"
               :size="140"
@@ -169,21 +186,23 @@ const onSubmit = handleSubmit(async (values) => {
               color="primary"
               :model-value="progressValue"
             >
-              <span style="font-size: 1.5em">{{ Math.round(progressValue) }}%</span>
+              <span class="text-h5">{{ Math.round(progressValue) }}%</span>
             </v-progress-circular>
-            <p class="mt-4" style="font-size: 1.5em">
-              {{ progressValue >= 100 ? '訓練完成' : '訓練中...' }}
+          </v-container>
+          <v-container class="d-flex align-end justify-center">
+            <p class="text-h5">
+              {{ progressValue >= 100 ? '訓練完成' : '訓練中' }}
             </p>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-    </div>
+            <SvgSpinners3DotsBounce v-if="progressValue < 100" class="text-h5 ml-1" />
+          </v-container>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <style lang="scss" scoped>
 .custom-text {
-  white-space: nowrap;
   text-align: center;
   color: #6d6d6d;
 }
