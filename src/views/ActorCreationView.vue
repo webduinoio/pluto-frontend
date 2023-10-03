@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import SvgSpinners3DotsBounce from '@/components/SvgSpinners3DotsBounce.vue';
 import { ERROR_CODE, MQTT_TOPIC, RETURN_CODE_FROM_MQTT, ROUTER_NAME } from '@/enums';
 import { useMessage } from '@/hooks/useMessage';
 import { useMqtt } from '@/hooks/useMqtt';
@@ -192,6 +193,7 @@ const onSubmit = handleSubmit(async (values) => {
             <p class="text-h5">
               {{ progressValue >= 100 ? '訓練完成' : '訓練中...' }}
             </p>
+            <SvgSpinners3DotsBounce v-if="progressValue < 100" class="text-h5 ml-1" />
           </v-container>
         </v-card-text>
       </v-card>
