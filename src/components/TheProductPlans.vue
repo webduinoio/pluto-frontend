@@ -24,7 +24,7 @@ const emit = defineEmits<{
 
       <v-container class="pa-0">
         <v-card-item class="pa-0">
-          <v-card-title class="text-center text-h4 font-weight-bold">
+          <v-card-title class="text-center text-h5 text-sm-h4 font-weight-bold">
             免費額度已到達上限囉！
           </v-card-title>
           <v-card-subtitle
