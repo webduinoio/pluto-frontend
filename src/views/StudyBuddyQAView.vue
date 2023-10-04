@@ -37,7 +37,7 @@ interface PDFViewerType {
   };
 }
 
-const WIDTH_TO_SHOW_PDF_VIEWER = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
+const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
 const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
@@ -272,7 +272,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <template>
   <splitpanes
     class="default-theme"
-    :class="{ 'custom-mobile-view': width < WIDTH_TO_SHOW_PDF_VIEWER }"
+    :class="{ 'custom-mobile-view': width < WIDTH_TO_SHOW_RIGHT_PANEL }"
   >
     <pane min-size="40" size="40">
       <v-container class="d-flex flex-column h-100 left-panel pa-0 overflow-auto" fluid>
@@ -318,7 +318,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           </v-select>
         </v-form>
 
-        <v-container class="pa-2 pt-0 w-100 overflow-y-auto" ref="messageScrollTarget">
+        <v-container class="pa-2 pt-0 w-100 overflow-y-auto" fluid ref="messageScrollTarget">
           <v-sheet
             border
             rounded
@@ -327,7 +327,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
             :key="index"
           >
-            <v-container>
+            <v-container fluid>
               <v-row
                 fluid
                 v-for="(msg, msgIdx) in actor.messages"
