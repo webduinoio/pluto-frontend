@@ -275,7 +275,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
     :class="{ 'custom-mobile-view': width < WIDTH_TO_SHOW_PDF_VIEWER }"
   >
     <pane min-size="40" size="40">
-      <v-container class="d-flex flex-column h-100 left-panel pa-0" fluid>
+      <v-container class="d-flex flex-column h-100 left-panel pa-0 overflow-auto" fluid>
         <v-card class="flex-shrink-0">
           <v-card-item>
             <v-row fluid>
