@@ -24,11 +24,20 @@ import { get, set } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+import { useDisplay } from 'vuetify';
 
 type PDFItem = {
   title: string;
   value: string;
 };
+
+interface PDFViewerType {
+  pdf: {
+    setInjectAskPrompt: (callback: (ask: string) => void) => void;
+  };
+}
+
+const WIDTH_TO_SHOW_PDF_VIEWER = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
 const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
@@ -37,12 +46,6 @@ const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-interface PDFViewerType {
-  pdf: {
-    setInjectAskPrompt: (callback: (ask: string) => void) => void;
-  };
-}
-
 const pdfViewer = ref<PDFViewerType | null>(null);
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
@@ -63,6 +66,7 @@ let respMsg: string[] = [];
 const authorizer = useAuthorizerStore();
 const oauth = useOAuthStore();
 const user = oauth.user;
+const { width } = useDisplay();
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -199,7 +203,7 @@ const onEdit = () => {
 
 onMounted(async () => {
   await loadData();
-  pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
+  pdfViewer.value?.pdf.setInjectAskPrompt(function (ask: string) {
     set(prompt, ask);
   });
 
@@ -266,9 +270,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
 </script>
 
 <template>
-  <splitpanes class="default-theme">
+  <splitpanes
+    class="default-theme"
+    :class="{ 'custom-mobile-view': width < WIDTH_TO_SHOW_PDF_VIEWER }"
+  >
     <pane min-size="40" size="40">
-      <v-container class="d-flex flex-column h-100 left-panel pa-0">
+      <v-container class="d-flex flex-column h-100 left-panel pa-0" fluid>
         <v-card class="flex-shrink-0">
           <v-card-item>
             <v-row fluid>
@@ -428,6 +435,17 @@ mqtt.init((msg: string, isEnd: boolean) => {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
+}
+
+.default-theme.custom-mobile-view {
+  :deep(.splitpanes__splitter),
+  :deep(.splitpanes__pane:last-child) {
+    display: none;
+  }
+
+  :deep(.splitpanes__pane:first-child) {
+    width: 100% !important;
+  }
 }
 </style>
 
