@@ -276,7 +276,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                 <v-img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
               </v-col>
               <v-col>
-                <v-card-subtitle>問答小書僮</v-card-subtitle>
+                <v-card-subtitle>問答小助教</v-card-subtitle>
                 <v-card-title>{{ actorData?.name }}</v-card-title>
               </v-col>
               <v-col

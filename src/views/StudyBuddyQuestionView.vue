@@ -244,7 +244,7 @@ watch(
 );
 
 /**
- * 思維工具的 mqtt，訊息格式與問答小書僮不一致
+ * 思維工具的 mqtt，訊息格式與問答小助教不一致
  * 訊息格式：
  * 1. json object
  * 2. 一般字串, e.g. 歡迎繼續提問 $UUID${{user id}}
@@ -280,8 +280,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
       <div class="d-flex flex-column h-100 left-panel overflow-auto">
         <v-card class="flex-shrink-0">
           <v-card-item :prepend-icon="mdiHome">
-            <v-card-subtitle>伴學小書僮</v-card-subtitle>
-            <v-card-title>出題小書僮</v-card-title>
+            <v-card-subtitle>伴學小助教</v-card-subtitle>
+            <v-card-title>出題小助教</v-card-title>
           </v-card-item>
         </v-card>
 

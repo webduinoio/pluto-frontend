@@ -5,7 +5,7 @@ import { logout } from '@/services';
 const { fire, showLoading } = useSweetAlert();
 
 fire({
-  title: '登入並開始與小書僮對話',
+  title: '登入並開始與小助教對話',
   text: '即將轉導回登入頁',
   icon: undefined,
   confirmButtonText: '確認',

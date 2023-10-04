@@ -115,7 +115,7 @@ const onSubmit = handleSubmit(async (values) => {
       } else if (code === ERROR_CODE.FOLDER_NOT_VIEWABLE_ERROR) {
         alert('資料夾權限不足');
       } else if (code === ERROR_CODE.TOO_MANY_ACTOR_ERROR) {
-        alert('小書僮數量已滿');
+        alert('小助教數量已滿');
       }
     } else {
       console.error('unexpected error: ', err);
@@ -127,13 +127,13 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <v-container class="mb-6 h-100 d-flex flex-column align-center justify-center">
-    <p class="text-h4 font-weight-bold">新增小書僮</p>
+    <p class="text-h4 font-weight-bold">新增小助教</p>
     <v-form @submit.prevent="onSubmit" class="mt-14">
       <v-sheet max-width="342" class="mx-auto bg-transparent">
         <v-row no-gutters>
           <v-col cols="12">
             <v-text-field
-              label="小書僮名稱"
+              label="小助教名稱"
               v-model="name.value.value"
               variant="outlined"
               color="black"
