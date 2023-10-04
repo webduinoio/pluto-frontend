@@ -187,15 +187,6 @@ const onReferenceMessage = (endMsg: string) => {
   return keywordAmt == 0 ? '' : links;
 };
 
-onMounted(async () => {
-  await loadData();
-  pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
-    set(prompt, ask);
-  });
-
-  textarea.value && textarea.value.focus();
-});
-
 const onEdit = () => {
   window.open(
     router.resolve({
@@ -205,6 +196,15 @@ const onEdit = () => {
     '_blank'
   );
 };
+
+onMounted(async () => {
+  await loadData();
+  pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
+    set(prompt, ask);
+  });
+
+  textarea.value && textarea.value.focus();
+});
 
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
@@ -268,7 +268,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <template>
   <splitpanes class="default-theme">
     <pane min-size="40" size="40">
-      <div class="d-flex flex-column h-100 left-panel overflow-auto">
+      <v-container class="d-flex flex-column h-100 left-panel pa-0">
         <v-card class="flex-shrink-0">
           <v-card-item>
             <v-row fluid>
@@ -291,8 +291,6 @@ mqtt.init((msg: string, isEnd: boolean) => {
           </v-card-item>
         </v-card>
 
-        <v-divider></v-divider>
-
         <v-form class="ma-4">
           <v-select
             label="沒靈感嗎？點我使用 AI 推薦提問"
@@ -313,39 +311,35 @@ mqtt.init((msg: string, isEnd: boolean) => {
           </v-select>
         </v-form>
 
-        <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
-          <div class="w-100">
-            <v-container class="pa-2 pt-0" ref="messageScrollTarget">
-              <div>
-                <v-sheet
-                  border
-                  rounded
-                  class="text-body-1 mx-auto mt-2"
-                  v-for="(actor, index) in actors"
-                  :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
-                  :key="index"
-                >
-                  <v-container>
-                    <v-row fluid v-for="(msg, msgIdx) in actor.messages" :key="msgIdx">
-                      <v-col cols="auto">
-                        <v-icon v-if="msgIdx !== 0"></v-icon>
-                        <template v-else>
-                          <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
-                          <v-icon v-else>
-                            <img class="icon-image" :src="get(actorData)?.image" />
-                          </v-icon>
-                        </template>
-                      </v-col>
-                      <v-col style="padding: 12px 12px 3px 12px">
-                        <div v-html="msg"></div>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-sheet>
-              </div>
+        <v-container class="pa-2 pt-0 w-100 overflow-y-auto" ref="messageScrollTarget">
+          <v-sheet
+            border
+            rounded
+            class="text-body-1 mx-auto mt-2"
+            v-for="(actor, index) in actors"
+            :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
+            :key="index"
+          >
+            <v-container>
+              <v-row fluid v-for="(msg, msgIdx) in actor.messages" :key="msgIdx">
+                <v-col cols="auto">
+                  <v-icon v-if="msgIdx !== 0"></v-icon>
+                  <template v-else>
+                    <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
+                    <v-icon v-else>
+                      <img class="icon-image" :src="get(actorData)?.image" />
+                    </v-icon>
+                  </template>
+                </v-col>
+                <v-col style="padding: 12px 12px 3px 12px">
+                  <div v-html="msg"></div>
+                </v-col>
+              </v-row>
             </v-container>
-          </div>
-        </v-layout>
+          </v-sheet>
+        </v-container>
+
+        <v-spacer></v-spacer>
 
         <v-divider class="mt-2"></v-divider>
 
@@ -375,15 +369,16 @@ mqtt.init((msg: string, isEnd: boolean) => {
             ></v-icon>
           </template>
         </v-textarea>
-        <div class="d-flex flex-column align-center">
+
+        <v-container class="d-flex justify-center pa-0">
           <TheVoiceInput
             :disabled="mqttLoading"
             @message="onVoiceMessage"
             @start="onVoiceStart"
             @stop="onVoiceStop"
           />
-        </div>
-      </div>
+        </v-container>
+      </v-container>
     </pane>
     <pane size="60" class="h-100 right-panel">
       <ThePDFViewer ref="pdfViewer" :items="pdfViewerItems"></ThePDFViewer>
@@ -394,9 +389,6 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <style lang="scss" scoped>
 .left-panel {
   max-height: calc(100vh - 64px);
-  .flex-grow-1 {
-    overflow-y: auto;
-  }
 }
 .right-panel {
   height: calc(100vh - 165px);
