@@ -328,7 +328,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
             :key="index"
           >
             <v-container>
-              <v-row fluid v-for="(msg, msgIdx) in actor.messages" :key="msgIdx">
+              <v-row
+                fluid
+                v-for="(msg, msgIdx) in actor.messages"
+                :key="msgIdx"
+                class="custom-message"
+              >
                 <v-col cols="auto">
                   <v-icon v-if="msgIdx !== 0"></v-icon>
                   <template v-else>
@@ -445,6 +450,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
 
   :deep(.splitpanes__pane:first-child) {
     width: 100% !important;
+
+    .v-row.custom-message:where(:has(.tooltip)) {
+      display: none;
+    }
   }
 }
 </style>
