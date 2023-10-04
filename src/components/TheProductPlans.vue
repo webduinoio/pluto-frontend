@@ -59,12 +59,12 @@ const emit = defineEmits<{
                   <v-card-text class="ma-3">
                     <v-row class="mb-1">
                       <v-icon :icon="mdiCheck" class="mr-1"></v-icon>
-                      <strong>2 支小書僮</strong>
+                      <strong>2 支小助教</strong>
                     </v-row>
                     <v-row class="mb-1">
                       <v-icon :icon="mdiCheck" class="mr-1"></v-icon>
                       <strong>5 個檔案</strong>&nbsp;
-                      <small>/每支小書僮</small>
+                      <small>/每支小助教</small>
                     </v-row>
                     <v-row class="mb-1">
                       <v-icon :icon="mdiCheck" class="mr-1"></v-icon>
@@ -130,12 +130,12 @@ const emit = defineEmits<{
                   <v-card-text class="ma-3">
                     <v-row class="mb-1">
                       <v-icon :icon="mdiCheck" class="mr-1" color="secondary"></v-icon>
-                      <strong class="text-secondary">10 支小書僮</strong>
+                      <strong class="text-secondary">10 支小助教</strong>
                     </v-row>
                     <v-row class="mb-1">
                       <v-icon :icon="mdiCheck" class="mr-1" color="secondary"></v-icon>
                       <strong>10 個檔案</strong>&nbsp;
-                      <small>/每支小書僮</small>
+                      <small>/每支小助教</small>
                     </v-row>
                     <v-row class="mb-1">
                       <v-icon :icon="mdiCheck" class="mr-1" color="secondary"></v-icon>

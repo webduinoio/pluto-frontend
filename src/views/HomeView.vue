@@ -98,7 +98,7 @@ const onDelete = async (id: number) => {
   } catch (err: any) {
     console.error(err);
     fire({
-      title: '刪除小書僮發生錯誤',
+      title: '刪除小助教發生錯誤',
       icon: 'error',
       text: err.message,
       showConfirmButton: false,
@@ -126,7 +126,7 @@ const onCreate = () => {
   const myActors = data.value.filter((datum) => datum.createdBy === oauth.user?.id);
   if (oauth.plan?.actorQuota && myActors.length >= oauth.plan.actorQuota) {
     if (oauth.plan.name !== 'free') {
-      notification.fire('小書僮數量已滿', 'top');
+      notification.fire('小助教數量已滿', 'top');
     } else {
       dialog.value = true;
     }
@@ -169,10 +169,10 @@ const onLoad = async ({ done }: { done: Function }) => {
 <template>
   <v-container class="mb-6">
     <div class="d-flex justify-space-between mt-15 px-sm-16">
-      <div class="text-h4 font-weight-bold">我的小書僮</div>
+      <div class="text-h4 font-weight-bold">我的小助教</div>
       <div v-if="authorizer.canCreate">
         <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
-          新增小書僮
+          新增小助教
         </v-btn>
         <v-btn color="primary" v-else :icon="mdiPlus" size="small" @click="onCreate"></v-btn>
       </div>

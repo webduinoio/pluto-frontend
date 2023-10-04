@@ -1,6 +1,6 @@
 # pluto-frontend
 
-小書僮
+小助教
 
 ## 大綱
 
@@ -103,5 +103,5 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 | main    | 思維工具正式機    |
 | aitsky  | 思維工具台天版    |
 | egame   | 思維工具 Egame 版 |
-| next    | 小書僮測試機      |
-| tutor   | 小書僮正式機      |
+| next    | 小助教測試機      |
+| tutor   | 小助教正式機      |

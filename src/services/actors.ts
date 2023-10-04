@@ -125,7 +125,7 @@ export function getActorDocuments(id: number) {
 }
 
 /**
- * 切換小書僮分享的狀態
+ * 切換小助教分享的狀態
  * @param id
  */
 export function toggleShareActor(id: number) {

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 // imported as URLs using the `?url` suffix, more info: https://github.com/jpkleemans/vite-svg-loader#import-params
-import Logo from '@/assets/logo.svg?url';
+import Logo from '@/assets/logo.png?url';
 import { ROUTER_NAME } from '@/enums';
 import { logout } from '@/services';
 import { useOAuthStore } from '@/stores/oauth';
