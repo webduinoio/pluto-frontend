@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - RWD - 小助教清單 [#7272](https://redmine.kingkit.codes/issues/7272)
 - RWD - 建立小助教 [#7273](https://redmine.kingkit.codes/issues/7273)
 - RWD - 額度已滿畫面 [#7275](https://redmine.kingkit.codes/issues/7275)
+- 小書僮更名 [#7266](https://redmine.kingkit.codes/issues/7266)
 
 ### Fixed
 
