@@ -156,5 +156,8 @@ const onClickIntroduce = () => {
 <style lang="scss" scoped>
 .logo {
   cursor: pointer;
+  :deep(img) {
+    width: auto;
+  }
 }
 </style>
