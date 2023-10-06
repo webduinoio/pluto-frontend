@@ -9,6 +9,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - RWD - 小助教清單 [#7272](https://redmine.kingkit.codes/issues/7272)
+- RWD - 建立小助教 [#7273](https://redmine.kingkit.codes/issues/7273)
+- RWD - 額度已滿畫面 [#7275](https://redmine.kingkit.codes/issues/7275)
+- RWD - 小助教聊天畫面 [#7274](https://redmine.kingkit.codes/issues/7274)
+- 小書僮更名 [#7266](https://redmine.kingkit.codes/issues/7266)
+- 修正 PDF 檔案下載與顯示 [#7250](https://redmine.kingkit.codes/issues/7250)
+- 快速切換 PDF 檔案會讓頁數異常 [#7238](https://redmine.kingkit.codes/issues/7238)
+
+### Fixed
+
+- 刪除小書僮後清單無法顯示全部小書僮 [#7241](https://redmine.kingkit.codes/issues/7241)
+- header 在 ipad 顯示異常 [#7295](https://redmine.kingkit.codes/issues/7295)
 
 ## [1.8.0] - 2023.09.28
 

@@ -5,6 +5,7 @@ export default class PDF {
     this.spanHighlightMap = {};
     this.nowPageNum = 1;
     this.scale = 1; // Initialize scale
+    this.pdfLoadingState = 0; // 0: ready , 1: loading , 2: interrupt & reload
     this.injectAskPrompt = function () {};
   }
 
@@ -104,6 +105,21 @@ export default class PDF {
   }
 
   async load(pdfUrl, callback) {
+    var cnt = 1;
+    while (cnt > 0) {
+      await new Promise((r) => setTimeout(r, 100));
+      if (this.pdfLoadingState == 0) {
+        this.wrap_load(pdfUrl, callback);
+        break;
+      } else if (this.pdfLoadingState == 1) {
+        this.pdfLoadingState = 2;
+      }
+    }
+  }
+
+  async wrap_load(pdfUrl, callback) {
+    var self = this;
+    self.pdfLoadingState = 1;
     if (typeof pdfUrl == 'undefined' || pdfUrl == '' || this.pdfUrl == pdfUrl) return;
     this.pdfUrl = pdfUrl;
     this.highlightTimeout = 0;
@@ -133,11 +149,11 @@ export default class PDF {
       this.loadingEffect(true);
       let loadingTask = pdfjsLib.getDocument({
         url: this.pdfUrl,
-        //cMapUrl: '/public/cmaps/',
         cMapUrl: '/cmaps/',
         rangeChunkSize: 65536 * 4,
         //disableRange: false,
       });
+
       this.vueCurrentPage.value = 0;
       this.vueTotalPages.value = 0;
       loadingTask.promise.then(async (pdf) => {
@@ -145,11 +161,17 @@ export default class PDF {
         const unscaledViewport = (await pdf.getPage(1)).getViewport({ scale: 1 });
         this.scale = this.pdfContainer.clientWidth / unscaledViewport.width;
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          //this.showMsg('page:', pageNum);
+          if (self.pdfLoadingState == 2 /*interrupt loading*/) {
+            break;
+          }
           this.vueTotalPages.value = pageNum;
           await this.renderPage(pdf, pageNum);
         }
         this.loadingEffect(false);
         this.vueCurrentPage.value = 1;
+        //this.showMsg('pdf load completed.');
+        self.pdfLoadingState = 0; // pdf load completed.
         if (typeof callback != 'undefined') callback();
       });
     } catch (error) {

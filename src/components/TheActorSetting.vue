@@ -40,13 +40,13 @@ const { handleSubmit, setFieldValue } = useForm({
 });
 
 const name = useField('name', undefined, {
-  label: '小書僮名稱',
+  label: '小助教名稱',
 });
 const description = useField('description', undefined, {
-  label: '介紹你的小書僮',
+  label: '介紹你的小助教',
 });
 const image = useField('image', undefined, {
-  label: '小書僮圖片',
+  label: '小助教圖片',
 });
 const loading = ref(false);
 const rules = [
@@ -115,7 +115,7 @@ watch(
       <v-sheet width="400" class="mt-4 bg-transparent">
         <v-form @submit.prevent="onSubmit">
           <template v-if="showID">
-            <p class="text-subtitle-1">小書僮 ID</p>
+            <p class="text-subtitle-1">小助教 ID</p>
             <v-row align="center">
               <v-col cols="9">
                 <p class="text-subtitle-2 text-disabled">{{ props.actor?.uuid }}</p>
@@ -133,13 +133,13 @@ watch(
             v-model="name.value.value"
             :error-messages="name.errorMessage.value"
             :counter="50"
-            label="小書僮名稱"
+            label="小助教名稱"
             :disabled="loading"
           ></v-text-field>
           <v-textarea
             class="mt-2"
             variant="outlined"
-            label="介紹你的小書僮"
+            label="介紹你的小助教"
             rows="3"
             :counter="300"
             v-model="description.value.value"
@@ -149,7 +149,7 @@ watch(
           <v-file-input
             class="mt-2"
             variant="outlined"
-            label="小書僮圖片"
+            label="小助教圖片"
             accept=".jpg, .png, .jpeg"
             :disabled="loading"
             @change="onChange"

@@ -12,7 +12,9 @@ import { get, set, useClipboard } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import { nextTick } from 'vue';
+import { useDisplay } from 'vuetify';
 
+const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
 const prompt = ref('');
@@ -48,6 +50,7 @@ const hintItems = ref([
   { title: '5W1H 出題策略', value: '你會用5W1H策略出題' },
   { title: '是非題', value: '出是非題，選項是「是」或「否」' },
 ]);
+const { width } = useDisplay();
 
 const addMessage = (role: string, msg: string) => {
   messages.value.push({
@@ -244,7 +247,7 @@ watch(
 );
 
 /**
- * 思維工具的 mqtt，訊息格式與問答小書僮不一致
+ * 思維工具的 mqtt，訊息格式與問答小助教不一致
  * 訊息格式：
  * 1. json object
  * 2. 一般字串, e.g. 歡迎繼續提問 $UUID${{user id}}
@@ -275,17 +278,18 @@ mqtt.init((msg: string, isEnd: boolean) => {
 </script>
 
 <template>
-  <splitpanes class="default-theme">
+  <splitpanes
+    class="default-theme"
+    :class="{ 'custom-mobile-view': width < WIDTH_TO_SHOW_RIGHT_PANEL }"
+  >
     <pane min-size="30" size="30">
-      <div class="d-flex flex-column h-100 left-panel overflow-auto">
+      <v-container class="d-flex flex-column h-100 left-panel pa-0 overflow-auto" fluid>
         <v-card class="flex-shrink-0">
           <v-card-item :prepend-icon="mdiHome">
-            <v-card-subtitle>伴學小書僮</v-card-subtitle>
-            <v-card-title>出題小書僮</v-card-title>
+            <v-card-subtitle>伴學小助教</v-card-subtitle>
+            <v-card-title>出題小助教</v-card-title>
           </v-card-item>
         </v-card>
-
-        <v-divider></v-divider>
 
         <v-form class="ma-4">
           <v-select
@@ -301,90 +305,86 @@ mqtt.init((msg: string, isEnd: boolean) => {
           ></v-select>
         </v-form>
 
-        <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
-          <div class="w-100">
-            <v-container class="pa-2 pt-0" ref="messageScrollTarget">
-              <v-sheet
-                border
-                rounded
-                class="text-body-1 mx-auto mt-2"
-                v-for="(msg, index) in messages"
-                :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-                :key="`${index}-${msg.type}`"
-              >
-                <v-container fluid>
-                  <v-row>
-                    <v-col cols="auto">
-                      <v-icon :icon="msg.type === 'ai' ? mdiRobot : mdiAccountBox"></v-icon>
-                    </v-col>
-                    <v-col>
-                      <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-sheet>
+        <v-container class="pa-2 pt-0 overflow-y-auto" fluid ref="messageScrollTarget">
+          <v-sheet
+            border
+            rounded
+            class="text-body-1 ma-2"
+            v-for="(msg, index) in messages"
+            :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+            :key="`${index}-${msg.type}`"
+          >
+            <v-container fluid>
+              <v-row>
+                <v-col cols="auto">
+                  <v-icon :icon="msg.type === 'ai' ? mdiRobot : mdiAccountBox"></v-icon>
+                </v-col>
+                <v-col>
+                  <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
+                </v-col>
+              </v-row>
             </v-container>
-          </div>
-        </v-layout>
+          </v-sheet>
+        </v-container>
+
+        <v-spacer></v-spacer>
 
         <v-divider class="mt-2"></v-divider>
 
-        <v-sheet class="ma-2 bg-transparent">
-          <v-form @submit.prevent="onSubmit">
-            <v-container>
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-select
-                    label="出題範圍"
-                    :items="assistantList"
-                    item-title="name"
-                    item-value="uuid"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="assistant"
-                  ></v-select>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    label="題目知識點（用空白隔開）"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="knowledgePoint"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="6">
-                  <v-select
-                    label="選擇題數量"
-                    :items="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="numberOfChoiceQuestion"
-                  ></v-select>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <v-select
-                    label="問答題數量"
-                    :items="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="numberOfAnswerQuestion"
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-sheet>
+        <v-form @submit.prevent="onSubmit" class="ma-2">
+          <v-container class="pa-2" fluid>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-select
+                  label="出題範圍"
+                  :items="assistantList"
+                  item-title="name"
+                  item-value="uuid"
+                  variant="solo"
+                  density="compact"
+                  hide-details="auto"
+                  v-model="assistant"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  label="題目知識點（用空白隔開）"
+                  variant="solo"
+                  density="compact"
+                  hide-details="auto"
+                  v-model="knowledgePoint"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-select
+                  label="選擇題數量"
+                  :items="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                  variant="solo"
+                  density="compact"
+                  hide-details="auto"
+                  v-model="numberOfChoiceQuestion"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-select
+                  label="問答題數量"
+                  :items="[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                  variant="solo"
+                  density="compact"
+                  hide-details="auto"
+                  v-model="numberOfAnswerQuestion"
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
 
         <v-divider></v-divider>
 
         <v-textarea
-          class="mt-2 mx-7 flex-grow-0"
+          class="mt-2 mx-4 flex-grow-0"
           rows="3"
           no-resize
           variant="solo"
@@ -409,7 +409,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
             ></v-icon>
           </template>
         </v-textarea>
-        <div class="d-flex justify-center align-center flex-wrap">
+
+        <v-container class="d-flex justify-center pa-0 flex-wrap">
           <TheVoiceInput
             :disabled="mqttLoading"
             @message="onVoiceMessage"
@@ -424,8 +425,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
           >
             匯出試卷
           </v-btn>
-        </div>
-      </div>
+        </v-container>
+      </v-container>
     </pane>
     <pane size="80">
       <v-card class="h-100 overflow-y-auto" max-height="calc(100vh - 64px)">
@@ -465,5 +466,20 @@ mqtt.init((msg: string, isEnd: boolean) => {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
+}
+
+.default-theme.custom-mobile-view {
+  :deep(.splitpanes__splitter),
+  :deep(.splitpanes__pane:last-child) {
+    display: none;
+  }
+
+  :deep(.splitpanes__pane:first-child) {
+    width: 100% !important;
+
+    .v-row.custom-message:where(:has(.tooltip)) {
+      display: none;
+    }
+  }
 }
 </style>
