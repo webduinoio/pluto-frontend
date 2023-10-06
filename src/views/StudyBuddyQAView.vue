@@ -100,7 +100,7 @@ const loadData = async () => {
         file: data[i] + '.pdf',
       };
       var encodedString = utf8ToB64(JSON.stringify(link));
-      var showFilename = data[i].length > 8 ? data[i].substring(0, 8) + '...' : data[i];
+      var showFilename = data[i];
       pdfViewerItems.value.push({ title: showFilename, value: encodedString });
     }
   } catch (err: any) {
