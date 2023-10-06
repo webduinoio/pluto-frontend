@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - RWD - 小助教聊天畫面 [#7274](https://redmine.kingkit.codes/issues/7274)
 - 小書僮更名 [#7266](https://redmine.kingkit.codes/issues/7266)
 - 修正 PDF 檔案下載與顯示 [#7250](https://redmine.kingkit.codes/issues/7250)
+- 快速切換 PDF 檔案會讓頁數異常 [#7238](https://redmine.kingkit.codes/issues/7238)
 
 ### Fixed
 
