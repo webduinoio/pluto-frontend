@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - 刪除小書僮後清單無法顯示全部小書僮 [#7241](https://redmine.kingkit.codes/issues/7241)
+- header 在 ipad 顯示異常 [#7295](https://redmine.kingkit.codes/issues/7295)
 
 ## [1.8.0] - 2023.09.28
 
