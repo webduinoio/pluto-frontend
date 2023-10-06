@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- 進階設定新增 Prompt 模板 [#7264](https://redmine.kingkit.codes/issues/7264)
+
 ### Changed
 
 - RWD - 小助教清單 [#7272](https://redmine.kingkit.codes/issues/7272)
