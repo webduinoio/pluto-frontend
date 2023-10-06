@@ -10,7 +10,9 @@ import { mdiAccountBox, mdiChevronRightBox, mdiHome, mdiRefresh, mdiRobot } from
 import { get, set, useDebounceFn } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+import { useDisplay } from 'vuetify';
 
+const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
 const prompt = ref('');
@@ -26,6 +28,7 @@ const sheetValue = ref([]);
 const loadingSheet = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
 let _promptTemp: String = '';
+const { width } = useDisplay();
 
 const _loadSheetData = async () => {
   try {
@@ -165,17 +168,18 @@ mqtt.init((msg: string, isEnd: boolean) => {
 </script>
 
 <template>
-  <splitpanes class="default-theme">
+  <splitpanes
+    class="default-theme"
+    :class="{ 'custom-mobile-view': width < WIDTH_TO_SHOW_RIGHT_PANEL }"
+  >
     <pane min-size="30" size="30">
-      <div class="d-flex flex-column h-100 left-panel">
+      <v-container class="d-flex flex-column h-100 left-panel pa-0 overflow-auto" fluid>
         <v-card class="flex-shrink-0">
           <v-card-item :prepend-icon="mdiHome">
             <v-card-subtitle>伴學小助教</v-card-subtitle>
             <v-card-title>試算表小助教</v-card-title>
           </v-card-item>
         </v-card>
-
-        <v-divider></v-divider>
 
         <v-form class="ma-4">
           <v-select
@@ -188,67 +192,63 @@ mqtt.init((msg: string, isEnd: boolean) => {
           ></v-select>
         </v-form>
 
-        <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
-          <div class="w-100">
-            <v-container class="pa-2 pt-0" ref="messageScrollTarget">
-              <v-sheet
-                border
-                rounded
-                class="text-body-1 mx-auto mt-2"
-                v-for="(msg, index) in messages"
-                :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
-                :key="index"
-              >
-                <v-container fluid>
-                  <v-row>
-                    <v-col cols="auto">
-                      <v-icon :icon="msg.type === 'ai' ? mdiRobot : mdiAccountBox"></v-icon>
-                    </v-col>
-                    <v-col>
-                      <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-sheet>
-            </v-container>
-          </div>
-        </v-layout>
-
-        <v-divider class="mt-2"></v-divider>
-
-        <v-sheet class="ma-2 bg-transparent">
-          <v-form @submit.prevent="onSubmit">
-            <v-container>
+        <v-container class="pa-2 pt-0overflow-y-auto" fluid ref="messageScrollTarget">
+          <v-sheet
+            border
+            rounded
+            class="text-body-1 ma-2"
+            v-for="(msg, index) in messages"
+            :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+            :key="index"
+          >
+            <v-container fluid>
               <v-row>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    label="試算表連結"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="sheetUrl"
-                    clearable
-                  ></v-text-field>
+                <v-col cols="auto">
+                  <v-icon :icon="msg.type === 'ai' ? mdiRobot : mdiAccountBox"></v-icon>
                 </v-col>
-                <v-col cols="12" sm="6">
-                  <v-text-field
-                    label="工作表"
-                    variant="solo"
-                    density="compact"
-                    hide-details="auto"
-                    v-model="sheetName"
-                    clearable
-                  ></v-text-field>
+                <v-col>
+                  <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
                 </v-col>
               </v-row>
             </v-container>
-          </v-form>
-        </v-sheet>
+          </v-sheet>
+        </v-container>
+
+        <v-spacer></v-spacer>
+
+        <v-divider class="mt-2"></v-divider>
+
+        <v-form @submit.prevent="onSubmit" class="ma-2">
+          <v-container class="pa-2" fluid>
+            <v-row>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  label="試算表連結"
+                  variant="solo"
+                  density="compact"
+                  hide-details="auto"
+                  v-model="sheetUrl"
+                  clearable
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  label="工作表"
+                  variant="solo"
+                  density="compact"
+                  hide-details="auto"
+                  v-model="sheetName"
+                  clearable
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
 
         <v-divider></v-divider>
 
         <v-textarea
-          class="mt-2 mx-7 flex-grow-0"
+          class="mt-2 mx-4 flex-grow-0"
           rows="1"
           no-resize
           variant="solo"
@@ -272,15 +272,16 @@ mqtt.init((msg: string, isEnd: boolean) => {
             ></v-icon>
           </template>
         </v-textarea>
-        <div class="d-flex justify-center align-center flex-wrap">
+
+        <v-container class="d-flex justify-center pa-0">
           <TheVoiceInput
             :disabled="mqttLoading"
             @message="onVoiceMessage"
             @start="onVoiceStart"
             @stop="onVoiceStop"
           />
-        </div>
-      </div>
+        </v-container>
+      </v-container>
     </pane>
     <pane size="80">
       <v-card class="h-100 overflow-y-auto" max-height="calc(100vh - 64px)">
@@ -331,5 +332,20 @@ mqtt.init((msg: string, isEnd: boolean) => {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
+}
+
+.default-theme.custom-mobile-view {
+  :deep(.splitpanes__splitter),
+  :deep(.splitpanes__pane:last-child) {
+    display: none;
+  }
+
+  :deep(.splitpanes__pane:first-child) {
+    width: 100% !important;
+
+    .v-row.custom-message:where(:has(.tooltip)) {
+      display: none;
+    }
+  }
 }
 </style>
