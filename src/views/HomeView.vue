@@ -21,7 +21,7 @@ const notification = useNotificationStore();
 const oauth = useOAuthStore();
 const actorStore = useActorStore();
 const authorizer = useAuthorizerStore();
-const { smAndUp } = useDisplay();
+const { smAndUp, width } = useDisplay();
 const user = oauth.user;
 
 // TODO: 待調整
@@ -29,6 +29,12 @@ const data = ref<Actor[]>([]);
 const dataLastIndex = ref('');
 const dialog = ref(false);
 const scrollPosition = ref(0);
+const containerWidth = computed(() => {
+  if (width.value < 750) return 340;
+  if (width.value < 1280) return 340 * 2;
+  if (width.value < 1920) return 340 * 3;
+  return 340 * 5;
+});
 
 onActivated(() => {
   window.addEventListener('scroll', handleScroll);
@@ -186,23 +192,25 @@ const onLoad = async ({ done }: { done: Function }) => {
           empty-text="&nbsp;"
           min-height="100"
         >
-          <v-row justify="center">
-            <v-col v-for="item in data" :key="item.id" cols="auto">
-              <TheActor
-                width="310"
-                height="380"
-                :data="item"
-                :can-edit="authorizer.canEdit"
-                :can-edit-all="authorizer.canEditAll"
-                :can-delete="authorizer.canDelete"
-                :can-delete-all="authorizer.canDeleteAll"
-                @edit="onEdit"
-                @open="onOpen"
-                @delete="onDelete"
-                @copy="onCopy"
-              />
-            </v-col>
-          </v-row>
+          <v-container :style="{ width: containerWidth + 'px' }">
+            <v-row>
+              <v-col v-for="item in data" :key="item.id" cols="auto">
+                <TheActor
+                  width="310"
+                  height="380"
+                  :data="item"
+                  :can-edit="authorizer.canEdit"
+                  :can-edit-all="authorizer.canEditAll"
+                  :can-delete="authorizer.canDelete"
+                  :can-delete-all="authorizer.canDeleteAll"
+                  @edit="onEdit"
+                  @open="onOpen"
+                  @delete="onDelete"
+                  @copy="onCopy"
+                />
+              </v-col>
+            </v-row>
+          </v-container>
           <template v-slot:empty> <span class="mt-5">已經到底了喔！</span> </template>
         </v-infinite-scroll>
       </v-container>
