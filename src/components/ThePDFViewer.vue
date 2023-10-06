@@ -4,16 +4,16 @@
       <v-toolbar color="white" border elevation="5">
         <span style="width: 250px">
           <v-select
-            density="compact"
-            hide-details
-            v-model="selectedItem"
             :items="items"
-            return-object
             variant="solo"
+            density="compact"
+            return-object
+            hide-details="auto"
             style="margin: 20px"
+            v-model="selectedItem"
           >
             <template v-slot:selection="{ item }">
-              <span style="width: 100%; font-size: 1em">
+              <span class="text-truncate" style="width: 100%; font-size: 1em">
                 {{ item.title }}
               </span>
             </template>
