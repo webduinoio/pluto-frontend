@@ -110,8 +110,8 @@ export default class PDF {
     this.selectedText = '';
     // Initialize PDF.js settings
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      //  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.js';
-      'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    //pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
     this.pdfContainer.addEventListener('scroll', () => {
       // Get all page elements
       const pageElements = Array.from(this.pdfContainer.children);
