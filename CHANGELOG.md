@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.9.0] - 2023.10.11
+
 ### Changed
 
 - RWD - 小助教清單 [#7272](https://redmine.kingkit.codes/issues/7272)
@@ -162,8 +164,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.8.0...HEAD
-[1.8.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.7.0...v1.8.0
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.9.0...HEAD
+[1.8.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.8.0...v1.9.0
 [1.7.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.5.0...v1.5.1
