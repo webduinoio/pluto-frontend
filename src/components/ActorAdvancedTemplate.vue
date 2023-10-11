@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * 進階設定 自定模式
+ * 進階設定 模板畫面
  */
 import { NOTIFICATION_TIMEOUT } from '@/config';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
@@ -86,6 +86,7 @@ watch(
 
 <template>
   <v-container>
+    模板畫面
     <v-sheet class="mt-4 bg-transparent">
       <v-row>
         <v-col cols="12" md="6">
