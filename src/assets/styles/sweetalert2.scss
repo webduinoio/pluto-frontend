@@ -1,7 +1,13 @@
+// 覆寫預設的 swal2 樣式
+
 // 與 vuetify 的自定的 secondary color 保持一致，參照 vuetify.ts
 $vuetify-secondary-color: #f1a23a;
 
-.custom-swal2-loader {
+.swal2-loader {
   border-top-color: $vuetify-secondary-color !important;
   border-bottom-color: $vuetify-secondary-color !important;
+}
+
+.swal2-confirm {
+  background-color: $vuetify-secondary-color !important;
 }

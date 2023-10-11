@@ -1,6 +1,7 @@
 /**
  * 包裝 sweetalert2 的 hook
  * i18n https://sweetalert2.github.io/recipe-gallery/i18n-l10n.html
+ * 樣式的處理，請使用 src/assets/styles/sweetalert2.scss，使用官方預設的 api，可能不會生效！
  */
 
 import { LOCALE } from '@/enums';
@@ -44,9 +45,6 @@ export function useSweetAlert() {
       title: frenchkiss.t('loading.title'),
       allowOutsideClick: false,
       backdrop: true,
-      customClass: {
-        loader: 'custom-swal2-loader'
-      },
       didOpen() {
         Swal.showLoading();
       },

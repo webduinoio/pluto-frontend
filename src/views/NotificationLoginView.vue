@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { logout } from '@/services';
-import { useTheme } from 'vuetify';
 
 const { fire, showLoading } = useSweetAlert();
-const { current } = useTheme();
 
 fire({
   title: '學習不再是孤軍奮戰！',
@@ -14,7 +12,6 @@ fire({
   timer: 7000,
   timerProgressBar: true,
   allowOutsideClick: false,
-  confirmButtonColor: current.value.colors.secondary,
 }).then(async () => {
   showLoading();
   logout();
