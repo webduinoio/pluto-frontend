@@ -45,7 +45,7 @@ export function useSweetAlert() {
       allowOutsideClick: false,
       backdrop: true,
       customClass: {
-        title: '!font-normal',
+        loader: 'custom-swal2-loader'
       },
       didOpen() {
         Swal.showLoading();
