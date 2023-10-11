@@ -24,11 +24,20 @@ import { get, set } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
+import { useDisplay } from 'vuetify';
 
 type PDFItem = {
   title: string;
   value: string;
 };
+
+interface PDFViewerType {
+  pdf: {
+    setInjectAskPrompt: (callback: (ask: string) => void) => void;
+  };
+}
+
+const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
 const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
@@ -37,12 +46,6 @@ const actors = ref<{ type: string; messages: string[] }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
-interface PDFViewerType {
-  pdf: {
-    setInjectAskPrompt: (callback: (ask: string) => void) => void;
-  };
-}
-
 const pdfViewer = ref<PDFViewerType | null>(null);
 const { fire } = useSweetAlert();
 const mqttLoading = ref(false);
@@ -63,6 +66,7 @@ let respMsg: string[] = [];
 const authorizer = useAuthorizerStore();
 const oauth = useOAuthStore();
 const user = oauth.user;
+const { width } = useDisplay();
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -96,7 +100,7 @@ const loadData = async () => {
         file: data[i] + '.pdf',
       };
       var encodedString = utf8ToB64(JSON.stringify(link));
-      var showFilename = data[i].length > 8 ? data[i].substring(0, 8) + '...' : data[i];
+      var showFilename = data[i];
       pdfViewerItems.value.push({ title: showFilename, value: encodedString });
     }
   } catch (err: any) {
@@ -187,15 +191,6 @@ const onReferenceMessage = (endMsg: string) => {
   return keywordAmt == 0 ? '' : links;
 };
 
-onMounted(async () => {
-  await loadData();
-  pdfViewer.value!.pdf.setInjectAskPrompt(function (ask: string) {
-    set(prompt, ask);
-  });
-
-  textarea.value && textarea.value.focus();
-});
-
 const onEdit = () => {
   window.open(
     router.resolve({
@@ -205,6 +200,15 @@ const onEdit = () => {
     '_blank'
   );
 };
+
+onMounted(async () => {
+  await loadData();
+  pdfViewer.value?.pdf.setInjectAskPrompt(function (ask: string) {
+    set(prompt, ask);
+  });
+
+  textarea.value && textarea.value.focus();
+});
 
 watch(mqttLoading, (val) => {
   val && set(prompt, '');
@@ -266,9 +270,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
 </script>
 
 <template>
-  <splitpanes class="default-theme">
+  <splitpanes
+    class="default-theme"
+    :class="{ 'custom-mobile-view': width < WIDTH_TO_SHOW_RIGHT_PANEL }"
+  >
     <pane min-size="40" size="40">
-      <div class="d-flex flex-column h-100 left-panel overflow-auto">
+      <v-container class="d-flex flex-column h-100 left-panel pa-0 overflow-auto" fluid>
         <v-card class="flex-shrink-0">
           <v-card-item>
             <v-row fluid>
@@ -276,7 +283,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                 <v-img class="rounded-image" width="47" height="47" :src="get(actorData)?.image" />
               </v-col>
               <v-col>
-                <v-card-subtitle>問答小書僮</v-card-subtitle>
+                <v-card-subtitle>問答小助教</v-card-subtitle>
                 <v-card-title>{{ actorData?.name }}</v-card-title>
               </v-col>
               <v-col
@@ -290,8 +297,6 @@ mqtt.init((msg: string, isEnd: boolean) => {
             </v-row>
           </v-card-item>
         </v-card>
-
-        <v-divider></v-divider>
 
         <v-form class="ma-4">
           <v-select
@@ -313,39 +318,40 @@ mqtt.init((msg: string, isEnd: boolean) => {
           </v-select>
         </v-form>
 
-        <v-layout class="flex-grow-1 mx-2 overflow-y-auto" style="min-height: 100px">
-          <div class="w-100">
-            <v-container class="pa-2 pt-0" ref="messageScrollTarget">
-              <div>
-                <v-sheet
-                  border
-                  rounded
-                  class="text-body-1 mx-auto mt-2"
-                  v-for="(actor, index) in actors"
-                  :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
-                  :key="index"
-                >
-                  <v-container>
-                    <v-row fluid v-for="(msg, msgIdx) in actor.messages" :key="msgIdx">
-                      <v-col cols="auto">
-                        <v-icon v-if="msgIdx !== 0"></v-icon>
-                        <template v-else>
-                          <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
-                          <v-icon v-else>
-                            <img class="icon-image" :src="get(actorData)?.image" />
-                          </v-icon>
-                        </template>
-                      </v-col>
-                      <v-col style="padding: 12px 12px 3px 12px">
-                        <div v-html="msg"></div>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-sheet>
-              </div>
+        <v-container class="pa-2 pt-0 w-100 overflow-y-auto" fluid ref="messageScrollTarget">
+          <v-sheet
+            border
+            rounded
+            class="text-body-1 mx-auto mt-2"
+            v-for="(actor, index) in actors"
+            :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
+            :key="index"
+          >
+            <v-container fluid>
+              <v-row
+                fluid
+                v-for="(msg, msgIdx) in actor.messages"
+                :key="msgIdx"
+                class="custom-message"
+              >
+                <v-col cols="auto">
+                  <v-icon v-if="msgIdx !== 0"></v-icon>
+                  <template v-else>
+                    <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
+                    <v-icon v-else>
+                      <img class="icon-image" :src="get(actorData)?.image" />
+                    </v-icon>
+                  </template>
+                </v-col>
+                <v-col style="padding: 12px 12px 3px 12px">
+                  <div v-html="msg"></div>
+                </v-col>
+              </v-row>
             </v-container>
-          </div>
-        </v-layout>
+          </v-sheet>
+        </v-container>
+
+        <v-spacer></v-spacer>
 
         <v-divider class="mt-2"></v-divider>
 
@@ -375,15 +381,16 @@ mqtt.init((msg: string, isEnd: boolean) => {
             ></v-icon>
           </template>
         </v-textarea>
-        <div class="d-flex flex-column align-center">
+
+        <v-container class="d-flex justify-center pa-0">
           <TheVoiceInput
             :disabled="mqttLoading"
             @message="onVoiceMessage"
             @start="onVoiceStart"
             @stop="onVoiceStop"
           />
-        </div>
-      </div>
+        </v-container>
+      </v-container>
     </pane>
     <pane size="60" class="h-100 right-panel">
       <ThePDFViewer ref="pdfViewer" :items="pdfViewerItems"></ThePDFViewer>
@@ -394,9 +401,6 @@ mqtt.init((msg: string, isEnd: boolean) => {
 <style lang="scss" scoped>
 .left-panel {
   max-height: calc(100vh - 64px);
-  .flex-grow-1 {
-    overflow-y: auto;
-  }
 }
 .right-panel {
   height: calc(100vh - 165px);
@@ -436,6 +440,21 @@ mqtt.init((msg: string, isEnd: boolean) => {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: running;
+}
+
+.default-theme.custom-mobile-view {
+  :deep(.splitpanes__splitter),
+  :deep(.splitpanes__pane:last-child) {
+    display: none;
+  }
+
+  :deep(.splitpanes__pane:first-child) {
+    width: 100% !important;
+
+    .v-row.custom-message:where(:has(.tooltip)) {
+      display: none;
+    }
+  }
 }
 </style>
 

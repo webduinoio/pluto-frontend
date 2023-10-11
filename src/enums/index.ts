@@ -22,7 +22,7 @@ export const MQTT_TOPIC: Readonly<{
   CODE: string;
   PROC: string;
 }> = {
-  KN: import.meta.env.VITE_MQTT_TOPIC_KN, // 小書僮
+  KN: import.meta.env.VITE_MQTT_TOPIC_KN, // 小助教
   CODE: import.meta.env.VITE_MQTT_TOPIC_CODE, // 思維工具
   PROC: import.meta.env.VITE_MQTT_TOPIC_PROC, // actorId 處理訊息通報
 }
