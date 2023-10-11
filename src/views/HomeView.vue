@@ -196,7 +196,7 @@ const onLoad = async ({ done }: { done: Function }) => {
             <v-col v-for="item in data" :key="item.id" cols="auto">
               <TheActor
                 class="pa-2"
-                max-width="310"
+                width="310"
                 height="380"
                 :data="item"
                 :can-edit="authorizer.canEdit"
