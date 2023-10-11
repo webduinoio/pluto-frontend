@@ -30,10 +30,10 @@ const dataLastIndex = ref('');
 const dialog = ref(false);
 const scrollPosition = ref(0);
 const containerWidth = computed(() => {
-  if (width.value < 750) return 340;
-  if (width.value < 1280) return 340 * 2;
-  if (width.value < 1920) return 340 * 3;
-  return 340 * 5;
+  if (width.value < 750) return `340px`;
+  if (width.value < 1280) return `${340 * 2}px`;
+  if (width.value < 1920) return `${340 * 3}px`;
+  return `${340 * 5}px`;
 });
 
 onActivated(() => {
@@ -174,7 +174,7 @@ const onLoad = async ({ done }: { done: Function }) => {
 
 <template>
   <v-container class="mb-6">
-    <div class="d-flex justify-space-between mt-15 px-sm-16">
+    <div class="d-flex justify-space-between mt-5 mt-sm-15 px-sm-16">
       <div class="text-h4 font-weight-bold">我的小助教</div>
       <div v-if="authorizer.canCreate">
         <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
@@ -183,39 +183,37 @@ const onLoad = async ({ done }: { done: Function }) => {
         <v-btn color="primary" v-else :icon="mdiPlus" size="small" @click="onCreate"></v-btn>
       </div>
     </div>
-    <v-main>
-      <v-container>
-        <v-infinite-scroll
-          :items="data"
-          :onLoad="onLoad"
-          class="overflow-x-hidden"
-          empty-text="&nbsp;"
-          min-height="100"
-        >
-          <v-container :style="{ width: containerWidth + 'px' }">
-            <v-row>
-              <v-col v-for="item in data" :key="item.id" cols="auto">
-                <TheActor
-                  class="pa-2"
-                  width="310"
-                  height="380"
-                  :data="item"
-                  :can-edit="authorizer.canEdit"
-                  :can-edit-all="authorizer.canEditAll"
-                  :can-delete="authorizer.canDelete"
-                  :can-delete-all="authorizer.canDeleteAll"
-                  @edit="onEdit"
-                  @open="onOpen"
-                  @delete="onDelete"
-                  @copy="onCopy"
-                />
-              </v-col>
-            </v-row>
-          </v-container>
-          <template v-slot:empty> <span class="mt-5">已經到底了喔！</span> </template>
-        </v-infinite-scroll>
-      </v-container>
-    </v-main>
+    <v-container>
+      <v-infinite-scroll
+        :items="data"
+        :onLoad="onLoad"
+        class="overflow-x-hidden"
+        empty-text="&nbsp;"
+        min-height="100"
+      >
+        <v-container :style="{ 'max-width': containerWidth }">
+          <v-row>
+            <v-col v-for="item in data" :key="item.id" cols="auto">
+              <TheActor
+                class="pa-2"
+                max-width="310"
+                height="380"
+                :data="item"
+                :can-edit="authorizer.canEdit"
+                :can-edit-all="authorizer.canEditAll"
+                :can-delete="authorizer.canDelete"
+                :can-delete-all="authorizer.canDeleteAll"
+                @edit="onEdit"
+                @open="onOpen"
+                @delete="onDelete"
+                @copy="onCopy"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
+        <template v-slot:empty> <span class="mt-5">已經到底了喔！</span> </template>
+      </v-infinite-scroll>
+    </v-container>
     <v-footer class="justify-center custom-footer mt-16 text-h6">
       <a href="https://webduino.io/" target="_blank" class="custom-footer-text"> Webduino </a>
       <span class="mx-1 custom-footer-text">·</span>
