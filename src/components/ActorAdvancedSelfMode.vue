@@ -80,6 +80,9 @@ watch(
   () => props.actor,
   (val) => {
     setFieldValue('prompt', val?.prompt || '');
+  },
+  {
+    immediate: true,
   }
 );
 </script>
