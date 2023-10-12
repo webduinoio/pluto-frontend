@@ -210,9 +210,9 @@ watch(
             </v-col>
             <v-col cols="12" sm="8" md="6">
               <v-switch
+                class="custom-switch"
                 hide-details
                 inset
-                color="blue-grey-darken-2"
                 :false-icon="mdiCloseCircle"
                 :true-icon="mdiCheckCircle"
               ></v-switch>
@@ -242,4 +242,17 @@ watch(
   </v-container>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.custom-switch {
+  :deep(.v-selection-control--dirty .v-selection-control__input) {
+    color: white;
+  }
+  :deep(.v-switch__track) {
+    border-color: #6d6d6d;
+    border: 2px solid;
+  }
+  :deep(.v-switch__track:not(.v-selection-control--dirty .v-switch__track)) {
+    background-color: #d9d9d9;
+  }
+}
+</style>
