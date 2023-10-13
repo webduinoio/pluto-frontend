@@ -17,7 +17,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'submit', data: Actor): void;
+  (e: 'update:actor', data: Actor): void;
 }>();
 
 const { fire } = useSweetAlert();
@@ -68,7 +68,7 @@ const onSubmit = handleSubmit(async (values) => {
       timer: NOTIFICATION_TIMEOUT,
       showConfirmButton: false,
     });
-    emit('submit', data);
+    emit('update:actor', data);
   } catch (err: any) {
     console.error(err);
     fire({

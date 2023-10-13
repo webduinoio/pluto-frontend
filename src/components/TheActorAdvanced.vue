@@ -46,8 +46,8 @@ const onSubmit = (value: Actor) => {
   </div>
 
   <v-window-item :value="props.value">
-    <ActorAdvancedSelfMode v-show="mode === 'self'" :actor="editActor" @submit="onSubmit" />
-    <ActorAdvancedTemplate v-show="mode === 'template'" :actor="editActor" @submit="onSubmit" />
+    <ActorAdvancedSelfMode v-show="mode === 'self'" v-model:actor="editActor" />
+    <ActorAdvancedTemplate v-show="mode === 'template'" v-model:actor="editActor" />
   </v-window-item>
 </template>
 
