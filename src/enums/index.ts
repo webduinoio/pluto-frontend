@@ -66,30 +66,6 @@ export enum RETURN_CODE_FROM_MQTT {
   FILE_TOO_LARGE_ERROR = -3,
 }
 
-// export enum MARKDOWN_TYPE {
-//   NONE = 'none',
-//   MARKDOWN = 'markdown',
-//   EXAM = 'exam',
-//   QUESTION = 'question',
-//   QUESTION_V2 = 'question_v2',
-// }
-
-// export enum ANSWER_RECORD_FROM {
-//   QUESTION = 'question',
-//   EXAM = 'exam-paper',
-// }
-
-// export enum ANSWER_RECORD_ERROR_TYPE {
-//   ERROR = 'AssertionError',
-//   TIMEOUT = 'TimeOutError',
-//   OUT_OF_MEMORY = 'OutOfMemoryError',
-// }
-
-// export enum RESULT_VIEW_MODE {
-//   LOCAL = 'local',
-//   SERVER = 'server',
-// }
-
 export enum Action {
   READ = 'GET',
   CREATE = 'POST',
@@ -106,4 +82,9 @@ export enum Effect {
 export enum Permission {
   ACTOR_ADMIN = '/api/v1/actor/',
   ACTOR_NORMAL = '/api/v1/self/actor/',
+}
+
+export enum ADVANCED_SETTING_MODE {
+  SELF = 'self',
+  TEMPLATE = 'template',
 }

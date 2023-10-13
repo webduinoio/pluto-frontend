@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { ADVANCED_SETTING_MODE } from '@/enums';
 import { useActorStore } from '@/stores/actor';
 import { useAuthorizerStore } from '@/stores/authorizer';
-import type { Actor } from '@/types';
 import { get, set } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
 import ActorAdvancedSelfMode from './ActorAdvancedSelfMode.vue';
@@ -14,26 +14,23 @@ const props = withDefaults(
   {}
 );
 
+const { TEMPLATE, SELF } = ADVANCED_SETTING_MODE;
 const authorizer = useAuthorizerStore();
 const actorStore = useActorStore();
 const { editActor } = storeToRefs(actorStore);
-const mode = ref('template');
+const mode = ref(TEMPLATE);
 
 const buttonText = computed(() => {
-  if (get(mode) === 'self') return '返回模板';
+  if (get(mode) === SELF) return '返回模板';
   return '切換自訂模式';
 });
 
 const onClick = () => {
-  if (get(mode) === 'self') {
-    set(mode, 'template');
+  if (get(mode) === SELF) {
+    set(mode, TEMPLATE);
   } else {
-    set(mode, 'self');
+    set(mode, SELF);
   }
-};
-
-const onSubmit = (value: Actor) => {
-  set(editActor, value);
 };
 </script>
 
@@ -45,8 +42,8 @@ const onSubmit = (value: Actor) => {
   </div>
 
   <v-window-item :value="props.value">
-    <ActorAdvancedSelfMode v-show="mode === 'self'" v-model:actor="editActor" />
-    <ActorAdvancedTemplate v-show="mode === 'template'" v-model:actor="editActor" />
+    <ActorAdvancedSelfMode v-show="mode === SELF" v-model:actor="editActor" />
+    <ActorAdvancedTemplate v-show="mode === TEMPLATE" v-model:actor="editActor" />
   </v-window-item>
 </template>
 
