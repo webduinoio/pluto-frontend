@@ -17,6 +17,10 @@ const props = withDefaults(
   {}
 );
 
+const emit = defineEmits<{
+  (e: 'submit', data: Actor): void;
+}>();
+
 const optionTones = [
   { title: '無', value: '' },
   { title: '親切', value: '# 你會以友善的語氣回答問題，避免艱澀的詞彙' },
@@ -122,13 +126,14 @@ const onSubmit = handleSubmit(async (values) => {
     set(loading, true);
     const form = new FormData();
     form.append('prompt', get(prompt));
-    await updateActor(props.actor?.id, form);
+    const { data } = await updateActor(props.actor?.id, form);
     await fire({
       title: '更新完成',
       icon: 'success',
       timer: NOTIFICATION_TIMEOUT,
       showConfirmButton: false,
     });
+    emit('submit', data);
   } catch (err: any) {
     console.error(err);
     fire({

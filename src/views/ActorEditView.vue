@@ -80,7 +80,7 @@ const onSave = (value: Actor) => {
         <v-window v-model="tab">
           <TheActorSetting value="setting" :actor="editActor" @save="onSave" />
           <TheActorDataManager value="dataManager" :actor="editActor" />
-          <TheActorAdvanced value="advanced" :actor="editActor" />
+          <TheActorAdvanced value="advanced" />
         </v-window>
       </v-main>
     </v-container>
