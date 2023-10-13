@@ -16,6 +16,10 @@ const props = withDefaults(
   {}
 );
 
+const emit = defineEmits<{
+  (e: 'submit', data: Actor): void;
+}>();
+
 const { fire } = useSweetAlert();
 const loading = ref(false);
 
@@ -57,13 +61,14 @@ const onSubmit = handleSubmit(async (values) => {
     set(loading, true);
     const form = new FormData();
     form.append('prompt', values.prompt);
-    await updateActor(props.actor?.id, form);
+    const { data } = await updateActor(props.actor?.id, form);
     await fire({
       title: '更新完成',
       icon: 'success',
       timer: NOTIFICATION_TIMEOUT,
       showConfirmButton: false,
     });
+    emit('submit', data);
   } catch (err: any) {
     console.error(err);
     fire({
