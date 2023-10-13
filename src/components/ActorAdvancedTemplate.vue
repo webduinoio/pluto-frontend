@@ -7,7 +7,7 @@ import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
 import type { Actor } from '@/types';
 import { mdiCheckCircle, mdiCloseCircle } from '@mdi/js';
-import { set } from '@vueuse/core';
+import { get, set } from '@vueuse/core';
 import { useField, useForm } from 'vee-validate';
 
 const props = withDefaults(
@@ -18,52 +18,23 @@ const props = withDefaults(
 );
 
 const optionTones = [
-  { title: '無', value: 'na' },
+  { title: '無', value: '' },
   { title: '親切', value: '# 你會以友善的語氣回答問題，避免艱澀的詞彙' },
   { title: '幽默', value: '# 你會以幽默活潑的語氣回答問題' },
   { title: '正式', value: '# 你會以正式專業的語氣回答問題' },
 ];
 
 const optionLanguages = [
-  { title: '自動', value: 'na' },
+  { title: '自動', value: '' },
   { title: 'English', value: '# answer in English' },
   { title: '繁體中文', value: '# 用繁體中文回答' },
 ];
 
 const optionLengths = [
-  { title: '自動', value: 'na' },
+  { title: '自動', value: '' },
   { title: '精簡', value: '# 回答字數限制30字內' },
   { title: '適中', value: '# 回答字數限制200字內' },
 ];
-
-const { fire } = useSweetAlert();
-const loading = ref(false);
-
-const { handleSubmit, setFieldValue } = useForm({
-  initialValues: {
-    prompt: '',
-    role: '',
-    tone: optionTones[0],
-    language: optionLanguages[0],
-    length: optionLengths[0],
-  },
-  // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
-  validationSchema: {
-    prompt: 'required|max:1000',
-    role: 'required|max:100',
-    tone: 'required',
-    language: 'required',
-    length: 'required',
-  },
-});
-
-const prompt = useField('prompt', undefined, {
-  label: 'Prompt',
-});
-const role = useField('role');
-const tone = useField('tone');
-const language = useField('language');
-const length = useField('length');
 
 const DEFAULT_PROMPT = `# 資料集
 \`\`\`
@@ -76,18 +47,81 @@ const DEFAULT_PROMPT = `# 資料集
 \`\`\`
 
 你會仔細分析資料集的內容，一步一步思考從中取得有用資料來回答問題。如果資料集找不到相關資訊就說不知道，不要編造答案。
+
 `;
 
-const onReset = () => {
-  setFieldValue('prompt', DEFAULT_PROMPT);
-};
+const DEFAULT_IMAGE_ON_PROMPT = `# 資料集
+\`\`\`
+{context}
+\`\`\`
+
+# 問題
+\`\`\`
+{question}
+\`\`\`
+
+## 回答問題
+你會仔細閱讀資料集內容，然後一步一步思考從中取得有用資料來回答問題。如果資料集找不到相關資訊就說不知道，不要編造答案。
+當你確認資料集中有 markdown 格式的圖片連結，例如 \`[alt text](URL)\`，請確保只回答真實的圖片連結，不要編造。
+
+## Let's work this out in a step by step way to be sure we have the right answer
+## 回答格式
+如果資料集中有圖片連結，則先提供[圖片連結]，否則直接回答問題。
+[回答問題]
+
+`;
+
+const { fire } = useSweetAlert();
+const loading = ref(false);
+
+const { handleSubmit, setFieldValue, resetForm } = useForm({
+  initialValues: {
+    role: '',
+    tone: optionTones[0].value,
+    language: optionLanguages[0].value,
+    length: optionLengths[0].value,
+    image: false,
+  },
+  // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
+  validationSchema: {
+    role: 'max:200',
+  },
+});
+
+const role = useField('role');
+const tone = useField('tone');
+const language = useField('language');
+const length = useField('length');
+const image = useField('image');
+
+const prompt = computed(() => {
+  let value = image.value.value ? DEFAULT_IMAGE_ON_PROMPT : DEFAULT_PROMPT;
+
+  if (role.value.value) {
+    value += `# 你會扮演${role.value.value}\n`;
+  }
+
+  if (tone.value.value) {
+    value += `${tone.value.value}\n`;
+  }
+
+  if (language.value.value) {
+    value += `${language.value.value}\n`;
+  }
+
+  if (length.value.value) {
+    value += `${length.value.value}\n`;
+  }
+
+  return value;
+});
 
 const onSubmit = handleSubmit(async (values) => {
   if (!props.actor?.id) return;
   try {
     set(loading, true);
     const form = new FormData();
-    form.append('prompt', values.prompt);
+    form.append('prompt', get(prompt));
     await updateActor(props.actor?.id, form);
     await fire({
       title: '更新完成',
@@ -107,10 +141,61 @@ const onSubmit = handleSubmit(async (values) => {
   }
 });
 
+const _updateRole = (prompt: string) => {
+  const regex = /# 你會扮演(.*)/m;
+  const match = prompt.match(regex);
+  if (match) {
+    setFieldValue('role', match[1]);
+  }
+};
+
+const _updateTone = (prompt: string) => {
+  const regex = /# 你會以(?:友善|幽默活潑|正式專業)的語氣回答問題(?:，避免艱澀的詞彙)?/m;
+  const match = prompt.match(regex);
+  if (match) {
+    const tone = optionTones.find((option) => option.value === match[0]);
+    if (tone) {
+      setFieldValue('tone', tone.value);
+    }
+  }
+};
+
+const _updateLanguage = (prompt: string) => {
+  const regex = /# (用繁體中文回答|answer in English)/m;
+  const match = prompt.match(regex);
+  if (match) {
+    const language = optionLanguages.find((option) => option.value === match[0]);
+    if (language) {
+      setFieldValue('language', language.value);
+    }
+  }
+};
+
+const _updateLength = (prompt: string) => {
+  const regex = /# 回答字數限制(?:30|200)字內/m;
+  const match = prompt.match(regex);
+  if (match) {
+    const length = optionLengths.find((option) => option.value === match[0]);
+    if (length) {
+      setFieldValue('length', length.value);
+    }
+  }
+};
+
+const _updateImage = (prompt: string) => {
+  const regex = /## 回答問題[\s\S]*markdown 格式的圖片連結[\s\S]*## 回答格式[\s\S]*\[回答問題\]/m;
+  setFieldValue('image', regex.test(prompt));
+};
+
 watch(
   () => props.actor,
   (val) => {
-    setFieldValue('prompt', val?.prompt || '');
+    if (!val || !val.prompt) return;
+    _updateRole(val.prompt);
+    _updateTone(val.prompt);
+    _updateLanguage(val.prompt);
+    _updateLength(val.prompt);
+    _updateImage(val.prompt);
   },
   {
     immediate: true,
@@ -135,7 +220,7 @@ watch(
                 variant="outlined"
                 rows="2"
                 v-model="role.value.value"
-                :error-messages="prompt.errorMessage.value"
+                :error-messages="role.errorMessage.value"
                 :disabled="loading"
               >
               </v-textarea>
@@ -213,8 +298,10 @@ watch(
                 class="custom-switch"
                 hide-details
                 inset
+                v-model="image.value.value"
                 :false-icon="mdiCloseCircle"
                 :true-icon="mdiCheckCircle"
+                :disabled="loading"
               ></v-switch>
             </v-col>
           </v-row>
@@ -227,7 +314,7 @@ watch(
             class="mt-12"
             size="large"
             :disabled="loading"
-            @click="onReset"
+            @click="resetForm"
           >
             重置
           </v-btn>
