@@ -4,6 +4,7 @@ import TheActorDataManager from '@/components/TheActorDataManager.vue';
 import TheActorSetting from '@/components/TheActorSetting.vue';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { getActor } from '@/services/actors';
+import { useActorStore } from '@/stores/actor';
 import type { Actor } from '@/types';
 import { mdiChevronLeft, mdiOpenInNew } from '@mdi/js';
 import { set } from '@vueuse/core';
@@ -11,6 +12,7 @@ import { set } from '@vueuse/core';
 const router = useRouter();
 const route = useRoute();
 const actor = ref<Actor>();
+const actorStore = useActorStore();
 
 const tab = ref();
 
@@ -42,6 +44,7 @@ const onOpen = () => {
 
 const onSave = (value: Actor) => {
   set(actor, value);
+  actorStore.refreshActors = true;
 };
 </script>
 
