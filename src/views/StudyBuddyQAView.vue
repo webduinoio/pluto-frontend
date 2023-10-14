@@ -172,13 +172,25 @@ const onReferenceMessage = (endMsg: string) => {
       ) {
         // 這邊可以處理 jieba
         keyword = content[line];
-        keyword = keyword.trim().split(' ')[0];
         break;
       }
     }
 
     if (keyword != '') {
-      var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
+      var linkInfo;
+      if (/[\u4e00-\u9fff]/.test(keyword)) {
+        // 如果包含中文字符
+        linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
+      } else {
+        // 如果是英文
+        var words = keyword.split(' ');
+        if (words.length > 7) {
+          keyword = words.slice(0, 7).join(' ');
+          linkInfo = keyword + '...';
+        } else {
+          linkInfo = keyword;
+        }
+      }
       keywordAmt++;
       let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}','${item.page}'); })())`;
       links += `<div class="tooltip">

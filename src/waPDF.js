@@ -75,8 +75,8 @@ class PDF {
     this.selectedText = '';
     // Initialize PDF.js settings
     pdfjsLib.GlobalWorkerOptions.workerSrc =
-      //  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.js';
-      'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    //'https://mozilla.github.io/pdf.js/build/pdf.worker.js';
     this.pdfContainer.addEventListener('scroll', () => {
       // Get all page elements
       const pageElements = Array.from(this.pdfContainer.children);
@@ -133,6 +133,7 @@ class PDF {
 
   async mark(markStr) {
     if (markStr == null) return;
+    markStr = markStr.replace(/\s+/g, '');
     this.clearMark();
     let verifyLength = markStr.length;
     let verifyCnt = 0;
@@ -145,22 +146,28 @@ class PDF {
     elements.forEach(function (element) {
       spans.push(element);
     });
-
     outerLoop: for (var idx in spans) {
       var words = spans[idx].textContent;
       var sameSpanCnt = 0;
       var startMatch = 0;
-
+      var spaceChar = 0;
       for (var w in words) {
         let mark = markStr.substring(verifyCnt, verifyCnt + 1);
+        if (mark == ' ') {
+          ++verifyCnt;
+          continue;
+        }
+        if (words[w] == ' ') {
+          ++spaceChar;
+          continue;
+        }
         if (words[w] == mark) {
-          // debugger;
           kewordNotFound = false;
           if (sameSpanCnt == 0) {
             startMatch = parseInt(w);
             _spanHighlightMap[idx] = { start: startMatch };
           }
-          var end = ++sameSpanCnt + startMatch;
+          var end = ++sameSpanCnt + startMatch + spaceChar;
           _spanHighlightMap[idx]['ele'] = spans[idx];
           _spanHighlightMap[idx]['end'] = end;
           _spanHighlightMap[idx]['cnt'] = words.substring(startMatch, end);
@@ -191,6 +198,9 @@ class PDF {
     // highlight
     for (var spanIdx in this.spanHighlightMap) {
       var cnt = elements[spanIdx].innerHTML;
+      console.log('cnt:', cnt);
+      console.log(this.spanHighlightMap[spanIdx]['start']);
+      console.log(this.spanHighlightMap[spanIdx]['end']);
       var replaceStr = cnt.substring(
         this.spanHighlightMap[spanIdx]['start'],
         this.spanHighlightMap[spanIdx]['end']
