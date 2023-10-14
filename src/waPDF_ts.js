@@ -203,9 +203,13 @@ export default class PDF {
       var words = spans[idx].textContent;
       var sameSpanCnt = 0;
       var startMatch = 0;
-
+      var spaceChar = 0;
       for (var w in words) {
         let mark = markStr.substring(verifyCnt, verifyCnt + 1);
+        if (words[w] == ' ') {
+          ++spaceChar;
+          continue;
+        }
         if (words[w] == mark) {
           // debugger;
           kewordNotFound = false;
@@ -213,7 +217,7 @@ export default class PDF {
             startMatch = parseInt(w);
             _spanHighlightMap[idx] = { start: startMatch };
           }
-          var end = ++sameSpanCnt + startMatch;
+          var end = ++sameSpanCnt + startMatch + spaceChar;
           _spanHighlightMap[idx]['ele'] = spans[idx];
           _spanHighlightMap[idx]['end'] = end;
           _spanHighlightMap[idx]['cnt'] = words.substring(startMatch, end);

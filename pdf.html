@@ -111,7 +111,8 @@
       </div>
     </div>
   </div>
-  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <!--
   <script src="/test/pdf/pdf.3.8.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.min.js"></script>
@@ -142,12 +143,13 @@
 
     ((async function () {
       var url = 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFXS0ZOal84MzhSNlJRVHRsa2lrXzBscjNQcG4tQjVKNSIsImZpbGUiOiJib29rLnBkZiJ9';
-      var url = './test/pdf/book.pdf';
+      var url = './test/pdf/book2.pdf';
       await pdf.load(url);
       //pdf.page(await pdf.mark('民國38年'));
       console.log("== test1 ==");
+      //pdf.page(await pdf.mark('什麼是機會'));
       //pdf.page(await pdf.mark('生物可藉由'));
-      pdf.page(await pdf.mark('認識各種顯微鏡'));
+      //pdf.page(await pdf.mark('認識各種顯微鏡'));
       console.log("== test2 ==");
       //pdf.page(await pdf.mark('1-1'));
       //pdf.page(await pdf.mark('5 張開雙眼，以一眼從目鏡觀察，打開光源及調整光圈的大小，使視野中的亮度'));
