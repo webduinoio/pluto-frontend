@@ -81,8 +81,6 @@ export default class PDF {
     if (this.pdfUrl != url) {
       this.load(url, async function () {
         var findPage = await self.mark(keyword, page);
-        //await self.page(findPage, function () {});
-        //setTimeout(async function () {
         self.pdfDoc.nowPage = parseInt(findPage);
         self.vueCurrentPage.value = self.pdfDoc.nowPage;
         self.showMsg('find:[' + keyword + '],page:' + findPage);
@@ -90,7 +88,6 @@ export default class PDF {
           self.vueCurrentPage.value = self.pdfDoc.nowPage;
           self.vueTotalPages.vaue = self.pdfDoc.numPages;
         });
-        //}, 0);
       });
     } else {
       var findPage = await self.mark(keyword, page);
@@ -105,6 +102,8 @@ export default class PDF {
   }
 
   async load(pdfUrl, callback) {
+    if (this.pdfUrl == pdfUrl) return;
+    this.pdfUrl = pdfUrl;
     var cnt = 1;
     while (cnt > 0) {
       await new Promise((r) => setTimeout(r, 100));
@@ -120,8 +119,6 @@ export default class PDF {
   async wrap_load(pdfUrl, callback) {
     var self = this;
     self.pdfLoadingState = 1;
-    if (typeof pdfUrl == 'undefined' || pdfUrl == '' || this.pdfUrl == pdfUrl) return;
-    this.pdfUrl = pdfUrl;
     this.highlightTimeout = 0;
     this.selectedText = '';
     // Initialize PDF.js settings
@@ -262,13 +259,11 @@ export default class PDF {
     }
     //tunning..
     setTimeout(function () {
-      //console.log('2:');
-      scrollEle.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      /*
-      self.onScrollEnd(scrollEle, function () {
-        scrollEle.parentElement.parentElement.parentElement.scrollTop -= 10;
-      });
-      //*/
+      try {
+        scrollEle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (e) {
+        console.log('scroller err:') + e;
+      }
     }, 500);
     return findPage;
   }
