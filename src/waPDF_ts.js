@@ -186,6 +186,7 @@ export default class PDF {
 
   async mark(markStr, page = 0) {
     if (markStr == null) return;
+    markStr = markStr.replace(/\s+/g, '');
     this.clearMark();
     let verifyLength = markStr.length;
     let verifyCnt = 0;
@@ -266,7 +267,7 @@ export default class PDF {
       try {
         scrollEle.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } catch (e) {
-        console.log('scroller err:') + e;
+        console.log('scroller err:' + e);
       }
     }, 500);
     return findPage;

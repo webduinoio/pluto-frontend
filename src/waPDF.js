@@ -133,6 +133,7 @@ class PDF {
 
   async mark(markStr) {
     if (markStr == null) return;
+    markStr = markStr.replace(/\s+/g, '');
     this.clearMark();
     let verifyLength = markStr.length;
     let verifyCnt = 0;
@@ -145,7 +146,6 @@ class PDF {
     elements.forEach(function (element) {
       spans.push(element);
     });
-
     outerLoop: for (var idx in spans) {
       var words = spans[idx].textContent;
       var sameSpanCnt = 0;
@@ -153,6 +153,10 @@ class PDF {
       var spaceChar = 0;
       for (var w in words) {
         let mark = markStr.substring(verifyCnt, verifyCnt + 1);
+        if (mark == ' ') {
+          ++verifyCnt;
+          continue;
+        }
         if (words[w] == ' ') {
           ++spaceChar;
           continue;
