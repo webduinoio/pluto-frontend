@@ -9,7 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - 進階設定新增 Prompt 模板 [#7264](https://redmine.kingkit.codes/issues/7264)
-- 修正切換索引標籤沒回應 [#7243](https://redmine.kingkit.codes/issues/7243)
+- 解析 PDF 文字間插入多餘空白 [#7318](https://redmine.kingkit.codes/issues/7318)
+- 點擊引用標籤，頁數會變成 NaN [#7243](https://redmine.kingkit.codes/issues/7243)
+- 索引標籤使用 7 個中文字或 7 個單詞 [#7243](https://redmine.kingkit.codes/issues/7243)
+- 刻意刪除副檔名".pdf"訓練會發生錯誤 [#7250](https://redmine.kingkit.codes/issues/7250)
 
 ## [1.9.0] - 2023.10.11
 
