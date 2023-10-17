@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+- 修正點擊引用標籤的問題(NaN,圖片連結) [#7243](https://redmine.kingkit.codes/issues/7243)
+
 ### Added
 
 - 進階設定新增 Prompt 模板 [#7264](https://redmine.kingkit.codes/issues/7264)
