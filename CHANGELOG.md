@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- 進階設定新增 Prompt 模板 [#7264](https://redmine.kingkit.codes/issues/7264)
+
 ## [1.9.1] - 2023.10.18
 
 ### Changed

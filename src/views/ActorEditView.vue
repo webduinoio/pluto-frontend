@@ -4,13 +4,16 @@ import TheActorDataManager from '@/components/TheActorDataManager.vue';
 import TheActorSetting from '@/components/TheActorSetting.vue';
 import { ACTOR_TYPE, ROUTER_NAME } from '@/enums';
 import { getActor } from '@/services/actors';
+import { useActorStore } from '@/stores/actor';
 import type { Actor } from '@/types';
 import { mdiChevronLeft, mdiOpenInNew } from '@mdi/js';
 import { set } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const route = useRoute();
-const actor = ref<Actor>();
+const actorStore = useActorStore();
+const { refreshActors, editActor } = storeToRefs(actorStore);
 
 const tab = ref();
 
@@ -23,17 +26,17 @@ const onBack = () => {
 onMounted(async () => {
   try {
     const { data: value } = await getActor(Number(route.params.id));
-    set(actor, value);
+    set(editActor, value);
   } catch (err) {
     console.error(err);
   }
 });
 
 const onOpen = () => {
-  if (!actor.value?.type) return;
+  if (!editActor.value?.type) return;
   const location = router.resolve({
     name:
-      actor.value.type === ACTOR_TYPE.QUIZ
+      editActor.value.type === ACTOR_TYPE.QUIZ
         ? ROUTER_NAME.STUDY_BUDDY_QUESTION
         : ROUTER_NAME.STUDY_BUDDY_QA,
   });
@@ -41,7 +44,8 @@ const onOpen = () => {
 };
 
 const onSave = (value: Actor) => {
-  set(actor, value);
+  set(editActor, value);
+  set(refreshActors, true);
 };
 </script>
 
@@ -59,7 +63,7 @@ const onSave = (value: Actor) => {
       <v-main>
         <v-toolbar class="bg-transparent">
           <v-toolbar-title class="text-h4 font-weight-bold">
-            {{ actor?.name }}
+            {{ editActor?.name }}
             <v-btn :icon="mdiOpenInNew" color="grey-darken-1" @click="onOpen"></v-btn>
           </v-toolbar-title>
 
@@ -74,9 +78,9 @@ const onSave = (value: Actor) => {
         <v-divider :thickness="2" class="divider"></v-divider>
 
         <v-window v-model="tab">
-          <TheActorSetting value="setting" :actor="actor" @save="onSave" />
-          <TheActorDataManager value="dataManager" :actor="actor" />
-          <TheActorAdvanced value="advanced" :actor="actor" />
+          <TheActorSetting value="setting" :actor="editActor" @save="onSave" />
+          <TheActorDataManager value="dataManager" :actor="editActor" />
+          <TheActorAdvanced value="advanced" />
         </v-window>
       </v-main>
     </v-container>
