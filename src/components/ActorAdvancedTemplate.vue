@@ -340,11 +340,21 @@ watch(
     color: white;
   }
   :deep(.v-switch__track) {
-    border-color: #6d6d6d;
+    background-color: #467974;
+    opacity: 1;
     border: 2px solid;
+    border-color: #6d6d6d;
   }
-  :deep(.v-switch__track:not(.v-selection-control--dirty .v-switch__track)) {
+  :deep(.v-switch__track:not(.v-selection-control--dirty *)) {
     background-color: #d9d9d9;
+  }
+
+  :deep(.v-selection-control__input:not(.v-selection-control--dirty *)) {
+    color: #6d6d6d;
+
+    & > i.v-icon {
+      opacity: 1;
+    }
   }
 }
 </style>
