@@ -168,17 +168,31 @@ const onReferenceMessage = (endMsg: string) => {
       if (
         content[line].trim() != '' &&
         !content[line].trim().startsWith('#') &&
-        !content[line].trim().startsWith('![圖片連結](https://')
+        !content[line].trim().startsWith('圖片連結](https://')
       ) {
         // 這邊可以處理 jieba
         keyword = content[line];
-        keyword = keyword.trim().split(' ')[0];
         break;
       }
     }
 
     if (keyword != '') {
-      var linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
+      //console.log('index:', keyword);
+      var linkInfo;
+      if (/[\u4e00-\u9fff]/.test(keyword)) {
+        // 如果包含中文字符
+        linkInfo = keyword.length > 7 ? keyword.substring(0, 7) + '...' : keyword;
+        keyword = keyword.split(' ')[0];
+      } else {
+        // 如果是英文
+        var words = keyword.split(' ');
+        if (words.length > 7) {
+          keyword = words.slice(0, 7).join(' ');
+          linkInfo = keyword + '...';
+        } else {
+          linkInfo = keyword;
+        }
+      }
       keywordAmt++;
       let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}','${item.page}'); })())`;
       links += `<div class="tooltip">
