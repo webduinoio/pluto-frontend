@@ -35,13 +35,12 @@ const onClick = () => {
 </script>
 
 <template>
-  <div class="d-flex justify-end" v-if="authorizer.canEditAll">
-    <v-btn variant="text" @click="onClick" class="text-grey">
-      {{ buttonText }}
-    </v-btn>
-  </div>
-
   <v-window-item :value="props.value">
+    <div class="d-flex justify-end" v-if="authorizer.canEditAll">
+      <v-btn variant="text" @click="onClick" class="text-grey">
+        {{ buttonText }}
+      </v-btn>
+    </div>
     <ActorAdvancedSelfMode v-show="mode === SELF" v-model:actor="editActor" />
     <ActorAdvancedTemplate v-show="mode === TEMPLATE" v-model:actor="editActor" />
   </v-window-item>
