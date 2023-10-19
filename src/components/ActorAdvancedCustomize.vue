@@ -1,8 +1,9 @@
 <script setup lang="ts">
 /**
- * 進階設定 自定模式
+ * 進階設定 自訂模式
  */
 import { NOTIFICATION_TIMEOUT } from '@/config';
+import { PROMPT_MODE } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
 import type { Actor } from '@/types';
@@ -61,6 +62,7 @@ const onSubmit = handleSubmit(async (values) => {
     set(loading, true);
     const form = new FormData();
     form.append('prompt', values.prompt);
+    form.append('promptMode', PROMPT_MODE.CUSTOMIZE);
     const { data } = await updateActor(props.actor?.id, form);
     await fire({
       title: '更新完成',

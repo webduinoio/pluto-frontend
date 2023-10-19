@@ -3,23 +3,7 @@
  * ServiceXXXX：更新後端資料使用的格式
  */
 
-import { ACTOR_TYPE } from '@/enums';
-
-// export interface MyClass {
-//   id: number;
-//   createdAt: number;
-//   modifiedAt: number;
-//   createdBy: number;
-//   name: string;
-// }
-
-// export interface MyClasses {
-//   totalPages: number;
-//   list: MyClass[];
-// }
-
-// export interface ServiceMyClass
-//   extends Omit<MyClass, 'id' | 'createdAt' | 'modifiedAt' | 'createdBy'> {}
+import { ACTOR_TYPE, PROMPT_MODE } from '@/enums';
 
 export interface Actor {
   id: number;
@@ -35,7 +19,11 @@ export interface Actor {
   temperature: number;
   type: ACTOR_TYPE;
   uuid: string;
-  recommends: Recommend[]
+  recommends: Recommend[];
+  abstract: string;
+  condense: string;
+  datasets: any[] | null;
+  promptMode: PROMPT_MODE,
 }
 
 export interface Recommend {

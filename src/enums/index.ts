@@ -84,7 +84,7 @@ export enum Permission {
   ACTOR_NORMAL = '/api/v1/self/actor/',
 }
 
-export enum ADVANCED_SETTING_MODE {
-  SELF = 'self',
+export enum PROMPT_MODE {
+  CUSTOMIZE = 'customize',
   TEMPLATE = 'template',
 }

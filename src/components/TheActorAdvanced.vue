@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ADVANCED_SETTING_MODE } from '@/enums';
+import { PROMPT_MODE } from '@/enums';
 import { useActorStore } from '@/stores/actor';
-import { useAuthorizerStore } from '@/stores/authorizer';
 import { get, set } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import ActorAdvancedSelfMode from './ActorAdvancedSelfMode.vue';
+import ActorAdvancedCustomize from './ActorAdvancedCustomize.vue';
 import ActorAdvancedTemplate from './ActorAdvancedTemplate.vue';
 
 const props = withDefaults(
@@ -14,34 +13,33 @@ const props = withDefaults(
   {}
 );
 
-const { TEMPLATE, SELF } = ADVANCED_SETTING_MODE;
-const authorizer = useAuthorizerStore();
+const { CUSTOMIZE, TEMPLATE } = PROMPT_MODE;
 const actorStore = useActorStore();
 const { editActor } = storeToRefs(actorStore);
-const mode = ref(TEMPLATE);
+const mode = ref(CUSTOMIZE);
 
 const buttonText = computed(() => {
-  if (get(mode) === SELF) return '返回模板';
-  return '切換自訂模式';
+  return get(mode) === CUSTOMIZE ? '返回模板' : '切換自訂模式';
 });
 
 const onClick = () => {
-  if (get(mode) === SELF) {
-    set(mode, TEMPLATE);
-  } else {
-    set(mode, SELF);
-  }
+  get(mode) === CUSTOMIZE ? set(mode, TEMPLATE) : set(mode, CUSTOMIZE);
 };
+
+onMounted(() => {
+  // 一開始建立的小助教，都是自訂模式，因此預設為自訂模式
+  set(mode, editActor.value?.promptMode || CUSTOMIZE);
+});
 </script>
 
 <template>
   <v-window-item :value="props.value">
-    <div class="d-flex justify-end" v-if="authorizer.canEditAll">
+    <div class="d-flex justify-end">
       <v-btn variant="text" @click="onClick" class="text-grey">
         {{ buttonText }}
       </v-btn>
     </div>
-    <ActorAdvancedSelfMode v-show="mode === SELF" v-model:actor="editActor" />
+    <ActorAdvancedCustomize v-show="mode === CUSTOMIZE" v-model:actor="editActor" />
     <ActorAdvancedTemplate v-show="mode === TEMPLATE" v-model:actor="editActor" />
   </v-window-item>
 </template>
