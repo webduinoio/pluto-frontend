@@ -3,6 +3,7 @@
  * 進階設定 模板畫面
  */
 import { NOTIFICATION_TIMEOUT } from '@/config';
+import { PROMPT_MODE } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
 import type { Actor } from '@/types';
@@ -125,6 +126,7 @@ const onSubmit = handleSubmit(async (values) => {
     set(loading, true);
     const form = new FormData();
     form.append('prompt', get(prompt));
+    form.append('promptMode', PROMPT_MODE.TEMPLATE);
     const { data } = await updateActor(props.actor?.id, form);
     await fire({
       title: '更新完成',
