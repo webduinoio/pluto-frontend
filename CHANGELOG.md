@@ -24,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 點擊引用標籤，頁數會變成 NaN [#7243](https://redmine.kingkit.codes/issues/7243)
 - 刻意刪除副檔名 `.pdf` 訓練會發生錯誤 [#7250](https://redmine.kingkit.codes/issues/7250)
 
+### Changed
+
+- 小助教 meta data [#7332](https://redmine.kingkit.codes/issues/7332)
+
 ## [1.9.0] - 2023.10.11
 
 ### Changed
