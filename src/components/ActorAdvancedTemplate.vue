@@ -32,7 +32,7 @@ const optionTones = [
 const optionLanguages = [
   { title: '自動', value: '' },
   { title: 'English', value: '# answer in English' },
-  { title: '繁體中文', value: '# 用繁體中文回答' },
+  { title: '繁體中文', value: '# 用中文回答' },
 ];
 
 const optionLengths = [
