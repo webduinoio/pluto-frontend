@@ -220,13 +220,12 @@ onMounted(async () => {
   pdfViewer.value?.pdf.setInjectAskPrompt(function (ask: string) {
     set(prompt, ask);
   });
-
-  textarea.value && textarea.value.focus();
 });
 
-watch(mqttLoading, (val) => {
+watch(mqttLoading, async (val) => {
   val && set(prompt, '');
-  textarea.value && textarea.value.focus(); // XXX: not working, but I don't know why
+  await nextTick();
+  textarea.value && textarea.value.focus();
 });
 
 watch(hintSelect, (val) => {
@@ -380,6 +379,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
           :hint="mqttLoading ? '等待回覆中...' : ''"
           :loading="mqttLoading"
           clearable
+          autofocus
           @keydown.enter="onSubmitByEnter"
         >
           <template v-slot:append-inner>
