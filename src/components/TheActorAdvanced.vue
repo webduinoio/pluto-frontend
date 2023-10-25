@@ -1,126 +1,46 @@
 <script setup lang="ts">
-import { NOTIFICATION_TIMEOUT } from '@/config';
-import { useSweetAlert } from '@/hooks/useSweetAlert';
-import { updateActor } from '@/services/actors';
-import type { Actor } from '@/types';
-import { set } from '@vueuse/core';
-import { useField, useForm } from 'vee-validate';
+import { PROMPT_MODE } from '@/enums';
+import { useActorStore } from '@/stores/actor';
+import { get, set } from '@vueuse/core';
+import { storeToRefs } from 'pinia';
+import ActorAdvancedCustomize from './ActorAdvancedCustomize.vue';
+import ActorAdvancedTemplate from './ActorAdvancedTemplate.vue';
 
 const props = withDefaults(
   defineProps<{
     value: string;
-    actor: Actor | undefined;
   }>(),
   {}
 );
 
-const { fire } = useSweetAlert();
-const loading = ref(false);
+const { CUSTOMIZE, TEMPLATE } = PROMPT_MODE;
+const actorStore = useActorStore();
+const { editActor } = storeToRefs(actorStore);
+const mode = ref(CUSTOMIZE);
 
-const { handleSubmit, setFieldValue } = useForm({
-  initialValues: {
-    prompt: '',
-    image: '',
-  },
-  // https://vee-validate.logaretm.com/v4/guide/global-validators/#available-rules
-  validationSchema: {
-    prompt: 'required|max:1000',
-  },
+const buttonText = computed(() => {
+  return get(mode) === CUSTOMIZE ? '返回模板' : '切換自訂模式';
 });
 
-const prompt = useField('prompt', undefined, {
-  label: 'Prompt',
-});
-
-const DEFAULT_PROMPT = `# 資料集
-\`\`\`
-{context}
-\`\`\`
-
-# 問題
-\`\`\`
-{question}
-\`\`\`
-
-你會仔細分析資料集的內容，深呼吸，一步一步思考從中取得有用資料來回答問題。如果資料集找不到相關資訊就說不知道，不要編造答案。
-`;
-
-const onReset = () => {
-  setFieldValue('prompt', DEFAULT_PROMPT);
+const onClick = () => {
+  get(mode) === CUSTOMIZE ? set(mode, TEMPLATE) : set(mode, CUSTOMIZE);
 };
 
-const onSubmit = handleSubmit(async (values) => {
-  if (!props.actor?.id) return;
-  try {
-    set(loading, true);
-    const form = new FormData();
-    form.append('prompt', values.prompt);
-    await updateActor(props.actor?.id, form);
-    await fire({
-      title: '更新完成',
-      icon: 'success',
-      timer: NOTIFICATION_TIMEOUT,
-      showConfirmButton: false,
-    });
-  } catch (err: any) {
-    console.error(err);
-    fire({
-      title: '儲存發生錯誤',
-      icon: 'error',
-      text: err.message,
-    });
-  } finally {
-    set(loading, false);
-  }
+onMounted(() => {
+  // 一開始建立的小助教，都是自訂模式，因此預設為自訂模式
+  set(mode, editActor.value?.promptMode || CUSTOMIZE);
 });
-
-watch(
-  () => props.actor,
-  (val) => {
-    setFieldValue('prompt', val?.prompt || '');
-  }
-);
 </script>
 
 <template>
   <v-window-item :value="props.value">
-    <v-container>
-      <v-sheet class="mt-4 bg-transparent">
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-form @submit.prevent="onSubmit">
-              <v-textarea
-                variant="outlined"
-                label="Prompt"
-                rows="8"
-                v-model="prompt.value.value"
-                :error-messages="prompt.errorMessage.value"
-                :disabled="loading"
-              ></v-textarea>
-              <v-btn
-                color="secondary"
-                variant="outlined"
-                class="mt-12"
-                size="large"
-                :disabled="loading"
-                @click="onReset"
-              >
-                重置
-              </v-btn>
-              <v-btn
-                type="submit"
-                color="primary"
-                class="mt-12 ml-2"
-                size="large"
-                :loading="loading"
-              >
-                儲存
-              </v-btn>
-            </v-form>
-          </v-col>
-        </v-row>
-      </v-sheet>
-    </v-container>
+    <div class="d-flex justify-end">
+      <v-btn variant="text" @click="onClick" class="text-grey">
+        {{ buttonText }}
+      </v-btn>
+    </div>
+    <ActorAdvancedCustomize v-show="mode === CUSTOMIZE" v-model:actor="editActor" />
+    <ActorAdvancedTemplate v-show="mode === TEMPLATE" v-model:actor="editActor" />
   </v-window-item>
 </template>
 

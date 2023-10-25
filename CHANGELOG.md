@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.10.0] - 2023.10.25
+
+### Added
+
+- 進階設定新增 Prompt 模板 [#7264](https://redmine.kingkit.codes/issues/7264)
+
+### Fixed
+
+- 平板編輯小助教標籤切換異常 [#7350](https://redmine.kingkit.codes/issues/7350)
+
+### Changed
+
+- 前端針對小助教回答逾時作錯誤處理 [#7346](https://redmine.kingkit.codes/issues/7346)
+
 ## [1.9.1] - 2023.10.18
 
 ### Changed
@@ -19,6 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 索引標籤使用 7 個中文字或 7 個單詞 [#7243](https://redmine.kingkit.codes/issues/7243)
 - 點擊引用標籤，頁數會變成 NaN [#7243](https://redmine.kingkit.codes/issues/7243)
 - 刻意刪除副檔名 `.pdf` 訓練會發生錯誤 [#7250](https://redmine.kingkit.codes/issues/7250)
+
+### Changed
+
+- 小助教 meta data [#7332](https://redmine.kingkit.codes/issues/7332)
 
 ## [1.9.0] - 2023.10.11
 
@@ -178,7 +196,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.7.0...v1.8.0
