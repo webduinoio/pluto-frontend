@@ -20,7 +20,7 @@ const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
-const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
+const messages = ref<{ type: string; message: string; error?: boolean }[]>([]); // 畫面左方訊息 (處理後)
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
 const sheetUrl = ref('');
@@ -116,6 +116,7 @@ watch(mqttLoadingTime, (val) => {
     messages.value.push({
       type: 'ai',
       message: '我好像出了點問題，請重新整理畫面，或稍後再試一次！',
+      error: true,
     });
     set(mqttLoading, false);
   }
@@ -222,7 +223,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             rounded
             class="text-body-1 ma-2"
             v-for="(msg, index) in messages"
-            :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+            :color="msg.error ? 'red-lighten-4' : msg.type === 'ai' ? 'grey-lighten-2' : ''"
             :key="index"
           >
             <v-container fluid>
