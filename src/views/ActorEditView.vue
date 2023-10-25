@@ -77,7 +77,7 @@ const onSave = (value: Actor) => {
         </v-toolbar>
         <v-divider :thickness="2" class="divider"></v-divider>
 
-        <v-window v-model="tab">
+        <v-window v-model="tab" :touch="{ right: undefined, left: undefined }">
           <TheActorSetting value="setting" :actor="editActor" @save="onSave" />
           <TheActorDataManager value="dataManager" :actor="editActor" />
           <TheActorAdvanced value="advanced" />
