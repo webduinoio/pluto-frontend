@@ -30,6 +30,13 @@ onMounted(() => {
   // 一開始建立的小助教，都是自訂模式，因此預設為自訂模式
   set(mode, editActor.value?.promptMode || CUSTOMIZE);
 });
+
+watch(
+  () => editActor.value?.promptMode,
+  (val) => {
+    set(mode, val);
+  }
+);
 </script>
 
 <template>
