@@ -20,7 +20,7 @@ import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
 import { mdiAccountBox, mdiChevronRightBox } from '@mdi/js';
-import { get, set } from '@vueuse/core';
+import { get, set, useInterval } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
@@ -38,6 +38,7 @@ interface PDFViewerType {
 }
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
+const MQTT_LOADING_TIME = 60; // 超過 60 秒，就顯示錯誤訊息
 const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
@@ -67,6 +68,12 @@ const authorizer = useAuthorizerStore();
 const oauth = useOAuthStore();
 const user = oauth.user;
 const { width } = useDisplay();
+const {
+  counter: mqttLoadingTime,
+  reset: mqttLoadingTimeReset,
+  pause: mqttLoadingTimePause,
+  resume: mqttLoadingTimeResume,
+} = useInterval(1000, { controls: true, immediate: false });
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -222,7 +229,24 @@ onMounted(async () => {
   });
 });
 
+watch(mqttLoadingTime, (val) => {
+  if (val > MQTT_LOADING_TIME) {
+    actors.value.push({
+      type: 'ai',
+      messages: ['我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
+    });
+    set(mqttLoading, false);
+  }
+});
+
 watch(mqttLoading, async (val) => {
+  if (val) {
+    mqttLoadingTimeResume();
+  } else {
+    mqttLoadingTimePause();
+    mqttLoadingTimeReset();
+  }
+
   val && set(prompt, '');
   await nextTick();
   textarea.value && textarea.value.focus();
