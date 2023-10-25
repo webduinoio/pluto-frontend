@@ -168,7 +168,7 @@ const onTrain = async () => {
       </v-row>
       <v-row align-content="center">
         <v-col cols="12">
-          <v-btn color="primary" size="large" @click.prevent.stop="onTrain" :disabled="training">
+          <v-btn color="primary" size="large" @click="onTrain" :disabled="training">
             {{ training ? '訓練中' : '再次訓練' }}
           </v-btn>
         </v-col>
