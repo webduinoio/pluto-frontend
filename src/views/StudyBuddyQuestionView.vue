@@ -22,7 +22,7 @@ const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
-const messages = ref<{ type: string; message: string }[]>([]); // 畫面左方訊息 (處理後)
+const messages = ref<{ type: string; message: string; error?: boolean }[]>([]); // 畫面左方訊息 (處理後)
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
 const markdownValueTemp = ref(''); // mqtt 更新前的訊息
 const assistantList = ref<Actor[]>([]);
@@ -59,10 +59,11 @@ const {
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
 
-const addMessage = (role: string, msg: string) => {
+const addMessage = (role: string, msg: string, error: boolean = false) => {
   messages.value.push({
     type: role,
     message: msg,
+    error,
   });
 };
 
@@ -331,7 +332,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             rounded
             class="text-body-1 ma-2"
             v-for="(msg, index) in messages"
-            :color="msg.type === 'ai' ? 'grey-lighten-1' : ''"
+            :color="msg.error ? 'red-lighten-4' : msg.type === 'ai' ? 'grey-lighten-2' : ''"
             :key="`${index}-${msg.type}`"
           >
             <v-container fluid>

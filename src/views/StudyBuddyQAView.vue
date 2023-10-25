@@ -43,7 +43,7 @@ const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const actors = ref<{ type: string; messages: string[] }[]>([]);
+const actors = ref<{ type: string; messages: string[]; error?: boolean }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -234,6 +234,7 @@ watch(mqttLoadingTime, (val) => {
     actors.value.push({
       type: 'ai',
       messages: ['我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
+      error: true,
     });
     set(mqttLoading, false);
   }
@@ -361,7 +362,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
             rounded
             class="text-body-1 mx-auto mt-2"
             v-for="(actor, index) in actors"
-            :color="actor.type === 'ai' ? 'grey-lighten-2' : ''"
+            :color="actor.error ? 'red-lighten-4' : actor.type === 'ai' ? 'grey-lighten-2' : ''"
             :key="index"
           >
             <v-container fluid>
