@@ -220,7 +220,7 @@ loadData();
 
 watch(mqttLoadingTime, (val) => {
   if (val > MQTT_LOADING_TIME) {
-    addMessage(ROLE_TYPE.AI, '我好像出了點問題，請重新整理畫面，或稍後再試一次！');
+    addMessage(ROLE_TYPE.AI, '我好像出了點問題，請重新整理畫面，或稍後再試一次！', true);
     set(mqttLoading, false);
   }
 });
