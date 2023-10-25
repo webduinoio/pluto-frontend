@@ -7,12 +7,13 @@ import { generateMqttUserId } from '@/hooks/useUtil';
 import { getGoogleSheetData } from '@/services/googleSheet';
 import type { ChoiceType, QAType } from '@/types';
 import { mdiAccountBox, mdiChevronRightBox, mdiHome, mdiRefresh, mdiRobot } from '@mdi/js';
-import { get, set, useDebounceFn } from '@vueuse/core';
+import { get, set, useDebounceFn, useInterval } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import { useDisplay } from 'vuetify';
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
+const MQTT_LOADING_TIME = 60; // 超過 60 秒，就顯示錯誤訊息
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
 const prompt = ref('');
@@ -29,6 +30,12 @@ const loadingSheet = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
 let _promptTemp: String = '';
 const { width } = useDisplay();
+const {
+  counter: mqttLoadingTime,
+  reset: mqttLoadingTimeReset,
+  pause: mqttLoadingTimePause,
+  resume: mqttLoadingTimeResume,
+} = useInterval(1000, { controls: true, immediate: false });
 
 const _loadSheetData = async () => {
   try {
@@ -104,7 +111,24 @@ const onRefresh = async () => {
   loadSheetData();
 };
 
+watch(mqttLoadingTime, (val) => {
+  if (val > MQTT_LOADING_TIME) {
+    messages.value.push({
+      type: 'ai',
+      message: '我好像出了點問題，請重新整理畫面，或稍後再試一次！',
+    });
+    set(mqttLoading, false);
+  }
+});
+
 watch(mqttLoading, (val) => {
+  if (val) {
+    mqttLoadingTimeResume();
+  } else {
+    mqttLoadingTimePause();
+    mqttLoadingTimeReset();
+  }
+
   val && set(prompt, '');
 });
 

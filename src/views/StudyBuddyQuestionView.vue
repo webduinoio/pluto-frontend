@@ -8,13 +8,14 @@ import { generateMqttUserId } from '@/hooks/useUtil';
 import { createForm, getActors } from '@/services';
 import type { Actor, ChoiceType, QAType } from '@/types';
 import { mdiAccountBox, mdiChevronRightBox, mdiHome, mdiRobot, mdiTrashCanOutline } from '@mdi/js';
-import { get, set, useClipboard } from '@vueuse/core';
+import { get, set, useClipboard, useInterval } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import { nextTick } from 'vue';
 import { useDisplay } from 'vuetify';
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
+const MQTT_LOADING_TIME = 60; // 超過 60 秒，就顯示錯誤訊息
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
 const prompt = ref('');
@@ -51,6 +52,12 @@ const hintItems = ref([
   { title: '是非題', value: '出是非題，選項是「是」或「否」' },
 ]);
 const { width } = useDisplay();
+const {
+  counter: mqttLoadingTime,
+  reset: mqttLoadingTimeReset,
+  pause: mqttLoadingTimePause,
+  resume: mqttLoadingTimeResume,
+} = useInterval(1000, { controls: true, immediate: false });
 
 const addMessage = (role: string, msg: string) => {
   messages.value.push({
@@ -210,7 +217,20 @@ const onVoiceMessage = async (value: string) => {
 
 loadData();
 
+watch(mqttLoadingTime, (val) => {
+  if (val > MQTT_LOADING_TIME) {
+    addMessage(ROLE_TYPE.AI, '我好像出了點問題，請重新整理畫面，或稍後再試一次！');
+    set(mqttLoading, false);
+  }
+});
+
 watch(mqttLoading, (val) => {
+  if (val) {
+    mqttLoadingTimeResume();
+  } else {
+    mqttLoadingTimePause();
+    mqttLoadingTimeReset();
+  }
   if (val) {
     set(prompt, '');
     set(hintSelect, '');
