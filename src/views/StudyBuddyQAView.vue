@@ -283,9 +283,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
       endMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    var linkInfo = onReferenceMessage(endMsg);
-    if (linkInfo != '') respMsg.push(linkInfo);
-    actors.value = [...actors.value];
+    const linkInfo = onReferenceMessage(endMsg);
+    if (linkInfo !== '') respMsg.push(linkInfo);
     respMsg = [];
     set(mqttLoading, false);
   } else {
@@ -293,15 +292,15 @@ mqtt.init((msg: string, isEnd: boolean) => {
       /(!?)\[.*?\]\((.*?)\)/g,
       "<img src='$2' width='50%' style='border-radius: 10px'>"
     );
-    if (respMsg.length == 0) {
+    if (respMsg.length === 0) {
       respMsg.push(msg);
+      // 這裡的 respMsg 是傳址而非傳值，後續理解上要注意。
       actors.value.push({
         type: 'ai',
         messages: respMsg,
       });
     } else {
       respMsg.push(msg);
-      actors.value = [...actors.value];
     }
   }
 });
