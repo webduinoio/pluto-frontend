@@ -383,7 +383,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   </template>
                 </v-col>
                 <v-col style="padding: 12px 12px 3px 12px">
-                  <div v-html="msg"></div>
+                  <div v-html="msg.replaceAll('\n', '<br>')"></div>
                 </v-col>
               </v-row>
             </v-container>
