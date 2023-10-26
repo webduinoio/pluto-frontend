@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- 前端針對小助教回答逾時作錯誤處理 part2 [#7365](https://redmine.kingkit.codes/issues/7365)
+
 ## [1.10.0] - 2023.10.25
 
 ### Added
