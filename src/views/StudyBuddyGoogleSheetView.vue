@@ -14,6 +14,7 @@ import { useDisplay } from 'vuetify';
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
 const MQTT_LOADING_TIME = 60; // 超過 60 秒，就顯示錯誤訊息
+const MQTT_FIRST_RESPONSE = 10; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
 const prompt = ref('');
@@ -112,7 +113,12 @@ const onRefresh = async () => {
 };
 
 watch(mqttLoadingTime, (val) => {
-  if (val > MQTT_LOADING_TIME) {
+  if (
+    (val > MQTT_FIRST_RESPONSE &&
+      get(mqttMsgLeftView).length === 0 &&
+      get(mqttMsgRightView).length === 0) ||
+    val > MQTT_LOADING_TIME
+  ) {
     messages.value.push({
       type: 'ai',
       message: '我好像出了點問題，請重新整理畫面，或稍後再試一次！',
@@ -187,7 +193,6 @@ mqtt.init((msg: string, isEnd: boolean) => {
       type: 'ai',
       message: mqttMsgLeftView.value.join('\n'),
     });
-    // set(markdownValue, get(markdownValue) + transformMsgToMarkdown(get(mqttMsgRightView)));
   }
 });
 </script>
