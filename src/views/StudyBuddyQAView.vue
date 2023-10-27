@@ -19,7 +19,13 @@ import { getActor, getActorDocuments } from '@/services';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
-import { mdiAccountBox, mdiBookMultiple, mdiChevronRightBox } from '@mdi/js';
+import {
+  mdiAccountBox,
+  mdiBookMultiple,
+  mdiChevronRightBox,
+  mdiThumbDown,
+  mdiThumbUpOutline,
+} from '@mdi/js';
 import { get, set, useInterval } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
@@ -59,6 +65,12 @@ interface PdfLink {
   info: string;
 }
 
+interface ActorMessage {
+  type: ActorMessageType;
+  messages: (string | CustomMessage)[];
+  error?: boolean;
+}
+
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
 const MQTT_LOADING_TIME = 60; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
 const MQTT_FIRST_RESPONSE = 10; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
@@ -66,9 +78,7 @@ const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const actors = ref<
-  { type: ActorMessageType; messages: (string | CustomMessage)[]; error?: boolean }[]
->([]);
+const actors = ref<ActorMessage[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -255,6 +265,26 @@ const onEdit = () => {
   );
 };
 
+/**
+ * 回答的角色必須是 ai 且沒有 pdf link 才顯示。
+ * 有 pdf link 時，會有另外的顯示方式。
+ * @param actorMsg
+ */
+const checkLikeVisibility = (actorMsg: ActorMessage) => {
+  const isHasPdfLink = actorMsg.messages.some((msg) => {
+    return typeof msg === 'object' && msg.type === MessageType.PDF_LINK;
+  });
+  return actorMsg.type === ActorMessageType.AI && !isHasPdfLink;
+};
+
+const onClickLike = () => {
+  console.log('like');
+};
+
+const onClickUnLike = () => {
+  console.log('Unlike');
+};
+
 onMounted(async () => {
   await loadData();
   pdfViewer.value?.pdf.setInjectAskPrompt(function (ask: string) {
@@ -429,20 +459,52 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   <v-icon v-else></v-icon>
                 </v-col>
                 <v-col style="padding: 12px 12px 3px 12px">
-                  <template v-if="typeof msg === 'object' && msg.type === MessageType.PDF_LINK">
-                    <div class="flex">
-                      <v-icon :icon="mdiBookMultiple"></v-icon>
-                      <div class="tooltip" v-for="link in msg.value">
-                        <a href="#" @click="onClickPdfLink(link)">{{ link.text }}</a>
-                        <span class="tooltiptext">{{ link.info }}</span>
-                      </div>
-                    </div>
-                  </template>
                   <template v-if="typeof msg === 'string'">
                     <div v-html="msg?.replaceAll('\n', '<br>')"></div>
                   </template>
+                  <template v-if="typeof msg === 'object' && msg.type === MessageType.PDF_LINK">
+                    <div class="d-flex justify-space-between">
+                      <div class="d-flex flex-wrap">
+                        <v-icon :icon="mdiBookMultiple"></v-icon>
+                        <div v-for="link in msg.value" class="ml-2">
+                          <a href="#" @click="onClickPdfLink(link)">{{ link.text }}</a>
+                          <v-tooltip activator="parent" location="top">{{ link.info }}</v-tooltip>
+                        </div>
+                      </div>
+                      <div class="d-flex">
+                        <v-btn
+                          variant="text"
+                          density="compact"
+                          :icon="mdiThumbUpOutline"
+                          @click="onClickLike"
+                        ></v-btn>
+                        <v-btn
+                          variant="text"
+                          density="compact"
+                          :icon="mdiThumbDown"
+                          class="ml-2"
+                          @click="onClickUnLike"
+                        ></v-btn>
+                      </div>
+                    </div>
+                  </template>
                 </v-col>
               </v-row>
+              <div class="d-flex justify-end" v-if="checkLikeVisibility(actor)">
+                <v-btn
+                  variant="text"
+                  density="compact"
+                  :icon="mdiThumbUpOutline"
+                  @click="onClickLike"
+                ></v-btn>
+                <v-btn
+                  variant="text"
+                  density="compact"
+                  :icon="mdiThumbDown"
+                  class="ml-2"
+                  @click="onClickUnLike"
+                ></v-btn>
+              </div>
             </v-container>
           </v-sheet>
         </v-container>
@@ -552,40 +614,5 @@ mqtt.init((msg: string, isEnd: boolean) => {
       display: none;
     }
   }
-}
-
-/* Tooltip container */
-.tooltip {
-  left: 10px;
-  margin-right: 10px;
-  position: relative;
-  display: inline-block;
-  cursor: pointer; /* If you want a pointer cursor on hover */
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: #555;
-  color: #fff;
-
-  padding: 5px;
-  border-radius: 6px;
-  font-size: 0.8em;
-  z-index: 1;
-  /* Position the tooltip text */
-  position: absolute;
-  bottom: 100%; /* Place tooltip above the element */
-  left: 50%;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-/* Show tooltip text on hover */
-.tooltip:hover .tooltiptext {
-  margin: 2px;
-  visibility: visible;
-  opacity: 1;
 }
 </style>
