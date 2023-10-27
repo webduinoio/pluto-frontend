@@ -19,7 +19,7 @@ import { getActor, getActorDocuments } from '@/services';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
-import { mdiAccountBox, mdiChevronRightBox } from '@mdi/js';
+import { mdiAccountBox, mdiBookMultiple, mdiChevronRightBox } from '@mdi/js';
 import { get, set, useInterval } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
@@ -37,8 +37,21 @@ interface PDFViewerType {
   };
 }
 
+enum MessageType {
+  PDF_LINK = 'pdf-link',
+}
+
 interface CustomMessage {
-  html: string;
+  type: MessageType;
+  value: PdfLink[];
+}
+
+interface PdfLink {
+  url: string;
+  keyword: string;
+  page: number;
+  text: string | number;
+  info: string;
 }
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
@@ -165,12 +178,13 @@ const onVoiceMessage = async (value: string) => {
 };
 
 // TODO: 後續可調整，單純處理資料，最後顯示的內容交由 template 來處理。
-const onReferenceMessage = (endMsg: string) => {
+const onReferenceMessage = (endMsg: string): PdfLink[] => {
   var info: Array<object> = JSON.parse(endMsg);
   var links =
     '<div style="text-align:left"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAGAAAAAARDxiuAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgoZXuEHAAACLUlEQVRIDaXVTW4TQRAFYJtAAggCQigsEAdgBSfhJJDDRLkI5wCxisSSTZAQCxBB4idg4H2NKzT22J7Ak95Md3V1/XbPTCfLmEb0M7wU3ghnIdkY2LcVfgi/hdPFjRYZfBQehldCm8aC7oXwS/g4fBo2MLw9H4v8dUj5f3ic/du8gahP22gyuZW3yIHM2ljQ/TpX3sl792IeysSoyN+ElH6EQAbvQ7LqD9kiBHszZBPoz0x2w+ehqO+F30MlAwYZfxC+DUVVzjNsYFjUe+GL8HYI9k45oGDxKkE4BEZ79nr6ZM17CRxY0PXqR69ko7RfhoMGOmVOr4VKXBU4qxfjQw4iblkpzRj0mTX9asiqzZzqwf1QDxzlxUzoqMCd8CisHmT4p+NtsuYhg8vhkIPqo0Ny7gzG9MAnQVYycSIHexD5P0HEDkGPv0o4tgcPY6G/B6Kts/8sY8dcJnUxM/yNTQ5KT9roEooQjck4g6X6Ew45KAPWN/WAUWcfBm0NCV2SioYDEV4PV4FOX/cas7FV6dlsgcN34ecQzHudJlx4WO9ZfXA3TvoM1NNZ/hTuhwfzOceVUYZrwQZdxp+EpyaO2avQJXILK/oM22e8NplvgoCVWBXaL7MvgVPhv2DRl5Wjj+HY6GXKaIGjmc1qJoO74UlYZeubHfFKaLJPiXvivvhpqUb7QzLGqx/0YejIWeC4fqEZrgUHyijjysC8gSGUnkwcRxvOCzbsUwG2zvALNZiPb44hnCMAAAAASUVORK5CYII=" style="width:16px;position:relative;top:3px">';
   var idxLink = 1;
   var keywordAmt = 0;
+  const pdfLinks: PdfLink[] = [];
   for (var i in info) {
     var idx = parseInt(i);
     var item = info[idx] as { score: number; content: string; url: string; page: number };
@@ -207,16 +221,21 @@ const onReferenceMessage = (endMsg: string) => {
         }
       }
       keywordAmt++;
-      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}','${item.page}'); })())`;
-      links += `<div class="tooltip">
-  <a href="#" onclick="${link}">${idxLink++}</a>
-  <span class="tooltiptext">${linkInfo}</span>
-</div>`;
+      pdfLinks.push({
+        url: item.url,
+        keyword: keyword,
+        page: item.page,
+        text: idxLink++,
+        info: linkInfo,
+      });
     }
   }
-  links += '</div>';
 
-  return keywordAmt == 0 ? '' : links;
+  return pdfLinks;
+};
+
+const onClickPdfLink = async (link: { url: string; keyword: string; page: number }) => {
+  await pdf.load_and_find(link.url, link.keyword, link.page);
 };
 
 const onEdit = () => {
@@ -292,9 +311,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
       set(uid, uuid);
     }
     const linkInfo = onReferenceMessage(endMsg);
-    if (linkInfo !== '') {
+    if (linkInfo.length > 0) {
       respMsg.push({
-        html: linkInfo,
+        type: MessageType.PDF_LINK,
+        value: linkInfo,
       });
     }
     respMsg = [];
@@ -384,19 +404,25 @@ mqtt.init((msg: string, isEnd: boolean) => {
                 class="custom-message"
               >
                 <v-col cols="auto">
-                  <v-icon v-if="msgIdx !== 0"></v-icon>
-                  <template v-else>
+                  <template v-if="msgIdx === 0">
                     <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
                     <v-icon v-else>
                       <img class="icon-image" :src="get(actorData)?.image" />
                     </v-icon>
                   </template>
+                  <v-icon v-else></v-icon>
                 </v-col>
                 <v-col style="padding: 12px 12px 3px 12px">
-                  <template v-if="typeof msg === 'object'">
-                    <div v-html="msg?.html"></div>
+                  <template v-if="typeof msg === 'object' && msg.type === MessageType.PDF_LINK">
+                    <div class="flex">
+                      <v-icon :icon="mdiBookMultiple"></v-icon>
+                      <div class="tooltip" v-for="link in msg.value">
+                        <a href="#" @click="onClickPdfLink(link)">{{ link.text }}</a>
+                        <span class="tooltiptext">{{ link.info }}</span>
+                      </div>
+                    </div>
                   </template>
-                  <template v-else>
+                  <template v-if="typeof msg === 'string'">
                     <div v-html="msg?.replaceAll('\n', '<br>')"></div>
                   </template>
                 </v-col>
@@ -511,9 +537,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
     }
   }
 }
-</style>
 
-<style lang="scss">
 /* Tooltip container */
 .tooltip {
   left: 10px;

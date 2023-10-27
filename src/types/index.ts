@@ -12,6 +12,7 @@ export * from './user';
 // TODO: 之後換成 mqtt.js
 declare global {
   export const Paho: any;
+  export const pdf: any;
 }
 
 export interface ChoiceType {
