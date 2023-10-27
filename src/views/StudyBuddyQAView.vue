@@ -37,13 +37,18 @@ interface PDFViewerType {
   };
 }
 
+interface CustomMessage {
+  html: string;
+}
+
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
-const MQTT_LOADING_TIME = 60; // 超過 60 秒，就顯示錯誤訊息
+const MQTT_LOADING_TIME = 60; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
+const MQTT_FIRST_RESPONSE = 10; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
 const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const actors = ref<{ type: string; messages: string[]; error?: boolean }[]>([]);
+const actors = ref<{ type: string; messages: (string | CustomMessage)[]; error?: boolean }[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -63,7 +68,7 @@ const hintItems = ref([
   { title: '題目解析', value: '[你的題目和選項]\n盡可能詳細解釋為什麼這題答案是[正確選項]' },
 ]);
 let _promptTemp: String = '';
-let respMsg: string[] = [];
+let respMsg: (string | CustomMessage)[] = [];
 const authorizer = useAuthorizerStore();
 const oauth = useOAuthStore();
 const user = oauth.user;
@@ -159,6 +164,7 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
+// TODO: 後續可調整，單純處理資料，最後顯示的內容交由 template 來處理。
 const onReferenceMessage = (endMsg: string) => {
   var info: Array<object> = JSON.parse(endMsg);
   var links =
@@ -209,6 +215,7 @@ const onReferenceMessage = (endMsg: string) => {
     }
   }
   links += '</div>';
+
   return keywordAmt == 0 ? '' : links;
 };
 
@@ -230,7 +237,8 @@ onMounted(async () => {
 });
 
 watch(mqttLoadingTime, (val) => {
-  if (val > MQTT_LOADING_TIME) {
+  // 由於 respMsg 並非 ref 物件，因此在執行順序上，不必擔心。
+  if ((val > MQTT_FIRST_RESPONSE && respMsg.length === 0) || val > MQTT_LOADING_TIME) {
     actors.value.push({
       type: 'ai',
       messages: ['我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
@@ -283,9 +291,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
       endMsg = msg.split('\n\n$UUID$')[0];
       set(uid, uuid);
     }
-    var linkInfo = onReferenceMessage(endMsg);
-    if (linkInfo != '') respMsg.push(linkInfo);
-    actors.value = [...actors.value];
+    const linkInfo = onReferenceMessage(endMsg);
+    if (linkInfo !== '') {
+      respMsg.push({
+        html: linkInfo,
+      });
+    }
     respMsg = [];
     set(mqttLoading, false);
   } else {
@@ -293,15 +304,15 @@ mqtt.init((msg: string, isEnd: boolean) => {
       /(!?)\[.*?\]\((.*?)\)/g,
       "<img src='$2' width='50%' style='border-radius: 10px'>"
     );
-    if (respMsg.length == 0) {
+    if (respMsg.length === 0) {
       respMsg.push(msg);
+      // 這裡的 respMsg 是傳址而非傳值，後續理解上要注意。
       actors.value.push({
         type: 'ai',
         messages: respMsg,
       });
     } else {
       respMsg.push(msg);
-      actors.value = [...actors.value];
     }
   }
 });
@@ -382,7 +393,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   </template>
                 </v-col>
                 <v-col style="padding: 12px 12px 3px 12px">
-                  <div v-html="msg"></div>
+                  <template v-if="typeof msg === 'object'">
+                    <div v-html="msg?.html"></div>
+                  </template>
+                  <template v-else>
+                    <div v-html="msg?.replaceAll('\n', '<br>')"></div>
+                  </template>
                 </v-col>
               </v-row>
             </v-container>

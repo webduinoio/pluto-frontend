@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.10.1] - 2023.10.27
+
+### Changed
+
+- 前端針對小助教回答逾時作錯誤處理 part2 [#7365](https://redmine.kingkit.codes/issues/7365)
+- 小助教上傳封面圖片失敗 - 前端調整 [#7369](https://redmine.kingkit.codes/issues/7369)
+
 ## [1.10.0] - 2023.10.25
 
 ### Added
@@ -15,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - 平板編輯小助教標籤切換異常 [#7350](https://redmine.kingkit.codes/issues/7350)
+- 問題輸入換行無效 [#7311](https://redmine.kingkit.codes/issues/7311)
 
 ### Changed
 
@@ -196,7 +204,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.1...HEAD
+[1.10.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.8.0...v1.9.0
