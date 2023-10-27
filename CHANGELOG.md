@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - 前端針對小助教回答逾時作錯誤處理 part2 [#7365](https://redmine.kingkit.codes/issues/7365)
+- 小助教上傳封面圖片失敗 - 前端調整 [#7369](https://redmine.kingkit.codes/issues/7369)
 
 ## [1.10.0] - 2023.10.25
 
