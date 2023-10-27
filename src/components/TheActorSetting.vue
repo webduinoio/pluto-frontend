@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { NOTIFICATION_TIMEOUT } from '@/config';
+import { LOCALE } from '@/enums';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { updateActor } from '@/services/actors';
 import { useNotificationStore } from '@/stores/notification';
 import type { Actor } from '@/types';
+import { localize } from '@vee-validate/i18n';
 import { set } from '@vueuse/core';
 import { useField, useForm } from 'vee-validate';
 
@@ -35,7 +37,15 @@ const { handleSubmit, setFieldValue } = useForm({
   validationSchema: {
     name: 'required|max:50',
     description: 'required|max:300',
-    // image: 'required|image/jpg|image/png|size:250',
+    image: 'size:3000|ext:jpg,png,jpeg',
+  },
+});
+
+localize(LOCALE.ZH_HANT, {
+  fields: {
+    image: {
+      size: '檔案不能大於 3 MB!',
+    },
   },
 });
 
@@ -49,13 +59,8 @@ const image = useField('image', undefined, {
   label: '小助教圖片',
 });
 const loading = ref(false);
-const rules = [
-  (value: any) => {
-    return !value || !value.length || value[0].size < 5000000 || '檔案不能大於 5 MB!';
-  },
-];
 
-const OnClick = async () => {
+const onClick = async () => {
   if (!props.actor) return;
 
   await navigator.clipboard.writeText(props.actor.uuid);
@@ -121,7 +126,7 @@ watch(
                 <p class="text-subtitle-2 text-disabled">{{ props.actor?.uuid }}</p>
               </v-col>
               <v-col cols="3">
-                <v-btn color="secondary" variant="outlined" size="large" @click="OnClick">
+                <v-btn color="secondary" variant="outlined" size="large" @click="onClick">
                   複製
                 </v-btn>
               </v-col>
@@ -153,7 +158,6 @@ watch(
             accept=".jpg, .png, .jpeg"
             :disabled="loading"
             @change="onChange"
-            :rules="rules"
             :error-messages="image.errorMessage.value"
             clearable
           >
