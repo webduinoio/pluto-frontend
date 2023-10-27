@@ -37,6 +37,11 @@ interface PDFViewerType {
   };
 }
 
+enum ActorMessageType {
+  USER = 'user',
+  AI = 'ai',
+}
+
 enum MessageType {
   PDF_LINK = 'pdf-link',
 }
@@ -61,7 +66,9 @@ const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const actors = ref<{ type: string; messages: (string | CustomMessage)[]; error?: boolean }[]>([]);
+const actors = ref<
+  { type: ActorMessageType; messages: (string | CustomMessage)[]; error?: boolean }[]
+>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -154,7 +161,7 @@ const onSubmit = () => {
     })
   );
   actors.value.push({
-    type: 'user',
+    type: ActorMessageType.USER,
     messages: [get(prompt)],
   });
 };
@@ -259,7 +266,7 @@ watch(mqttLoadingTime, (val) => {
   // 由於 respMsg 並非 ref 物件，因此在執行順序上，不必擔心。
   if ((val > MQTT_FIRST_RESPONSE && respMsg.length === 0) || val > MQTT_LOADING_TIME) {
     actors.value.push({
-      type: 'ai',
+      type: ActorMessageType.AI,
       messages: ['我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
       error: true,
     });
@@ -328,7 +335,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
       respMsg.push(msg);
       // 這裡的 respMsg 是傳址而非傳值，後續理解上要注意。
       actors.value.push({
-        type: 'ai',
+        type: ActorMessageType.AI,
         messages: respMsg,
       });
     } else {
@@ -393,7 +400,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
             rounded
             class="text-body-1 mx-auto mt-2"
             v-for="(actor, index) in actors"
-            :color="actor.error ? 'red-lighten-4' : actor.type === 'ai' ? 'grey-lighten-2' : ''"
+            :color="
+              actor.error
+                ? 'red-lighten-4'
+                : actor.type === ActorMessageType.AI
+                ? 'grey-lighten-2'
+                : ''
+            "
             :key="index"
           >
             <v-container fluid>
@@ -405,7 +418,10 @@ mqtt.init((msg: string, isEnd: boolean) => {
               >
                 <v-col cols="auto">
                   <template v-if="msgIdx === 0">
-                    <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
+                    <v-icon
+                      v-if="actor.type !== ActorMessageType.AI"
+                      :icon="mdiAccountBox"
+                    ></v-icon>
                     <v-icon v-else>
                       <img class="icon-image" :src="get(actorData)?.image" />
                     </v-icon>
