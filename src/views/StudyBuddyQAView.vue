@@ -8,6 +8,7 @@ function utf8ToB64(str: string) {
   );
 }
 
+import TheDislikeFeedback from '@/components/TheDislikeFeedback.vue';
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
@@ -109,6 +110,7 @@ const {
   pause: mqttLoadingTimePause,
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
+const feedbackDialog = ref(true);
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -483,7 +485,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                           density="compact"
                           :icon="mdiThumbDown"
                           class="ml-2"
-                          @click="onClickUnLike"
+                          @click="feedbackDialog = true"
                         ></v-btn>
                       </div>
                     </div>
@@ -502,7 +504,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   density="compact"
                   :icon="mdiThumbDown"
                   class="ml-2"
-                  @click="onClickUnLike"
+                  @click="feedbackDialog = true"
                 ></v-btn>
               </div>
             </v-container>
@@ -555,6 +557,8 @@ mqtt.init((msg: string, isEnd: boolean) => {
       <ThePDFViewer ref="pdfViewer" :items="pdfViewerItems"></ThePDFViewer>
     </pane>
   </splitpanes>
+
+  <TheDislikeFeedback v-model="feedbackDialog"></TheDislikeFeedback>
 </template>
 
 <style lang="scss" scoped>
