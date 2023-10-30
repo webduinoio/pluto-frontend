@@ -263,11 +263,8 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
-// TODO: 後續可調整，單純處理資料，最後顯示的內容交由 template 來處理。
 const onReferenceMessage = (endMsg: string): PdfLink[] => {
   var info: Array<object> = JSON.parse(endMsg);
-  var links =
-    '<div style="text-align:left"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAGAAAAAARDxiuAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgoZXuEHAAACLUlEQVRIDaXVTW4TQRAFYJtAAggCQigsEAdgBSfhJJDDRLkI5wCxisSSTZAQCxBB4idg4H2NKzT22J7Ak95Md3V1/XbPTCfLmEb0M7wU3ghnIdkY2LcVfgi/hdPFjRYZfBQehldCm8aC7oXwS/g4fBo2MLw9H4v8dUj5f3ic/du8gahP22gyuZW3yIHM2ljQ/TpX3sl792IeysSoyN+ElH6EQAbvQ7LqD9kiBHszZBPoz0x2w+ehqO+F30MlAwYZfxC+DUVVzjNsYFjUe+GL8HYI9k45oGDxKkE4BEZ79nr6ZM17CRxY0PXqR69ko7RfhoMGOmVOr4VKXBU4qxfjQw4iblkpzRj0mTX9asiqzZzqwf1QDxzlxUzoqMCd8CisHmT4p+NtsuYhg8vhkIPqo0Ny7gzG9MAnQVYycSIHexD5P0HEDkGPv0o4tgcPY6G/B6Kts/8sY8dcJnUxM/yNTQ5KT9roEooQjck4g6X6Ew45KAPWN/WAUWcfBm0NCV2SioYDEV4PV4FOX/cas7FV6dlsgcN34ecQzHudJlx4WO9ZfXA3TvoM1NNZ/hTuhwfzOceVUYZrwQZdxp+EpyaO2avQJXILK/oM22e8NplvgoCVWBXaL7MvgVPhv2DRl5Wjj+HY6GXKaIGjmc1qJoO74UlYZeubHfFKaLJPiXvivvhpqUb7QzLGqx/0YejIWeC4fqEZrgUHyijjysC8gSGUnkwcRxvOCzbsUwG2zvALNZiPb44hnCMAAAAASUVORK5CYII=" style="width:16px;position:relative;top:3px">';
   var idxLink = 1;
   var keywordAmt = 0;
   const pdfLinks: PdfLink[] = [];
@@ -290,7 +287,6 @@ const onReferenceMessage = (endMsg: string): PdfLink[] => {
     }
 
     if (keyword != '') {
-      //console.log('index:', keyword);
       var linkInfo;
       if (/[\u4e00-\u9fff]/.test(keyword)) {
         // 如果包含中文字符
@@ -348,7 +344,6 @@ const checkLikeVisibility = (actorMsg: ActorMessage) => {
 
 const onClickLike = async (index: number) => {
   try {
-    console.log('已送出');
     // await createReview({
     //   id: Number(route.params.id),
     //   like: true,
