@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createReview } from '@/services/history';
+// import { createReview } from '@/services/history';
 import { mdiCloseCircle, mdiWindowClose } from '@mdi/js';
 import { set } from '@vueuse/core';
 import { useForm } from 'vee-validate';
@@ -15,6 +15,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
+  (e: 'submit'): void;
 }>();
 
 const route = useRoute();
@@ -67,11 +68,12 @@ const onSubmit = handleSubmit(async (values) => {
     } else {
       data.reason = values.radio;
     }
-    await createReview(data);
+    // await createReview(data);
   } catch (err) {
     console.error(err);
   }
   emit('update:modelValue', false);
+  emit('submit');
   set(loading, false);
 });
 

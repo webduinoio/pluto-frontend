@@ -17,6 +17,7 @@ import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor, getActorDocuments } from '@/services';
+// import { createReview } from '@/services/history';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
@@ -25,6 +26,8 @@ import {
   mdiBookMultiple,
   mdiChevronRightBox,
   mdiThumbDown,
+  mdiThumbDownOutline,
+  mdiThumbUp,
   mdiThumbUpOutline,
 } from '@mdi/js';
 import { get, set, useInterval } from '@vueuse/core';
@@ -70,7 +73,70 @@ interface ActorMessage {
   type: ActorMessageType;
   messages: (string | CustomMessage)[];
   error?: boolean;
+  like?: boolean;
 }
+
+const fakeData: {
+  type: ActorMessageType;
+  messages: (string | CustomMessage)[];
+  error?: boolean;
+}[] = [
+  {
+    type: ActorMessageType.USER,
+    messages: ['在教學資源中，學校應該設定哪些實驗室和儲藏室？'],
+  },
+  {
+    type: ActorMessageType.AI,
+    messages: [
+      '1 根據資料集，學校應該設定自然科學領域的實驗室、藥品儲藏室和器材準備室。',
+      {
+        type: MessageType.PDF_LINK,
+        value: [
+          {
+            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
+            keyword: '並處理各校因實驗教學而產生之有毒廢棄物',
+            page: '84',
+            text: 1,
+            info: '並處理各校因實...',
+          },
+          {
+            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
+            keyword: '得適時設計示範實驗、戶外教學等活動',
+            page: '83',
+            text: 2,
+            info: '得適時設計示範...',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: ActorMessageType.AI,
+    messages: [
+      '2 根據資料集，學校應該設定自然科學領域的實驗室、藥品儲藏室和器材準備室。',
+      {
+        type: MessageType.PDF_LINK,
+        value: [
+          {
+            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
+            keyword: '並處理各校因實驗教學而產生之有毒廢棄物',
+            page: '84',
+            text: 1,
+            info: '並處理各校因實...',
+          },
+          {
+            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
+            keyword: '得適時設計示範實驗、戶外教學等活動',
+            page: '83',
+            text: 2,
+            info: '得適時設計示範...',
+          },
+        ],
+      },
+    ],
+    like: false,
+  },
+];
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
 const MQTT_LOADING_TIME = 60; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
@@ -79,7 +145,7 @@ const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const actors = ref<ActorMessage[]>([]);
+const actors = ref<ActorMessage[]>(fakeData);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -111,6 +177,7 @@ const {
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
 const feedbackDialog = ref(true);
+const actorsFeedbackIndex = ref(0);
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -279,12 +346,30 @@ const checkLikeVisibility = (actorMsg: ActorMessage) => {
   return actorMsg.type === ActorMessageType.AI && !isHasPdfLink && !actorMsg.error;
 };
 
-const onClickLike = () => {
-  console.log('like');
+const onClickLike = async (index: number) => {
+  try {
+    console.log('已送出');
+    // await createReview({
+    //   id: Number(route.params.id),
+    //   like: true,
+    // });
+    if (actors.value[index].like) {
+      delete actors.value[index].like;
+    } else {
+      actors.value[index].like = true;
+    }
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-const onClickUnLike = () => {
-  console.log('Unlike');
+const onClickDislike = (index: number) => {
+  set(feedbackDialog, true);
+  set(actorsFeedbackIndex, index);
+};
+
+const onSubmitDislike = () => {
+  actors.value[actorsFeedbackIndex.value].like = false;
 };
 
 onMounted(async () => {
@@ -477,15 +562,27 @@ mqtt.init((msg: string, isEnd: boolean) => {
                         <v-btn
                           variant="text"
                           density="compact"
-                          :icon="mdiThumbUpOutline"
-                          @click="onClickLike"
+                          :icon="
+                            actor.like === undefined
+                              ? mdiThumbUpOutline
+                              : actor.like
+                              ? mdiThumbUp
+                              : mdiThumbUpOutline
+                          "
+                          @click="onClickLike(index)"
                         ></v-btn>
                         <v-btn
                           variant="text"
                           density="compact"
-                          :icon="mdiThumbDown"
+                          :icon="
+                            actor.like === undefined
+                              ? mdiThumbDownOutline
+                              : actor.like
+                              ? mdiThumbDownOutline
+                              : mdiThumbDown
+                          "
                           class="ml-2"
-                          @click="feedbackDialog = true"
+                          @click="onClickDislike(index)"
                         ></v-btn>
                       </div>
                     </div>
@@ -496,15 +593,27 @@ mqtt.init((msg: string, isEnd: boolean) => {
                 <v-btn
                   variant="text"
                   density="compact"
-                  :icon="mdiThumbUpOutline"
-                  @click="onClickLike"
+                  :icon="
+                    actor.like === undefined
+                      ? mdiThumbUpOutline
+                      : actor.like
+                      ? mdiThumbUp
+                      : mdiThumbUpOutline
+                  "
+                  @click="onClickLike(index)"
                 ></v-btn>
                 <v-btn
                   variant="text"
                   density="compact"
-                  :icon="mdiThumbDown"
+                  :icon="
+                    actor.like === undefined
+                      ? mdiThumbDownOutline
+                      : actor.like
+                      ? mdiThumbDownOutline
+                      : mdiThumbDown
+                  "
                   class="ml-2"
-                  @click="feedbackDialog = true"
+                  @click="onClickDislike(index)"
                 ></v-btn>
               </div>
             </v-container>
@@ -558,7 +667,7 @@ mqtt.init((msg: string, isEnd: boolean) => {
     </pane>
   </splitpanes>
 
-  <TheDislikeFeedback v-model="feedbackDialog"></TheDislikeFeedback>
+  <TheDislikeFeedback v-model="feedbackDialog" @submit="onSubmitDislike"></TheDislikeFeedback>
 </template>
 
 <style lang="scss" scoped>
