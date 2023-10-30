@@ -268,7 +268,7 @@ const onEdit = () => {
 };
 
 /**
- * 回答的角色必須是 ai 且沒有 pdf link 才顯示。
+ * 回答的角色必須是 ai 沒有 pdf link，也不是錯誤訊息，才顯示讚/倒讚。
  * 有 pdf link 時，會有另外的顯示方式。
  * @param actorMsg
  */
@@ -276,7 +276,7 @@ const checkLikeVisibility = (actorMsg: ActorMessage) => {
   const isHasPdfLink = actorMsg.messages.some((msg) => {
     return typeof msg === 'object' && msg.type === MessageType.PDF_LINK;
   });
-  return actorMsg.type === ActorMessageType.AI && !isHasPdfLink;
+  return actorMsg.type === ActorMessageType.AI && !isHasPdfLink && !actorMsg.error;
 };
 
 const onClickLike = () => {
