@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { createReview } from '@/services/history';
-import { mdiCloseCircle } from '@mdi/js';
+import { mdiCloseCircle, mdiWindowClose } from '@mdi/js';
 import { set } from '@vueuse/core';
 import { useForm } from 'vee-validate';
 
@@ -89,7 +89,17 @@ const onChangeRadio = (value: string) => {
 <template>
   <v-dialog v-model="props.modelValue" width="436px" persistent>
     <v-card variant="elevated" class="rounded-lg" :disabled="loading">
-      <v-card-title class="text-h5 mt-6 ml-6 pa-0 font-weight-bold">提供回饋</v-card-title>
+      <template v-slot:append>
+        <v-btn
+          class="mt-n3"
+          :icon="mdiWindowClose"
+          variant="text"
+          @click="emit('update:modelValue', false)"
+        ></v-btn>
+      </template>
+      <template v-slot:title>
+        <p class="text-h5 font-weight-bold mt-3">提供回饋</p>
+      </template>
       <v-card-subtitle class="mt-4 ml-6 pa-0"> 我覺得小助教的回答... </v-card-subtitle>
       <v-card-text>
         <v-form :id="formId" @submit.prevent="onSubmit">
