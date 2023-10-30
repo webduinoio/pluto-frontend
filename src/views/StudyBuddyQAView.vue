@@ -8,7 +8,9 @@ function utf8ToB64(str: string) {
   );
 }
 
+import TheDislikeButton from '@/components/TheDislikeButton.vue';
 import TheDislikeFeedback from '@/components/TheDislikeFeedback.vue';
+import TheLikeButton from '@/components/TheLikeButton.vue';
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
@@ -21,15 +23,7 @@ import { getActor, getActorDocuments } from '@/services';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
-import {
-  mdiAccountBox,
-  mdiBookMultiple,
-  mdiChevronRightBox,
-  mdiThumbDown,
-  mdiThumbDownOutline,
-  mdiThumbUp,
-  mdiThumbUpOutline,
-} from '@mdi/js';
+import { mdiAccountBox, mdiBookMultiple, mdiChevronRightBox } from '@mdi/js';
 import { get, set, useInterval } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
@@ -170,14 +164,15 @@ const authorizer = useAuthorizerStore();
 const oauth = useOAuthStore();
 const user = oauth.user;
 const { width } = useDisplay();
+const feedbackDialog = ref(false);
+const actorsFeedbackIndex = ref(0);
+
 const {
   counter: mqttLoadingTime,
   reset: mqttLoadingTimeReset,
   pause: mqttLoadingTimePause,
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
-const feedbackDialog = ref(true);
-const actorsFeedbackIndex = ref(0);
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -554,62 +549,22 @@ mqtt.init((msg: string, isEnd: boolean) => {
                         </div>
                       </div>
                       <div class="d-flex">
-                        <v-btn
-                          variant="text"
-                          density="compact"
-                          :icon="
-                            actor.like === undefined
-                              ? mdiThumbUpOutline
-                              : actor.like
-                              ? mdiThumbUp
-                              : mdiThumbUpOutline
-                          "
-                          @click="onClickLike(index)"
-                        ></v-btn>
-                        <v-btn
-                          variant="text"
-                          density="compact"
-                          :icon="
-                            actor.like === undefined
-                              ? mdiThumbDownOutline
-                              : actor.like
-                              ? mdiThumbDownOutline
-                              : mdiThumbDown
-                          "
-                          class="ml-2"
+                        <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
+                        <TheDislikeButton
+                          :model-value="actor.like === undefined ? undefined : !actor.like"
                           @click="onClickDislike(index)"
-                        ></v-btn>
+                        />
                       </div>
                     </div>
                   </template>
                 </v-col>
               </v-row>
               <div class="d-flex justify-end" v-if="checkLikeVisibility(actor)">
-                <v-btn
-                  variant="text"
-                  density="compact"
-                  :icon="
-                    actor.like === undefined
-                      ? mdiThumbUpOutline
-                      : actor.like
-                      ? mdiThumbUp
-                      : mdiThumbUpOutline
-                  "
-                  @click="onClickLike(index)"
-                ></v-btn>
-                <v-btn
-                  variant="text"
-                  density="compact"
-                  :icon="
-                    actor.like === undefined
-                      ? mdiThumbDownOutline
-                      : actor.like
-                      ? mdiThumbDownOutline
-                      : mdiThumbDown
-                  "
-                  class="ml-2"
+                <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
+                <TheDislikeButton
+                  :model-value="actor.like === undefined ? undefined : !actor.like"
                   @click="onClickDislike(index)"
-                ></v-btn>
+                />
               </div>
             </v-container>
           </v-sheet>
