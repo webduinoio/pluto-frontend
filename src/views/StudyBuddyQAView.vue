@@ -525,12 +525,14 @@ mqtt.init(initMqtt, handleResponseId);
                   </template>
                 </v-col>
               </v-row>
-              <div class="d-flex justify-end" v-if="checkLikeVisibility(actor)">
-                <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
-                <TheDislikeButton
-                  :model-value="actor.like === undefined ? undefined : !actor.like"
-                  @click="onClickDislike(index)"
-                />
+              <div v-show="!mqttLoading">
+                <div class="d-flex justify-end" v-if="checkLikeVisibility(actor)">
+                  <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
+                  <TheDislikeButton
+                    :model-value="actor.like === undefined ? undefined : !actor.like"
+                    @click="onClickDislike(index)"
+                  />
+                </div>
               </div>
             </v-container>
           </v-sheet>

@@ -316,12 +316,14 @@ mqtt.init(initMqtt, handleResponseId);
                   <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
                 </v-col>
               </v-row>
-              <div class="d-flex justify-end" v-if="checkLikeVisibility(msg)">
-                <TheLikeButton :model-value="msg.like" @click="onClickLike(index)" />
-                <TheDislikeButton
-                  :model-value="msg.like === undefined ? undefined : !msg.like"
-                  @click="onClickDislike(index)"
-                />
+              <div v-show="!mqttLoading">
+                <div class="d-flex justify-end" v-if="checkLikeVisibility(msg)">
+                  <TheLikeButton :model-value="msg.like" @click="onClickLike(index)" />
+                  <TheDislikeButton
+                    :model-value="msg.like === undefined ? undefined : !msg.like"
+                    @click="onClickDislike(index)"
+                  />
+                </div>
               </div>
             </v-container>
           </v-sheet>
