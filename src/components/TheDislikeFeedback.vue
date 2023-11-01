@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import { createReview } from '@/services/history';
+import { createReview } from '@/services/history';
 import { mdiCloseCircle, mdiWindowClose } from '@mdi/js';
 import { set } from '@vueuse/core';
 import { useForm } from 'vee-validate';
@@ -7,6 +7,7 @@ import { useForm } from 'vee-validate';
 const props = withDefaults(
   defineProps<{
     modelValue: boolean;
+    feedbackId?: number | string;
   }>(),
   {
     modelValue: false,
@@ -58,17 +59,19 @@ const reason = defineComponentBinds('reason');
 const onSubmit = handleSubmit(async (values) => {
   set(loading, true);
   try {
-    const data = {
-      id: Number(route.params.id),
-      like: false,
-      reason: '',
-    };
-    if (values.radio === 'other') {
-      data.reason = values.reason;
-    } else {
-      data.reason = values.radio;
+    if (props.feedbackId) {
+      const data = {
+        id: Number(props.feedbackId),
+        like: false,
+        reason: '',
+      };
+      if (values.radio === 'other') {
+        data.reason = values.reason;
+      } else {
+        data.reason = values.radio;
+      }
+      await createReview(data);
     }
-    // await createReview(data);
   } catch (err) {
     console.error(err);
   }

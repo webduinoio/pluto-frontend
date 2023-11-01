@@ -7,6 +7,7 @@ class MQTTApp {
   pubTopic: string;
   respTopic_cb: string;
   respTopic_end: string;
+  respTopic_history_id: string;
   onConnectPromise: Promise<void> | null;
   subscriptions: Record<string, { onMessageReceived: (msg: any) => void }>;
   failure: boolean;
@@ -24,12 +25,14 @@ class MQTTApp {
     this.onConnectPromise = null;
     this.subscriptions = {}; // 存儲訂閱關係的對象
     this.pubTopic = topic + '_prompt/' + userId;
+
     this.respTopic_cb = topic + '_completion/' + this.userId;
     this.respTopic_end = topic + '_completion_end/' + this.userId;
+    this.respTopic_history_id = `${topic}_conversation_history/${this.userId}`;
     this.failure = false;
   }
 
-  async init(cb: (msg: any, end: boolean) => void) {
+  async init(cb: (msg: any, end: boolean) => void, cbId?: (msg: any) => void) {
     await this.connect();
     this.subscribe(this.respTopic_cb, function (msg: any) {
       cb(msg, false);
@@ -38,6 +41,14 @@ class MQTTApp {
       console.log('=============================');
       cb(msg, true);
     });
+
+    // 有需要知道回覆的 id 時，才訂閱
+    if (cbId) {
+      this.subscribe(this.respTopic_history_id, function (msg: any) {
+        // e.g. msg: {"id":370}
+        cbId(msg);
+      });
+    }
   }
 
   async connect() {

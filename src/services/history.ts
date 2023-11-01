@@ -19,10 +19,10 @@ function createInstance(value: any) {
 const instance = createInstance('');
 
 /**
- * 按讚或倒讚
+ * 按讚、倒讚、取消
  * @param data
  */
-export function createReview(data: { id: number, like: boolean, reason?: string }) {
+export function createReview(data: { id: number, like?: boolean, reason?: string }) {
   const config = {
     method: 'put',
     data,

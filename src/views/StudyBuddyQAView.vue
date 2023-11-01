@@ -19,7 +19,7 @@ import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor, getActorDocuments } from '@/services';
-// import { createReview } from '@/services/history';
+import { createReview } from '@/services/history';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
@@ -58,7 +58,7 @@ interface CustomMessage {
 interface PdfLink {
   url: string;
   keyword: string;
-  page: number;
+  page: string | number;
   text: string | number;
   info: string;
 }
@@ -68,69 +68,8 @@ interface ActorMessage {
   messages: (string | CustomMessage)[];
   error?: boolean;
   like?: boolean;
+  id?: number;
 }
-
-const fakeData: {
-  type: ActorMessageType;
-  messages: (string | CustomMessage)[];
-  error?: boolean;
-}[] = [
-  {
-    type: ActorMessageType.USER,
-    messages: ['在教學資源中，學校應該設定哪些實驗室和儲藏室？'],
-  },
-  {
-    type: ActorMessageType.AI,
-    messages: [
-      '1 根據資料集，學校應該設定自然科學領域的實驗室、藥品儲藏室和器材準備室。',
-      {
-        type: MessageType.PDF_LINK,
-        value: [
-          {
-            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
-            keyword: '並處理各校因實驗教學而產生之有毒廢棄物',
-            page: '84',
-            text: 1,
-            info: '並處理各校因實...',
-          },
-          {
-            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
-            keyword: '得適時設計示範實驗、戶外教學等活動',
-            page: '83',
-            text: 2,
-            info: '得適時設計示範...',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    type: ActorMessageType.AI,
-    messages: [
-      '2 根據資料集，學校應該設定自然科學領域的實驗室、藥品儲藏室和器材準備室。',
-      {
-        type: MessageType.PDF_LINK,
-        value: [
-          {
-            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
-            keyword: '並處理各校因實驗教學而產生之有毒廢棄物',
-            page: '84',
-            text: 1,
-            info: '並處理各校因實...',
-          },
-          {
-            url: 'https://kn-staging.nodered.vip/books/docs/eyJucyI6IjFrTXl2dXJ1N1NoX1VqYWlmVklyVV94RFYyZ3BVdlNYYiIsImZpbGUiOiLljYHkuozlubTlnIvmsJHln7rmnKzmlZnogrLoqrLnqIvntrHopoHlnIvmsJHkuK3lsI/lrbjmmqjmma7pgJrlnovpq5jntJrkuK3nrYnmoKEt6Ieq54S256eR5a246aCY5Z+fLnBkZiJ9',
-            keyword: '得適時設計示範實驗、戶外教學等活動',
-            page: '83',
-            text: 2,
-            info: '得適時設計示範...',
-          },
-        ],
-      },
-    ],
-    like: false,
-  },
-];
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
 const MQTT_LOADING_TIME = 60; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
@@ -139,7 +78,7 @@ const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const actors = ref<ActorMessage[]>(fakeData);
+const actors = ref<ActorMessage[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -165,7 +104,7 @@ const oauth = useOAuthStore();
 const user = oauth.user;
 const { width } = useDisplay();
 const feedbackDialog = ref(false);
-const actorsFeedbackIndex = ref(0);
+const actorsFeedbackIndex = ref(null);
 
 const {
   counter: mqttLoadingTime,
@@ -173,6 +112,11 @@ const {
   pause: mqttLoadingTimePause,
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
+
+const feedbackActorId = computed(() => {
+  if (!actorsFeedbackIndex.value) return;
+  return actors.value[actorsFeedbackIndex.value].id;
+});
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -311,7 +255,7 @@ const onReferenceMessage = (endMsg: string): PdfLink[] => {
   return pdfLinks;
 };
 
-const onClickPdfLink = async (link: { url: string; keyword: string; page: number }) => {
+const onClickPdfLink = async (link: PdfLink) => {
   await pdf.load_and_find(link.url, link.keyword, link.page);
 };
 
@@ -339,14 +283,24 @@ const checkLikeVisibility = (actorMsg: ActorMessage) => {
 
 const onClickLike = async (index: number) => {
   try {
-    // await createReview({
-    //   id: Number(route.params.id),
-    //   like: true,
-    // });
+    // 按鈕效果
     if (actors.value[index].like) {
       delete actors.value[index].like;
     } else {
       actors.value[index].like = true;
+    }
+
+    // 若有訊息 id，則送出結果
+    if (actors.value[index].id) {
+      const data: { id: number; like?: boolean } = {
+        id: Number(actors.value[index].id),
+      };
+
+      if (actors.value[index].like !== undefined) {
+        data.like = actors.value[index].like;
+      }
+
+      await createReview(data);
     }
   } catch (err) {
     console.error(err);
@@ -360,6 +314,52 @@ const onClickDislike = (index: number) => {
 
 const onSubmitDislike = () => {
   actors.value[actorsFeedbackIndex.value].like = false;
+};
+
+const initMqtt = (msg: string, isEnd: boolean) => {
+  if (!msg || msg.trim().length === 0) return;
+  if (isEnd) {
+    // 其中包含 uuid 的部份，在這裡暫時無用
+    const uuid = msg.split('\n\n$UUID$')[1];
+    let endMsg = msg;
+    if (uuid) {
+      endMsg = msg.split('\n\n$UUID$')[0];
+      set(uid, uuid);
+    }
+    const linkInfo = onReferenceMessage(endMsg);
+    if (linkInfo.length > 0) {
+      respMsg.push({
+        type: MessageType.PDF_LINK,
+        value: linkInfo,
+      });
+    }
+    respMsg = [];
+    set(mqttLoading, false);
+  } else {
+    msg = msg.replace(
+      /(!?)\[.*?\]\((.*?)\)/g,
+      "<img src='$2' width='50%' style='border-radius: 10px'>"
+    );
+    if (respMsg.length === 0) {
+      respMsg.push(msg);
+      // 這裡的 respMsg 是傳址而非傳值，後續理解上要注意。
+      actors.value.push({
+        type: ActorMessageType.AI,
+        messages: respMsg,
+      });
+    } else {
+      respMsg.push(msg);
+    }
+  }
+};
+
+const handleResponseId = (msg: string) => {
+  try {
+    const { id } = JSON.parse(msg);
+    actors.value[actors.value.length - 1].id = Number(id);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 onMounted(async () => {
@@ -414,42 +414,7 @@ watch(
   { deep: true }
 );
 
-mqtt.init((msg: string, isEnd: boolean) => {
-  if (!msg || msg.trim().length === 0) return;
-  if (isEnd) {
-    // 其中包含 uuid 的部份，在這裡暫時無用
-    const uuid = msg.split('\n\n$UUID$')[1];
-    let endMsg = msg;
-    if (uuid) {
-      endMsg = msg.split('\n\n$UUID$')[0];
-      set(uid, uuid);
-    }
-    const linkInfo = onReferenceMessage(endMsg);
-    if (linkInfo.length > 0) {
-      respMsg.push({
-        type: MessageType.PDF_LINK,
-        value: linkInfo,
-      });
-    }
-    respMsg = [];
-    set(mqttLoading, false);
-  } else {
-    msg = msg.replace(
-      /(!?)\[.*?\]\((.*?)\)/g,
-      "<img src='$2' width='50%' style='border-radius: 10px'>"
-    );
-    if (respMsg.length === 0) {
-      respMsg.push(msg);
-      // 這裡的 respMsg 是傳址而非傳值，後續理解上要注意。
-      actors.value.push({
-        type: ActorMessageType.AI,
-        messages: respMsg,
-      });
-    } else {
-      respMsg.push(msg);
-    }
-  }
-});
+mqtt.init(initMqtt, handleResponseId);
 </script>
 
 <template>
@@ -617,7 +582,11 @@ mqtt.init((msg: string, isEnd: boolean) => {
     </pane>
   </splitpanes>
 
-  <TheDislikeFeedback v-model="feedbackDialog" @submit="onSubmitDislike"></TheDislikeFeedback>
+  <TheDislikeFeedback
+    v-model="feedbackDialog"
+    @submit="onSubmitDislike"
+    :feedback-id="feedbackActorId"
+  ></TheDislikeFeedback>
 </template>
 
 <style lang="scss" scoped>
