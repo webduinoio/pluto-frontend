@@ -165,9 +165,16 @@ const onClickDislike = (index: number) => {
 };
 
 const onSubmitDislike = () => {
-  console.log('>>> submit dislike', feedbackIndex.value);
   if (feedbackIndex.value === null) return;
   messages.value[feedbackIndex.value].like = false;
+};
+
+/**
+ * 回答的角色必須是 ai 也不是錯誤訊息，才顯示讚/倒讚。
+ * @param actorMsg
+ */
+const checkLikeVisibility = (message: Message) => {
+  return message.type === MessageType.AI && !message.error;
 };
 
 const initMqtt = (msg: string, isEnd: boolean) => {
@@ -309,7 +316,7 @@ mqtt.init(initMqtt, handleResponseId);
                   <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
                 </v-col>
               </v-row>
-              <div class="d-flex justify-end">
+              <div class="d-flex justify-end" v-if="checkLikeVisibility(msg)">
                 <TheLikeButton :model-value="msg.like" @click="onClickLike(index)" />
                 <TheDislikeButton
                   :model-value="msg.like === undefined ? undefined : !msg.like"
