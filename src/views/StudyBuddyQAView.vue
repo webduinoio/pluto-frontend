@@ -313,7 +313,9 @@ const onClickDislike = (index: number) => {
 };
 
 const onSubmitDislike = () => {
-  actors.value[actorsFeedbackIndex.value].like = false;
+  if (actorsFeedbackIndex.value) {
+    actors.value[actorsFeedbackIndex.value].like = false;
+  }
 };
 
 const initMqtt = (msg: string, isEnd: boolean) => {
