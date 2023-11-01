@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import TheDislikeButton from '@/components/TheDislikeButton.vue';
+import TheDislikeFeedback from '@/components/TheDislikeFeedback.vue';
+import TheLikeButton from '@/components/TheLikeButton.vue';
 import TheMarkdown from '@/components/TheMarkdown.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ACTOR_TYPE, GENERATE_QUESTION_TYPE, MQTT_TOPIC } from '@/enums';
@@ -6,6 +9,7 @@ import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { createForm, getActors } from '@/services';
+import { createReview } from '@/services/history';
 import type { Actor, ChoiceType, QAType } from '@/types';
 import { mdiAccountBox, mdiChevronRightBox, mdiHome, mdiRobot, mdiTrashCanOutline } from '@mdi/js';
 import { get, set, useClipboard, useInterval } from '@vueuse/core';
@@ -13,6 +17,19 @@ import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import { nextTick } from 'vue';
 import { useDisplay } from 'vuetify';
+
+enum MessageType {
+  USER = 'user',
+  AI = 'ai',
+}
+
+interface Message {
+  type: MessageType;
+  message: string;
+  error?: boolean;
+  like?: boolean;
+  id?: number;
+}
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
 const MQTT_LOADING_TIME = 60; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
@@ -23,7 +40,7 @@ const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const mqttMsgRightViewTemp = ref<(ChoiceType | QAType)[]>([]); // mqtt 本次拋送的訊息
-const messages = ref<{ type: string; message: string; error?: boolean }[]>([]); // 畫面左方訊息 (處理後)
+const messages = ref<Message[]>([]); // 畫面左方訊息 (處理後)
 const markdownValue = ref(''); // 畫面右方訊息 (處理後)
 const markdownValueTemp = ref(''); // mqtt 更新前的訊息
 const assistantList = ref<Actor[]>([]);
@@ -37,10 +54,6 @@ const isVoiceInputWorking = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
 const markdownValueScrollTarget = ref<HTMLFormElement>();
 const { copy } = useClipboard();
-const ROLE_TYPE = {
-  USER: 'user',
-  AI: 'ai',
-};
 let _promptTemp: String = '';
 const hintSelect = ref(null);
 const hintItems = ref([
@@ -59,8 +72,15 @@ const {
   pause: mqttLoadingTimePause,
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
+const feedbackDialog = ref(false);
+const feedbackIndex = ref(null);
 
-const addMessage = (role: string, msg: string, error: boolean = false) => {
+const feedbackId = computed(() => {
+  if (feedbackIndex.value === null) return;
+  return messages.value[feedbackIndex.value].id;
+});
+
+const addMessage = (role: MessageType, msg: string, error: boolean = false) => {
   messages.value.push({
     type: role,
     message: msg,
@@ -148,7 +168,7 @@ const onSubmit = () => {
   mqttMsgLeftView.value.splice(0);
   // 增加空白，就不會用 cache, e.g. mqtt.publish(`${get(actor)}: ${getPayload()}`);
   mqtt.publish(`${get(actor)}:${getPayload()}`);
-  addMessage(ROLE_TYPE.USER, get(prompt));
+  addMessage(MessageType.USER, get(prompt));
 };
 
 const onSubmitByEnter = (evt: any) => {
@@ -217,6 +237,80 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
+const onClickLike = async (index: number) => {
+  try {
+    // 按鈕效果
+    if (messages.value[index].like) {
+      delete messages.value[index].like;
+    } else {
+      messages.value[index].like = true;
+    }
+    // 若有訊息 id，則送出結果
+    if (messages.value[index].id) {
+      const data: { id: number; like?: boolean } = {
+        id: Number(messages.value[index].id),
+      };
+      if (messages.value[index].like !== undefined) {
+        data.like = messages.value[index].like;
+      }
+      await createReview(data);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const onClickDislike = (index: number) => {
+  set(feedbackDialog, true);
+  set(feedbackIndex, index);
+};
+
+const onSubmitDislike = () => {
+  if (feedbackIndex.value === null) return;
+  messages.value[feedbackIndex.value].like = false;
+};
+
+/**
+ * 回答的角色必須是 ai 也不是錯誤訊息，才顯示讚/倒讚。
+ * @param actorMsg
+ */
+const checkLikeVisibility = (message: Message) => {
+  return message.type === MessageType.AI && !message.error;
+};
+
+const initMqtt = (msg: string, isEnd: boolean) => {
+  const info = handleMsg(msg);
+
+  if (info instanceof Object) {
+    if (info.loading) {
+      return;
+    }
+    mqttMsgRightView.value.push(info);
+    mqttMsgRightViewTemp.value.push(info);
+    set(markdownValue, get(markdownValueTemp) + transformMsgToMarkdown(get(mqttMsgRightViewTemp)));
+  }
+
+  if (typeof info === 'string' && info.trim().length > 0) {
+    mqttMsgLeftView.value.push(info);
+  }
+
+  if (isEnd) {
+    set(mqttLoading, false);
+    set(markdownValueTemp, get(markdownValue));
+    get(mqttMsgLeftView).length && addMessage(MessageType.AI, get(mqttMsgLeftView).join('\n'));
+    mqttMsgRightViewTemp.value.splice(0);
+  }
+};
+
+const handleResponseId = (msg: string) => {
+  try {
+    const { id } = JSON.parse(msg);
+    messages.value[messages.value.length - 1].id = Number(id);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 loadData();
 
 watch(mqttLoadingTime, (val) => {
@@ -226,7 +320,7 @@ watch(mqttLoadingTime, (val) => {
       get(mqttMsgRightViewTemp).length === 0) ||
     val > MQTT_LOADING_TIME
   ) {
-    addMessage(ROLE_TYPE.AI, '我好像出了點問題，請重新整理畫面，或稍後再試一次！', true);
+    addMessage(MessageType.AI, '我好像出了點問題，請重新整理畫面，或稍後再試一次！', true);
     set(mqttLoading, false);
   }
 });
@@ -279,29 +373,7 @@ watch(
  * 1. json object
  * 2. 一般字串, e.g. 歡迎繼續提問 $UUID${{user id}}
  */
-mqtt.init((msg: string, isEnd: boolean) => {
-  const info = handleMsg(msg);
-
-  if (info instanceof Object) {
-    if (info.loading) {
-      return;
-    }
-    mqttMsgRightView.value.push(info);
-    mqttMsgRightViewTemp.value.push(info);
-    set(markdownValue, get(markdownValueTemp) + transformMsgToMarkdown(get(mqttMsgRightViewTemp)));
-  }
-
-  if (typeof info === 'string' && info.trim().length > 0) {
-    mqttMsgLeftView.value.push(info);
-  }
-
-  if (isEnd) {
-    set(mqttLoading, false);
-    set(markdownValueTemp, get(markdownValue));
-    get(mqttMsgLeftView).length && addMessage(ROLE_TYPE.AI, get(mqttMsgLeftView).join('\n'));
-    mqttMsgRightViewTemp.value.splice(0);
-  }
-});
+mqtt.init(initMqtt, handleResponseId);
 </script>
 
 <template>
@@ -332,7 +404,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
           ></v-select>
         </v-form>
 
-        <v-container class="pa-2 pt-0 overflow-y-auto" fluid ref="messageScrollTarget">
+        <v-container
+          class="pa-2 pt-0 overflow-y-auto"
+          fluid
+          ref="messageScrollTarget"
+          style="min-height: 50px"
+        >
           <v-sheet
             border
             rounded
@@ -350,6 +427,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
                 </v-col>
               </v-row>
+              <div class="d-flex justify-end" v-if="checkLikeVisibility(msg)">
+                <TheLikeButton :model-value="msg.like" @click="onClickLike(index)" />
+                <TheDislikeButton
+                  :model-value="msg.like === undefined ? undefined : !msg.like"
+                  @click="onClickDislike(index)"
+                />
+              </div>
             </v-container>
           </v-sheet>
         </v-container>
@@ -471,6 +555,11 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </v-card>
     </pane>
   </splitpanes>
+  <TheDislikeFeedback
+    v-model="feedbackDialog"
+    @submit="onSubmitDislike"
+    :feedback-id="feedbackId"
+  ></TheDislikeFeedback>
 </template>
 
 <style lang="scss" scoped>
