@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- 小助教按讚和倒讚 [#7301](https://redmine.kingkit.codes/issues/7301)
+
+
 ## [1.10.1] - 2023.10.27
 
 ### Changed

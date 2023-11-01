@@ -8,6 +8,9 @@ function utf8ToB64(str: string) {
   );
 }
 
+import TheDislikeButton from '@/components/TheDislikeButton.vue';
+import TheDislikeFeedback from '@/components/TheDislikeFeedback.vue';
+import TheLikeButton from '@/components/TheLikeButton.vue';
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
@@ -16,10 +19,11 @@ import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getActor, getActorDocuments } from '@/services';
+import { createReview } from '@/services/history';
 import { useAuthorizerStore } from '@/stores/authorizer';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types/actors';
-import { mdiAccountBox, mdiChevronRightBox } from '@mdi/js';
+import { mdiAccountBox, mdiBookMultiple, mdiChevronRightBox } from '@mdi/js';
 import { get, set, useInterval } from '@vueuse/core';
 import axios from 'axios';
 import { Pane, Splitpanes } from 'splitpanes';
@@ -37,8 +41,34 @@ interface PDFViewerType {
   };
 }
 
+enum ActorMessageType {
+  USER = 'user',
+  AI = 'ai',
+}
+
+enum MessageType {
+  PDF_LINK = 'pdf-link',
+}
+
 interface CustomMessage {
-  html: string;
+  type: MessageType;
+  value: PdfLink[];
+}
+
+interface PdfLink {
+  url: string;
+  keyword: string;
+  page: string | number;
+  text: string | number;
+  info: string;
+}
+
+interface ActorMessage {
+  type: ActorMessageType;
+  messages: (string | CustomMessage)[];
+  error?: boolean;
+  like?: boolean;
+  id?: number;
 }
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
@@ -48,7 +78,7 @@ const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.KN);
-const actors = ref<{ type: string; messages: (string | CustomMessage)[]; error?: boolean }[]>([]);
+const actors = ref<ActorMessage[]>([]);
 const actorData = ref<Actor>();
 const prompt = ref('');
 const uid = ref('');
@@ -73,12 +103,20 @@ const authorizer = useAuthorizerStore();
 const oauth = useOAuthStore();
 const user = oauth.user;
 const { width } = useDisplay();
+const feedbackDialog = ref(false);
+const feedbackIndex = ref(null);
+
 const {
   counter: mqttLoadingTime,
   reset: mqttLoadingTimeReset,
   pause: mqttLoadingTimePause,
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
+
+const feedbackId = computed(() => {
+  if (feedbackIndex.value === null) return;
+  return actors.value[feedbackIndex.value].id;
+});
 
 const loadData = async () => {
   const actorOpenID = route.params.id;
@@ -141,7 +179,7 @@ const onSubmit = () => {
     })
   );
   actors.value.push({
-    type: 'user',
+    type: ActorMessageType.USER,
     messages: [get(prompt)],
   });
 };
@@ -164,13 +202,11 @@ const onVoiceMessage = async (value: string) => {
   set(prompt, _promptTemp + value);
 };
 
-// TODO: 後續可調整，單純處理資料，最後顯示的內容交由 template 來處理。
-const onReferenceMessage = (endMsg: string) => {
+const onReferenceMessage = (endMsg: string): PdfLink[] => {
   var info: Array<object> = JSON.parse(endMsg);
-  var links =
-    '<div style="text-align:left"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAGKADAAQAAAABAAAAGAAAAAARDxiuAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgoZXuEHAAACLUlEQVRIDaXVTW4TQRAFYJtAAggCQigsEAdgBSfhJJDDRLkI5wCxisSSTZAQCxBB4idg4H2NKzT22J7Ak95Md3V1/XbPTCfLmEb0M7wU3ghnIdkY2LcVfgi/hdPFjRYZfBQehldCm8aC7oXwS/g4fBo2MLw9H4v8dUj5f3ic/du8gahP22gyuZW3yIHM2ljQ/TpX3sl792IeysSoyN+ElH6EQAbvQ7LqD9kiBHszZBPoz0x2w+ehqO+F30MlAwYZfxC+DUVVzjNsYFjUe+GL8HYI9k45oGDxKkE4BEZ79nr6ZM17CRxY0PXqR69ko7RfhoMGOmVOr4VKXBU4qxfjQw4iblkpzRj0mTX9asiqzZzqwf1QDxzlxUzoqMCd8CisHmT4p+NtsuYhg8vhkIPqo0Ny7gzG9MAnQVYycSIHexD5P0HEDkGPv0o4tgcPY6G/B6Kts/8sY8dcJnUxM/yNTQ5KT9roEooQjck4g6X6Ew45KAPWN/WAUWcfBm0NCV2SioYDEV4PV4FOX/cas7FV6dlsgcN34ecQzHudJlx4WO9ZfXA3TvoM1NNZ/hTuhwfzOceVUYZrwQZdxp+EpyaO2avQJXILK/oM22e8NplvgoCVWBXaL7MvgVPhv2DRl5Wjj+HY6GXKaIGjmc1qJoO74UlYZeubHfFKaLJPiXvivvhpqUb7QzLGqx/0YejIWeC4fqEZrgUHyijjysC8gSGUnkwcRxvOCzbsUwG2zvALNZiPb44hnCMAAAAASUVORK5CYII=" style="width:16px;position:relative;top:3px">';
   var idxLink = 1;
   var keywordAmt = 0;
+  const pdfLinks: PdfLink[] = [];
   for (var i in info) {
     var idx = parseInt(i);
     var item = info[idx] as { score: number; content: string; url: string; page: number };
@@ -190,7 +226,6 @@ const onReferenceMessage = (endMsg: string) => {
     }
 
     if (keyword != '') {
-      //console.log('index:', keyword);
       var linkInfo;
       if (/[\u4e00-\u9fff]/.test(keyword)) {
         // 如果包含中文字符
@@ -207,16 +242,21 @@ const onReferenceMessage = (endMsg: string) => {
         }
       }
       keywordAmt++;
-      let link = `((async function(){await pdf.load_and_find('${item.url}','${keyword}','${item.page}'); })())`;
-      links += `<div class="tooltip">
-  <a href="#" onclick="${link}">${idxLink++}</a>
-  <span class="tooltiptext">${linkInfo}</span>
-</div>`;
+      pdfLinks.push({
+        url: item.url,
+        keyword: keyword,
+        page: item.page,
+        text: idxLink++,
+        info: linkInfo,
+      });
     }
   }
-  links += '</div>';
 
-  return keywordAmt == 0 ? '' : links;
+  return pdfLinks;
+};
+
+const onClickPdfLink = async (link: PdfLink) => {
+  await pdf.load_and_find(link.url, link.keyword, link.page);
 };
 
 const onEdit = () => {
@@ -227,6 +267,100 @@ const onEdit = () => {
     }).href,
     '_blank'
   );
+};
+
+/**
+ * 回答的角色必須是 ai 沒有 pdf link，也不是錯誤訊息，才顯示讚/倒讚。
+ * 有 pdf link 時，會有另外的顯示方式。
+ * @param actorMsg
+ */
+const checkLikeVisibility = (actorMsg: ActorMessage) => {
+  const isHasPdfLink = actorMsg.messages.some((msg) => {
+    return typeof msg === 'object' && msg.type === MessageType.PDF_LINK;
+  });
+  return actorMsg.type === ActorMessageType.AI && !isHasPdfLink && !actorMsg.error;
+};
+
+const onClickLike = async (index: number) => {
+  try {
+    // 按鈕效果
+    if (actors.value[index].like) {
+      delete actors.value[index].like;
+    } else {
+      actors.value[index].like = true;
+    }
+
+    // 若有訊息 id，則送出結果
+    if (actors.value[index].id) {
+      const data: { id: number; like?: boolean } = {
+        id: Number(actors.value[index].id),
+      };
+
+      if (actors.value[index].like !== undefined) {
+        data.like = actors.value[index].like;
+      }
+
+      await createReview(data);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const onClickDislike = (index: number) => {
+  set(feedbackDialog, true);
+  set(feedbackIndex, index);
+};
+
+const onSubmitDislike = () => {
+  if (feedbackIndex.value === null) return;
+  actors.value[feedbackIndex.value].like = false;
+};
+
+const initMqtt = (msg: string, isEnd: boolean) => {
+  if (!msg || msg.trim().length === 0) return;
+  if (isEnd) {
+    // 其中包含 uuid 的部份，在這裡暫時無用
+    const uuid = msg.split('\n\n$UUID$')[1];
+    let endMsg = msg;
+    if (uuid) {
+      endMsg = msg.split('\n\n$UUID$')[0];
+      set(uid, uuid);
+    }
+    const linkInfo = onReferenceMessage(endMsg);
+    if (linkInfo.length > 0) {
+      respMsg.push({
+        type: MessageType.PDF_LINK,
+        value: linkInfo,
+      });
+    }
+    respMsg = [];
+    set(mqttLoading, false);
+  } else {
+    msg = msg.replace(
+      /(!?)\[.*?\]\((.*?)\)/g,
+      "<img src='$2' width='50%' style='border-radius: 10px'>"
+    );
+    if (respMsg.length === 0) {
+      respMsg.push(msg);
+      // 這裡的 respMsg 是傳址而非傳值，後續理解上要注意。
+      actors.value.push({
+        type: ActorMessageType.AI,
+        messages: respMsg,
+      });
+    } else {
+      respMsg.push(msg);
+    }
+  }
+};
+
+const handleResponseId = (msg: string) => {
+  try {
+    const { id } = JSON.parse(msg);
+    actors.value[actors.value.length - 1].id = Number(id);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 onMounted(async () => {
@@ -240,7 +374,7 @@ watch(mqttLoadingTime, (val) => {
   // 由於 respMsg 並非 ref 物件，因此在執行順序上，不必擔心。
   if ((val > MQTT_FIRST_RESPONSE && respMsg.length === 0) || val > MQTT_LOADING_TIME) {
     actors.value.push({
-      type: 'ai',
+      type: ActorMessageType.AI,
       messages: ['我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
       error: true,
     });
@@ -281,41 +415,7 @@ watch(
   { deep: true }
 );
 
-mqtt.init((msg: string, isEnd: boolean) => {
-  if (!msg || msg.trim().length === 0) return;
-  if (isEnd) {
-    // 其中包含 uuid 的部份，在這裡暫時無用
-    const uuid = msg.split('\n\n$UUID$')[1];
-    let endMsg = msg;
-    if (uuid) {
-      endMsg = msg.split('\n\n$UUID$')[0];
-      set(uid, uuid);
-    }
-    const linkInfo = onReferenceMessage(endMsg);
-    if (linkInfo !== '') {
-      respMsg.push({
-        html: linkInfo,
-      });
-    }
-    respMsg = [];
-    set(mqttLoading, false);
-  } else {
-    msg = msg.replace(
-      /(!?)\[.*?\]\((.*?)\)/g,
-      "<img src='$2' width='50%' style='border-radius: 10px'>"
-    );
-    if (respMsg.length === 0) {
-      respMsg.push(msg);
-      // 這裡的 respMsg 是傳址而非傳值，後續理解上要注意。
-      actors.value.push({
-        type: 'ai',
-        messages: respMsg,
-      });
-    } else {
-      respMsg.push(msg);
-    }
-  }
-});
+mqtt.init(initMqtt, handleResponseId);
 </script>
 
 <template>
@@ -373,7 +473,13 @@ mqtt.init((msg: string, isEnd: boolean) => {
             rounded
             class="text-body-1 mx-auto mt-2"
             v-for="(actor, index) in actors"
-            :color="actor.error ? 'red-lighten-4' : actor.type === 'ai' ? 'grey-lighten-2' : ''"
+            :color="
+              actor.error
+                ? 'red-lighten-4'
+                : actor.type === ActorMessageType.AI
+                ? 'grey-lighten-2'
+                : ''
+            "
             :key="index"
           >
             <v-container fluid>
@@ -384,23 +490,50 @@ mqtt.init((msg: string, isEnd: boolean) => {
                 class="custom-message"
               >
                 <v-col cols="auto">
-                  <v-icon v-if="msgIdx !== 0"></v-icon>
-                  <template v-else>
-                    <v-icon v-if="actor.type !== 'ai'" :icon="mdiAccountBox"></v-icon>
+                  <template v-if="msgIdx === 0">
+                    <v-icon
+                      v-if="actor.type !== ActorMessageType.AI"
+                      :icon="mdiAccountBox"
+                    ></v-icon>
                     <v-icon v-else>
                       <img class="icon-image" :src="get(actorData)?.image" />
                     </v-icon>
                   </template>
+                  <v-icon v-else></v-icon>
                 </v-col>
                 <v-col style="padding: 12px 12px 3px 12px">
-                  <template v-if="typeof msg === 'object'">
-                    <div v-html="msg?.html"></div>
-                  </template>
-                  <template v-else>
+                  <template v-if="typeof msg === 'string'">
                     <div v-html="msg?.replaceAll('\n', '<br>')"></div>
+                  </template>
+                  <template v-if="typeof msg === 'object' && msg.type === MessageType.PDF_LINK">
+                    <div class="d-flex justify-space-between">
+                      <div class="d-flex flex-wrap">
+                        <v-icon :icon="mdiBookMultiple"></v-icon>
+                        <div v-for="link in msg.value" class="ml-2">
+                          <a href="#" @click="onClickPdfLink(link)">{{ link.text }}</a>
+                          <v-tooltip activator="parent" location="top">{{ link.info }}</v-tooltip>
+                        </div>
+                      </div>
+                      <div class="d-flex">
+                        <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
+                        <TheDislikeButton
+                          :model-value="actor.like === undefined ? undefined : !actor.like"
+                          @click="onClickDislike(index)"
+                        />
+                      </div>
+                    </div>
                   </template>
                 </v-col>
               </v-row>
+              <div v-show="!mqttLoading">
+                <div class="d-flex justify-end" v-if="checkLikeVisibility(actor)">
+                  <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
+                  <TheDislikeButton
+                    :model-value="actor.like === undefined ? undefined : !actor.like"
+                    @click="onClickDislike(index)"
+                  />
+                </div>
+              </div>
             </v-container>
           </v-sheet>
         </v-container>
@@ -451,6 +584,12 @@ mqtt.init((msg: string, isEnd: boolean) => {
       <ThePDFViewer ref="pdfViewer" :items="pdfViewerItems"></ThePDFViewer>
     </pane>
   </splitpanes>
+
+  <TheDislikeFeedback
+    v-model="feedbackDialog"
+    @submit="onSubmitDislike"
+    :feedback-id="feedbackId"
+  ></TheDislikeFeedback>
 </template>
 
 <style lang="scss" scoped>
@@ -510,42 +649,5 @@ mqtt.init((msg: string, isEnd: boolean) => {
       display: none;
     }
   }
-}
-</style>
-
-<style lang="scss">
-/* Tooltip container */
-.tooltip {
-  left: 10px;
-  margin-right: 10px;
-  position: relative;
-  display: inline-block;
-  cursor: pointer; /* If you want a pointer cursor on hover */
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: #555;
-  color: #fff;
-
-  padding: 5px;
-  border-radius: 6px;
-  font-size: 0.8em;
-  z-index: 1;
-  /* Position the tooltip text */
-  position: absolute;
-  bottom: 100%; /* Place tooltip above the element */
-  left: 50%;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-/* Show tooltip text on hover */
-.tooltip:hover .tooltiptext {
-  margin: 2px;
-  visibility: visible;
-  opacity: 1;
 }
 </style>
