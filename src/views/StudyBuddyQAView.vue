@@ -104,7 +104,7 @@ const oauth = useOAuthStore();
 const user = oauth.user;
 const { width } = useDisplay();
 const feedbackDialog = ref(false);
-const actorsFeedbackIndex = ref(null);
+const feedbackIndex = ref(null);
 
 const {
   counter: mqttLoadingTime,
@@ -113,9 +113,9 @@ const {
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
 
-const feedbackActorId = computed(() => {
-  if (!actorsFeedbackIndex.value) return;
-  return actors.value[actorsFeedbackIndex.value].id;
+const feedbackId = computed(() => {
+  if (feedbackIndex.value === null) return;
+  return actors.value[feedbackIndex.value].id;
 });
 
 const loadData = async () => {
@@ -309,13 +309,12 @@ const onClickLike = async (index: number) => {
 
 const onClickDislike = (index: number) => {
   set(feedbackDialog, true);
-  set(actorsFeedbackIndex, index);
+  set(feedbackIndex, index);
 };
 
 const onSubmitDislike = () => {
-  if (actorsFeedbackIndex.value) {
-    actors.value[actorsFeedbackIndex.value].like = false;
-  }
+  if (feedbackIndex.value === null) return;
+  actors.value[feedbackIndex.value].like = false;
 };
 
 const initMqtt = (msg: string, isEnd: boolean) => {
@@ -587,7 +586,7 @@ mqtt.init(initMqtt, handleResponseId);
   <TheDislikeFeedback
     v-model="feedbackDialog"
     @submit="onSubmitDislike"
-    :feedback-id="feedbackActorId"
+    :feedback-id="feedbackId"
   ></TheDislikeFeedback>
 </template>
 
