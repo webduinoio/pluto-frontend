@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { COLOR } from '@/enums/style';
 import { createReview } from '@/services/history';
 import { mdiCloseCircle, mdiWindowClose } from '@mdi/js';
 import { set } from '@vueuse/core';
@@ -19,7 +20,6 @@ const emit = defineEmits<{
   (e: 'submit'): void;
 }>();
 
-const route = useRoute();
 const radioOptions = ref([
   {
     label: '與事實不符',
@@ -39,7 +39,6 @@ const radioOptions = ref([
   },
 ]);
 const loading = ref(false);
-const formId = ref(`form-${Date.now()}`);
 const textarea = ref();
 
 const { handleSubmit, defineComponentBinds, errors, setFieldValue } = useForm({
@@ -94,27 +93,40 @@ const onChangeRadio = (value: string) => {
 <template>
   <v-dialog v-model="props.modelValue" width="436px" persistent>
     <v-card variant="elevated" class="rounded-lg" :disabled="loading">
-      <template v-slot:append>
-        <v-btn
-          class="mt-n3"
-          :icon="mdiWindowClose"
-          variant="text"
-          @click="emit('update:modelValue', false)"
-        ></v-btn>
+      <template v-slot:title class="mt-3">
+        <div class="d-flex justify-space-between align-start mt-3">
+          <p class="text-h5 ml-2 font-weight-bold">提供回饋</p>
+          <v-btn
+            :icon="mdiWindowClose"
+            variant="text"
+            density="compact"
+            @click="emit('update:modelValue', false)"
+          ></v-btn>
+        </div>
       </template>
-      <template v-slot:title>
-        <p class="text-h5 font-weight-bold mt-3">提供回饋</p>
+      <template v-slot:subtitle>
+        <p class="mt-4 ml-2">我覺得小助教的回答...</p>
       </template>
-      <v-card-subtitle class="mt-4 ml-6 pa-0"> 我覺得小助教的回答... </v-card-subtitle>
       <v-card-text>
-        <v-form :id="formId" @submit.prevent="onSubmit">
+        <v-form @submit.prevent="onSubmit">
           <v-radio-group hide-details v-bind="radio" @update:model-value="onChangeRadio">
-            <v-radio v-for="val in radioOptions" :label="val.label" :value="val.value"></v-radio>
+            <v-radio
+              v-for="val in radioOptions"
+              :color="COLOR.C02"
+              :label="val.label"
+              :value="val.value"
+            >
+              <template v-slot:label>
+                <div class="text-high-emphasis">
+                  {{ val.label }}
+                </div>
+              </template>
+            </v-radio>
           </v-radio-group>
 
           <v-textarea
             ref="textarea"
-            class="ml-10 mt-2 mr-10"
+            class="ml-2 mt-2"
             no-resize
             variant="outlined"
             clearable
@@ -126,20 +138,20 @@ const onChangeRadio = (value: string) => {
             :clear-icon="mdiCloseCircle"
             :error-messages="errors.reason"
           ></v-textarea>
+
+          <div class="d-flex justify-end pb-4 mt-2">
+            <v-btn
+              color="secondary"
+              variant="elevated"
+              size="large"
+              type="submit"
+              :loading="loading"
+            >
+              送出
+            </v-btn>
+          </div>
         </v-form>
       </v-card-text>
-      <v-card-actions class="justify-end mt-n2 mb-6 mr-6">
-        <v-btn
-          color="secondary"
-          variant="elevated"
-          size="large"
-          type="submit"
-          :loading="loading"
-          :form="formId"
-        >
-          送出
-        </v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
