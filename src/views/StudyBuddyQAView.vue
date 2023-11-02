@@ -14,6 +14,7 @@ import TheLikeButton from '@/components/TheLikeButton.vue';
 import ThePDFViewer from '@/components/ThePDFViewer.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { ERROR_CODE, MQTT_TOPIC, ROUTER_NAME } from '@/enums';
+import { COLOR } from '@/enums/style';
 import { getCookie } from '@/hooks/useCookie';
 import { useMqtt } from '@/hooks/useMqtt';
 import { useSweetAlert } from '@/hooks/useSweetAlert';
@@ -508,7 +509,7 @@ mqtt.init(initMqtt, handleResponseId);
                   <template v-if="typeof msg === 'object' && msg.type === MessageType.PDF_LINK">
                     <div class="d-flex justify-space-between">
                       <div class="d-flex flex-wrap">
-                        <v-icon :icon="mdiBookMultiple"></v-icon>
+                        <v-icon :icon="mdiBookMultiple" :style="{ color: COLOR.GREY_01 }"></v-icon>
                         <div v-for="link in msg.value" class="ml-2">
                           <a href="#" @click="onClickPdfLink(link)">{{ link.text }}</a>
                           <v-tooltip activator="parent" location="top">{{ link.info }}</v-tooltip>
@@ -517,6 +518,7 @@ mqtt.init(initMqtt, handleResponseId);
                       <div class="d-flex">
                         <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
                         <TheDislikeButton
+                          class="ml-3"
                           :model-value="actor.like === undefined ? undefined : !actor.like"
                           @click="onClickDislike(index)"
                         />
@@ -529,6 +531,7 @@ mqtt.init(initMqtt, handleResponseId);
                 <div class="d-flex justify-end" v-if="checkLikeVisibility(actor)">
                   <TheLikeButton :model-value="actor.like" @click="onClickLike(index)" />
                   <TheDislikeButton
+                    class="ml-3"
                     :model-value="actor.like === undefined ? undefined : !actor.like"
                     @click="onClickDislike(index)"
                   />
