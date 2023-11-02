@@ -275,7 +275,8 @@ const onSubmitDislike = () => {
  * @param actorMsg
  */
 const checkLikeVisibility = (message: Message) => {
-  return message.type === MessageType.AI && !message.error;
+  return false;
+  // return message.type === MessageType.AI && !message.error;
 };
 
 const initMqtt = (msg: string, isEnd: boolean) => {
