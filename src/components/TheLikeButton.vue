@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { COLOR } from '@/enums/style';
 import { mdiThumbUp, mdiThumbUpOutline } from '@mdi/js';
 
 const props = withDefaults(
@@ -15,6 +16,7 @@ const props = withDefaults(
   <v-btn
     variant="text"
     density="compact"
+    :style="{ color: COLOR.GREY_01 }"
     :icon="
       props.modelValue === undefined
         ? mdiThumbUpOutline
