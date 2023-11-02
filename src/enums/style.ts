@@ -3,6 +3,6 @@
  */
 
 export enum COLOR {
-  GREY_01 = '#6D6D6D',
+  C01 = '#6D6D6D',
   C02 = '#467974',
 }

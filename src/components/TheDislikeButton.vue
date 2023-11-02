@@ -16,7 +16,7 @@ const props = withDefaults(
   <v-btn
     variant="text"
     density="compact"
-    :style="{ color: COLOR.GREY_01 }"
+    :style="{ color: COLOR.C01 }"
     :icon="
       props.modelValue === undefined
         ? mdiThumbDownOutline
