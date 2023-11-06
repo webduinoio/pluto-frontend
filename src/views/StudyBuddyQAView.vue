@@ -509,7 +509,7 @@ mqtt.init(initMqtt, handleResponseId);
                   <template v-if="typeof msg === 'object' && msg.type === MessageType.PDF_LINK">
                     <div class="d-flex justify-space-between">
                       <div class="d-flex flex-wrap">
-                        <v-icon :icon="mdiBookMultiple" :style="{ color: COLOR.GREY_01 }"></v-icon>
+                        <v-icon :icon="mdiBookMultiple" :style="{ color: COLOR.C01 }"></v-icon>
                         <div v-for="link in msg.value" class="ml-2">
                           <a href="#" @click="onClickPdfLink(link)">{{ link.text }}</a>
                           <v-tooltip activator="parent" location="top">{{ link.info }}</v-tooltip>
