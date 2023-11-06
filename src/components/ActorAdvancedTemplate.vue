@@ -102,7 +102,8 @@ const prompt = computed(() => {
   let value = image.value.value ? DEFAULT_IMAGE_ON_PROMPT : DEFAULT_PROMPT;
 
   if (role.value.value) {
-    value += `# 你會扮演${role.value.value}\n`;
+    const roleValue = role.value.value as string;
+    value += `# 你會扮演${roleValue.replaceAll(/\n/g, ' ')}\n`;
   }
 
   if (tone.value.value) {
