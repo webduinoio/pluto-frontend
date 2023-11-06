@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - 小助教按讚和倒讚 [#7301](https://redmine.kingkit.codes/issues/7301)
 
+### Fixed
+
+- prompt 模板角色設定欄位異常 [#7379](https://redmine.kingkit.codes/issues/7379)
 
 ## [1.10.1] - 2023.10.27
 
