@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { LOCALE } from '@/enums';
 import { COLOR } from '@/enums/style';
 import { createReview } from '@/services/history';
 import { mdiCloseCircle, mdiWindowClose } from '@mdi/js';
+import { localize } from '@vee-validate/i18n';
 import { set } from '@vueuse/core';
-import { useForm } from 'vee-validate';
+import { configure, useForm } from 'vee-validate';
 
 const props = withDefaults(
   defineProps<{
@@ -41,7 +43,15 @@ const radioOptions = ref([
 const loading = ref(false);
 const textarea = ref();
 
-const { handleSubmit, defineComponentBinds, errors, setFieldValue } = useForm({
+configure({
+  generateMessage: localize(LOCALE.ZH_HANT, {
+    names: {
+      reason: '說明',
+    },
+  }),
+});
+
+const { handleSubmit, defineComponentBinds, errors, setFieldValue, resetForm } = useForm({
   initialValues: {
     radio: radioOptions.value[0].value,
     reason: '',
@@ -88,6 +98,17 @@ const onChangeRadio = (value: string) => {
     setFieldValue('reason', '');
   }
 };
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (!value) {
+      nextTick(() => {
+        resetForm();
+      });
+    }
+  }
+);
 </script>
 
 <template>
