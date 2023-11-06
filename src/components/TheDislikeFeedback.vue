@@ -51,7 +51,7 @@ configure({
   }),
 });
 
-const { handleSubmit, defineComponentBinds, errors, setFieldValue } = useForm({
+const { handleSubmit, defineComponentBinds, errors, setFieldValue, resetForm } = useForm({
   initialValues: {
     radio: radioOptions.value[0].value,
     reason: '',
@@ -98,6 +98,17 @@ const onChangeRadio = (value: string) => {
     setFieldValue('reason', '');
   }
 };
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (!value) {
+      nextTick(() => {
+        resetForm();
+      });
+    }
+  }
+);
 </script>
 
 <template>
