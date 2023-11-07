@@ -1,16 +1,33 @@
 <script lang="ts" setup>
+import TheDislikeButton from '@/components/TheDislikeButton.vue';
+import TheDislikeFeedback from '@/components/TheDislikeFeedback.vue';
+import TheLikeButton from '@/components/TheLikeButton.vue';
 import TheSheetTable from '@/components/TheSheetTable.vue';
 import TheVoiceInput from '@/components/TheVoiceInput.vue';
 import { MQTT_TOPIC } from '@/enums';
 import { useMqtt } from '@/hooks/useMqtt';
 import { generateMqttUserId } from '@/hooks/useUtil';
 import { getGoogleSheetData } from '@/services/googleSheet';
+import { createReview } from '@/services/history';
 import type { ChoiceType, QAType } from '@/types';
 import { mdiAccountBox, mdiChevronRightBox, mdiHome, mdiRefresh, mdiRobot } from '@mdi/js';
 import { get, set, useDebounceFn, useInterval } from '@vueuse/core';
 import { Pane, Splitpanes } from 'splitpanes';
 import 'splitpanes/dist/splitpanes.css';
 import { useDisplay } from 'vuetify';
+
+enum MessageType {
+  USER = 'user',
+  AI = 'ai',
+}
+
+interface Message {
+  type: MessageType;
+  message: string;
+  error?: boolean;
+  like?: boolean;
+  id?: number;
+}
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
 const MQTT_LOADING_TIME = 60; // 超過 60 秒，就顯示錯誤訊息
@@ -21,11 +38,11 @@ const prompt = ref('');
 const mqttMsgLeftView = ref<string[]>([]); // 儲存給畫面左方的訊息 (處理前)
 const mqttMsgRightView = ref<(ChoiceType | QAType)[]>([]); // 儲存給畫面右方的訊息 (處理前)
 const wholeMsg = ref<string[]>([]); // 收到的所有 mqtt 訊息
-const messages = ref<{ type: string; message: string; error?: boolean }[]>([]); // 畫面左方訊息 (處理後)
+const messages = ref<Message[]>([]); // 畫面左方訊息 (處理後)
 const mqttLoading = ref(false);
 const isVoiceInputWorking = ref(false);
 const sheetUrl = ref('');
-const sheetName = ref('');
+const sheetName = ref('工作表1');
 const sheetValue = ref([]);
 const loadingSheet = ref(false);
 const messageScrollTarget = ref<HTMLFormElement>();
@@ -37,6 +54,13 @@ const {
   pause: mqttLoadingTimePause,
   resume: mqttLoadingTimeResume,
 } = useInterval(1000, { controls: true, immediate: false });
+const feedbackDialog = ref(false);
+const feedbackIndex = ref(null);
+
+const feedbackId = computed(() => {
+  if (feedbackIndex.value === null) return;
+  return messages.value[feedbackIndex.value].id;
+});
 
 const _loadSheetData = async () => {
   try {
@@ -84,7 +108,7 @@ const onSubmit = () => {
   wholeMsg.value.splice(0);
   mqtt.publish(`${get(actor)}:${getPayload()}`);
   messages.value.push({
-    type: 'user',
+    type: MessageType.USER,
     message: get(prompt),
   });
 };
@@ -112,6 +136,80 @@ const onRefresh = async () => {
   loadSheetData();
 };
 
+const onClickLike = async (index: number) => {
+  try {
+    // 按鈕效果
+    if (messages.value[index].like) {
+      delete messages.value[index].like;
+    } else {
+      messages.value[index].like = true;
+    }
+    // 若有訊息 id，則送出結果
+    if (messages.value[index].id) {
+      const data: { id: number; like?: boolean } = {
+        id: Number(messages.value[index].id),
+      };
+      if (messages.value[index].like !== undefined) {
+        data.like = messages.value[index].like;
+      }
+      await createReview(data);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const onClickDislike = (index: number) => {
+  set(feedbackDialog, true);
+  set(feedbackIndex, index);
+};
+
+const onSubmitDislike = () => {
+  if (feedbackIndex.value === null) return;
+  messages.value[feedbackIndex.value].like = false;
+};
+
+/**
+ * 回答的角色必須是 ai 也不是錯誤訊息，才顯示讚/倒讚。
+ * @param actorMsg
+ */
+const checkLikeVisibility = (message: Message) => {
+  return false;
+  // return message.type === MessageType.AI && !message.error;
+};
+
+const initMqtt = (msg: string, isEnd: boolean) => {
+  if (!msg && !isEnd) return;
+
+  wholeMsg.value.push(msg);
+  const info = handleMsg(msg);
+  if (info instanceof Object) {
+    if (info.loading) {
+      return;
+    }
+    mqttMsgRightView.value.push(info);
+  } else {
+    mqttMsgLeftView.value.push(info);
+  }
+
+  if (isEnd) {
+    set(mqttLoading, false);
+    messages.value.push({
+      type: MessageType.AI,
+      message: mqttMsgLeftView.value.join('\n'),
+    });
+  }
+};
+
+const handleResponseId = (msg: string) => {
+  try {
+    const { id } = JSON.parse(msg);
+    messages.value[messages.value.length - 1].id = Number(id);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 watch(mqttLoadingTime, (val) => {
   if (
     (val > MQTT_FIRST_RESPONSE &&
@@ -120,7 +218,7 @@ watch(mqttLoadingTime, (val) => {
     val > MQTT_LOADING_TIME
   ) {
     messages.value.push({
-      type: 'ai',
+      type: MessageType.AI,
       message: '我好像出了點問題，請重新整理畫面，或稍後再試一次！',
       error: true,
     });
@@ -173,28 +271,7 @@ watch(
  * 1. json object
  * 2. 一般字串, e.g. 歡迎繼續提問 $UUID${{user id}}
  */
-mqtt.init((msg: string, isEnd: boolean) => {
-  if (!msg && !isEnd) return;
-
-  wholeMsg.value.push(msg);
-  const info = handleMsg(msg);
-  if (info instanceof Object) {
-    if (info.loading) {
-      return;
-    }
-    mqttMsgRightView.value.push(info);
-  } else {
-    mqttMsgLeftView.value.push(info);
-  }
-
-  if (isEnd) {
-    set(mqttLoading, false);
-    messages.value.push({
-      type: 'ai',
-      message: mqttMsgLeftView.value.join('\n'),
-    });
-  }
-});
+mqtt.init(initMqtt, handleResponseId);
 </script>
 
 <template>
@@ -240,6 +317,15 @@ mqtt.init((msg: string, isEnd: boolean) => {
                   <p v-html="msg.message?.replaceAll('\n', '<br>')"></p>
                 </v-col>
               </v-row>
+              <div v-show="!mqttLoading">
+                <div class="d-flex justify-end" v-if="checkLikeVisibility(msg)">
+                  <TheLikeButton :model-value="msg.like" @click="onClickLike(index)" />
+                  <TheDislikeButton
+                    :model-value="msg.like === undefined ? undefined : !msg.like"
+                    @click="onClickDislike(index)"
+                  />
+                </div>
+              </div>
             </v-container>
           </v-sheet>
         </v-container>
@@ -340,6 +426,11 @@ mqtt.init((msg: string, isEnd: boolean) => {
       </v-card>
     </pane>
   </splitpanes>
+  <TheDislikeFeedback
+    v-model="feedbackDialog"
+    @submit="onSubmitDislike"
+    :feedback-id="feedbackId"
+  ></TheDislikeFeedback>
 </template>
 
 <style lang="scss" scoped>
