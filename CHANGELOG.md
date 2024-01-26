@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- 調整台天資料 [#7608](https://redmine.kingkit.codes/issues/7608)
+
 ## [1.11.0] - 2023.11.07
 
 ### Added
