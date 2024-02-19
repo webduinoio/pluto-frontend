@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - 調整台天資料 [#7608](https://redmine.kingkit.codes/issues/7608)
+- 調整語音輸入按鈕的位置 [#7630](https://redmine.kingkit.codes/issues/7630)
 
 ## [1.11.0] - 2023.11.07
 

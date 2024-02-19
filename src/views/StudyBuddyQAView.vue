@@ -545,41 +545,44 @@ mqtt.init(initMqtt, handleResponseId);
 
         <v-divider class="mt-2"></v-divider>
 
-        <v-textarea
-          ref="textarea"
-          class="mt-2 mx-7 flex-grow-0"
-          rows="3"
-          no-resize
-          variant="solo"
-          v-model="prompt"
-          :disabled="mqttLoading || isVoiceInputWorking"
-          :hint="mqttLoading ? '等待回覆中...' : ''"
-          :loading="mqttLoading"
-          clearable
-          autofocus
-          @keydown.enter="onSubmitByEnter"
-        >
-          <template v-slot:append-inner>
-            <v-icon
-              color="primary"
-              :icon="mdiChevronRightBox"
-              :style="{
-                cursor: prompt ? 'pointer' : 'not-allowed',
-                opacity: prompt ? 'unset' : '',
-              }"
-              size="x-large"
-              @click="onSubmit"
-            ></v-icon>
-          </template>
-        </v-textarea>
-
-        <v-container class="d-flex justify-center pa-0">
+        <v-container class="d-flex py-0 px-4 w-100 mt-2" style="gap: 12px">
           <TheVoiceInput
+            text=""
             :disabled="mqttLoading"
             @message="onVoiceMessage"
             @start="onVoiceStart"
             @stop="onVoiceStop"
           />
+
+          <div style="min-width: 200px" class="flex-grow-1">
+            <v-textarea
+              class="fix-textarea-overflow"
+              auto-grow
+              rows="1"
+              max-rows="7"
+              variant="solo"
+              v-model="prompt"
+              :disabled="mqttLoading || isVoiceInputWorking"
+              :hint="mqttLoading ? '等待回覆中...' : ''"
+              :loading="mqttLoading"
+              clearable
+              autofocus
+              @keydown.enter="onSubmitByEnter"
+            >
+              <template v-slot:append-inner>
+                <v-icon
+                  color="primary"
+                  :icon="mdiChevronRightBox"
+                  :style="{
+                    cursor: prompt ? 'pointer' : 'not-allowed',
+                    opacity: prompt ? 'unset' : '',
+                  }"
+                  size="x-large"
+                  @click="onSubmit"
+                ></v-icon>
+              </template>
+            </v-textarea>
+          </div>
         </v-container>
       </v-container>
     </pane>
@@ -651,6 +654,12 @@ mqtt.init(initMqtt, handleResponseId);
     .v-row.custom-message:where(:has(.tooltip)) {
       display: none;
     }
+  }
+}
+
+.fix-textarea-overflow {
+  :deep(textarea) {
+    overflow: auto !important;
   }
 }
 </style>
