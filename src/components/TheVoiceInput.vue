@@ -61,7 +61,26 @@ const onVoiceInput = () => {
 </script>
 
 <template>
-  <v-btn class="mb-4 text-orange" size="large" :disabled="props.disabled" @click="onVoiceInput">
+  <v-btn
+    v-if="!props.text"
+    class="text-orange"
+    :icon="
+      speech.isSupported.value
+        ? speech.isListening.value
+          ? mdiMicrophone
+          : mdiMicrophoneOutline
+        : mdiMicrophoneOff
+    "
+    :disabled="props.disabled"
+    @click="onVoiceInput"
+  ></v-btn>
+  <v-btn
+    v-else
+    class="mb-4 text-orange"
+    size="large"
+    :disabled="props.disabled"
+    @click="onVoiceInput"
+  >
     <template v-slot:prepend>
       <v-icon
         :class="{ 'mic-icon-working': speech.isListening.value }"

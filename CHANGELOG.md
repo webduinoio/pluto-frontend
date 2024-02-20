@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.11.1] - 2024.2.20
+
+### Changed
+
+- 調整台天資料 [#7608](https://redmine.kingkit.codes/issues/7608)
+- 調整語音輸入按鈕的位置 [#7630](https://redmine.kingkit.codes/issues/7630)
+
 ## [1.11.0] - 2023.11.07
 
 ### Added
@@ -214,7 +221,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.11.1...HEAD
+[1.11.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.1...v1.11.1
 [1.11.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.1...v1.11.0
 [1.10.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.9.1...v1.10.0
