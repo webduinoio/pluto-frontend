@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- 小助教索引文字問題 [#7652](https://redmine.kingkit.codes/issues/7652)
+
 ## [1.11.1] - 2024.2.20
 
 ### Changed
