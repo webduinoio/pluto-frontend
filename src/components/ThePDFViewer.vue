@@ -183,7 +183,7 @@ defineExpose({ pdf });
 </script>
 
 <style scoped>
-::v-deep(.centered-select .v-select__selection) {
+:deep(.centered-select .v-select__selection) {
   text-align: center;
 }
 
@@ -193,10 +193,10 @@ defineExpose({ pdf });
   width: 58px;
 }
 
-::v-deep(.centered-input input) {
+:deep(.centered-input input) {
   text-align: center;
 }
-::v-deep(.select-page-field) {
+:deep(.select-page-field) {
   width: 50px !important;
 }
 .clickable {
@@ -216,10 +216,12 @@ defineExpose({ pdf });
 
 .pdfContainer-highlight {
   background-color: rgb(239, 248, 0);
+  opacity: 0.3;
 }
 
 .pdfContainer-mark {
   background-color: rgb(255, 77, 77);
+  opacity: 0.3;
 }
 
 .pdfContainer-overlay {
