@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js'
 
-export class DeployBitV2 extends LitElement {
+export class DeployBitV1 extends LitElement {
 
     static properties = {
         console: {},
@@ -54,6 +54,7 @@ export class DeployBitV2 extends LitElement {
         self.usbButton.addEventListener('click', async function (e) {
             await self.repl.usbConnect();
             var code = parent.editor.getCode();
+            code = code.replace('from webduino.webbit import WebBit', 'from webduino.webbitv1 import WebBit');
             self.msg.innerHTML = '.';
             var writeLen = await self.repl.uploadFile(code);
             if (writeLen > 0) {
@@ -74,7 +75,7 @@ export class DeployBitV2 extends LitElement {
     }
 
     setEnable(enabled) {
-        console.log("deploy v2:", enabled);
+        console.log("deploy v1:", enabled);
         this.usbButton.disabled = !enabled;
         if (enabled) {
             this.usbButton.classList.remove('disabled');
@@ -113,4 +114,4 @@ export class DeployBitV2 extends LitElement {
         `;
     }
 }
-customElements.define('wa-deploy-bitv2', DeployBitV2);
+customElements.define('wa-deploy-bitv1', DeployBitV1);

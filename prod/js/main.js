@@ -69,7 +69,8 @@ class Main {
         setTimeout(function () {
             window.Main.editor = editor;
             window.flow = document.getElementById('flow');
-            window.Main.registry("deploy", document.getElementById('deploy'));
+            window.Main.registry("deploy_v1", document.getElementById('deploy_v1'));
+            window.Main.registry("deploy_v2", document.getElementById('deploy_v2'));
             window.Main.registry("runPython", document.getElementById('runPython'));
         }, 100);
     }
@@ -118,32 +119,50 @@ class Main {
             if (info[1] == 'python') {
                 div_display('content-md', false);
                 div_display('content-code', true);
-                this.coms['deploy'].hide(true);
-                this.coms['deploy'].setEnable(false);
+                this.coms['deploy_v1'].hide(true);
+                this.coms['deploy_v1'].setEnable(false);
+                this.coms['deploy_v2'].hide(true);
+                this.coms['deploy_v2'].setEnable(false);
                 this.coms['runPython'].hide(false);
                 this.coms['split-v'].setHideBody(false);
+            }
+            else if (info[1] == 'wbitv1') {
+                div_display('content-md', false);
+                div_display('content-code', true);
+                this.coms['deploy_v1'].hide(false);
+                this.coms['deploy_v1'].setEnable(true);
+                this.coms['deploy_v2'].hide(true);
+                this.coms['deploy_v2'].setEnable(false);
+                this.coms['runPython'].hide(true);
+                this.coms['split-v'].setHideBody(true);
             }
             else if (info[1] == 'wbit') {
                 div_display('content-md', false);
                 div_display('content-code', true);
-                this.coms['deploy'].hide(false);
-                this.coms['deploy'].setEnable(true);
+                this.coms['deploy_v2'].hide(false);
+                this.coms['deploy_v2'].setEnable(true);
+                this.coms['deploy_v1'].hide(true);
+                this.coms['deploy_v1'].setEnable(false);
                 this.coms['runPython'].hide(true);
                 this.coms['split-v'].setHideBody(true);
             }
             else if (info[1] == 'mbit') {
                 div_display('content-md', false);
                 div_display('content-code', true);
-                this.coms['deploy'].hide(true);
+                this.coms['deploy_v1'].hide(true);
+                this.coms['deploy_v1'].setEnable(false);
+                this.coms['deploy_v2'].hide(true);
+                this.coms['deploy_v2'].setEnable(false);
                 this.coms['runPython'].hide(true);
-                this.coms['deploy'].setEnable(false);
                 this.coms['split-v'].setHideBody(true);
             }
             else if (info[1] == 'gpt35') {
                 div_display('content-md', true);
                 div_display('content-code', false);
-                this.coms['deploy'].hide(true);
-                this.coms['deploy'].setEnable(false);
+                this.coms['deploy_v1'].hide(true);
+                this.coms['deploy_v1'].setEnable(false);
+                this.coms['deploy_v2'].hide(true);
+                this.coms['deploy_v2'].setEnable(false);
                 this.coms['runPython'].hide(true);
                 this.coms['split-v'].setHideBody(true);
             }

@@ -21,6 +21,7 @@
     <script type="module" src="./prod/coms/wa-splitter.js"></script>
     <script type="module" src="./prod/coms/wa-menubar.js"></script>
     <script type="module" src="./prod/coms/wa-run-python.js"></script>
+    <script type="module" src="./prod/coms/wa-deploy-bitv1.js"></script>
     <script type="module" src="./prod/coms/wa-deploy-bitv2.js"></script>
     <script type="module" src="./prod/coms/wa-split-v.js"></script>
     <script type="module" src="./prod/coms/wa-markdown.js"></script>
@@ -71,7 +72,8 @@
         onclick="window.open('https://md.webduino.io/s/Fzh6vAPjY')">comment</span>
 
     <wa-menubar id="menubar">
-        <wa-deploy-bitv2 id="deploy"></wa-deploy-bitv2>
+        <wa-deploy-bitv1 id="deploy_v1"></wa-deploy-bitv1>
+        <wa-deploy-bitv2 id="deploy_v2"></wa-deploy-bitv2>
         <wa-run-python id='runPython' console="output"></wa-run-python>
     </wa-menubar>
 
