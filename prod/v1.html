@@ -7,9 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <script src="board/webbitv2/js/utilities.js" defer></script>
-    <script src="board/webbitv2/js/esptool.js" defer></script>
-    <script src="board/webbitv2/js/v2.js" defer></script>
+    <script type="text/javascript" src="board/webbitv1/lib/repl.js"></script>
+    <script src="board/webbitv1/lib/WebSerial.js"></script>
+    <script src="board/webbitv1/lib/esptool/pako/pako_deflate.js"></script>
+    <script src="board/webbitv1/lib/esptool/slip.js"></script>
+    <script src="board/webbitv1/lib/esptool/md5.js"></script>
+    <script src="board/webbitv1/lib/esptool/esptool.js"></script>
+
     <style>
         #main {
             display: flex;
@@ -31,10 +35,11 @@
         #btnBlockly {
             margin: 0 25px;
         }
-        #fw{
+
+        #fw {
             background-color: #eee;
             width: 300px;
-            margin-left:90px;
+            margin-left: 90px;
         }
     </style>
 </head>
@@ -43,10 +48,10 @@
     <div style="padding:10px">
         <h1 style="margin-left:50px;">Web:Bit v1 韌體更新工具</h1>
         <div id='main'>
-            <img src="coms/wbitv2.png" width="320px"><br>
+            <img src="coms/wbitv1.png" width="240px"><br>
         </div>
         <div id="btn">
-            <button id="btnPython" type="button">AI協作試用版</button>
+            <button id="btnPython" type="button">AI Python小助教</button>
             <button id="btnBlockly" type="button">Web:Bit教育版</button>
         </div>
         <br><br>
@@ -56,7 +61,7 @@
             <div id="myBar" class="w3-container w3-green" style="padding: 0px;width:0%;display:none">0%</div>
         </div>
         <div id='pythonReady2go' style="display:none">
-            <h3>重新插拔 Web:Bit USB 後，點選 [<a href="https://chat.webduino.io/test/index.html">Webduino - GPT 試用版</a>] 開始試用
+            <h3>重新插拔 Web:Bit USB 後，點選 [<a href="https://chat.webduino.io/index.html">AI Python小助教</a>] 開始使用
             </h3>
         </div>
         <div id='blocklyReady2go' style="display:none">
@@ -73,10 +78,36 @@
         }
 
         function progressSet(n) {
+            msg.innerHTML = n < 100 ? "燒錄中..." : "燒錄完成";
             var elem = document.getElementById("myBar");
             elem.style.width = n + '%';
             elem.innerHTML = n + '%';
         }
+
+        btnBlockly.onclick = async () => {
+            progressShow();
+            esp = new ESP({
+                baudrate: 115200 * 2
+            })
+            await esp.init()
+            esp.burn([
+                ["./board/webbitv1/fw_blockly/firmware.bin", 0]
+            ], function (n) {
+                progressSet(n);
+            });
+        }
+        btnPython.onclick = async () => {
+            progressShow();
+            esp = new ESP({
+                baudrate: 115200 * 2
+            })
+            await esp.init()
+            esp.burn([
+                ["./board/webbitv1/fw_mpy/micropython.bin", 0x0]
+            ], function (n) {
+                progressSet(n);
+            });
+        }        
     </script>
 </body>
 
