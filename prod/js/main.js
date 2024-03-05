@@ -111,6 +111,8 @@ class Main {
 
     eventTrigger(com, action, info) {
         console.log(com, ":", action, ":", info);
+        this.actor = info[1];
+        this.coms['select_prompt'].renderActorSelect(this.actor);
         if (com == 'mqtt' && action == 'onFailure') {
             //alert('連線中斷，請重新整理網頁');
         }

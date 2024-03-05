@@ -8,6 +8,7 @@ const textarea = document.getElementById("show");
 const voice = document.getElementById("voice");
 const carousel = document.getElementById("carousel");
 const md2html = parent.document.getElementById("md2html");
+const select_prompt = document.getElementById("select_prompt");
 var info = parseURL(parent.location.href);
 const app = new MQTTApp(info["userId"] + "_" + Math.random());
 
@@ -119,10 +120,11 @@ async function init() {
   parent.Main.registry("app", app);
   parent.Main.registry("gpt", gpt);
   parent.Main.registry("voice", voice);
-  //parent.Main.registry("deploy", deploy);
+  parent.Main.registry("select_prompt", select_prompt);
   parent.Main.registry("flow", parent.flow);
   parent.Main.registry("carousel", carousel);
   parent.Main.registry("editor", parent.editor);
+  
   gpt.setMQTT(app);
   gpt.prompt(info["prompt"]);
   await app.init(appendToShow);
