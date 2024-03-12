@@ -3,7 +3,6 @@ import {
   html,
   css,
 } from "https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js";
-
 /**
  * filename：wa-run-python.js
  * descript：按下此按鈕，可以使用 pyodide 套件執行 python 程式
@@ -49,6 +48,25 @@ export class RunPython extends LitElement {
 
   async runPythonCode(code) {
     try {
+      var self = this;
+      var mqtt = new MQTTApp("pyodide-" + Math.random(1000000));
+      window.mqtt = mqtt;
+      await mqtt.connect();
+      mqtt.pub = mqtt.publishTopic;
+      mqtt.sub = function (topic, methodName) {
+        const callback =
+          typeof methodName === "string"
+            ? self.pyodide.globals.get(methodName)
+            : methodName.copy();
+
+        mqtt.subscribe(topic, function (msg) {
+          try {
+            callback(msg);
+          } catch (e) {
+            console.log("err:", e);
+          }
+        });
+      };
       await this.pyodide.runPythonAsync(code);
       return null;
     } catch (err) {
