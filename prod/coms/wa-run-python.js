@@ -3,9 +3,11 @@ import {
   html,
   css,
 } from "https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js";
+import MQTTAppV2 from "../js/py-mqtt-v2.js";
+
 /**
  * filename：wa-run-python.js
- * descript：按下此按鈕，可以使用 pyodide 套件執行 python 程式
+ * description：按下此按鈕，可以使用 pyodide 套件執行 python 程式
  * associate: editor , wa-output , Main
  * Author: Marty
  * Date: 2022/02
@@ -49,24 +51,8 @@ export class RunPython extends LitElement {
   async runPythonCode(code) {
     try {
       var self = this;
-      var mqtt = new MQTTApp("pyodide-" + Math.random(1000000));
-      window.mqtt = mqtt;
-      await mqtt.connect();
-      mqtt.pub = mqtt.publishTopic;
-      mqtt.sub = function (topic, methodName) {
-        const callback =
-          typeof methodName === "string"
-            ? self.pyodide.globals.get(methodName)
-            : methodName.copy();
-
-        mqtt.subscribe(topic, function (msg) {
-          try {
-            callback(msg);
-          } catch (e) {
-            console.log("err:", e);
-          }
-        });
-      };
+      window.mqtt = MQTTAppV2;
+      mqtt.disconnectAll();
       await this.pyodide.runPythonAsync(code);
       return null;
     } catch (err) {
@@ -250,77 +236,3 @@ export class RunPython extends LitElement {
   }
 }
 customElements.define("wa-run-python", RunPython);
-
-class MQTTApp {
-  constructor(userId) {
-    this.userId = userId;
-    this.client = new Paho.Client("wss://mqtt1.webduino.io/mqtt", userId);
-    this.options = {
-      reconnect: true,
-      timeout: 900,
-      keepAliveInterval: 30,
-      userName: "webduino",
-      password: "webduino",
-    };
-    this.subscriptions = {}; // 存儲訂閱關係的對象
-  }
-
-  async connect() {
-    this.onConnectPromise = new Promise((resolve, reject) => {
-      this.client.connect({
-        ...this.options,
-        onSuccess: () => {
-          console.log("Connected to MQTT broker");
-          resolve();
-        },
-        onFailure: (err) => {
-          console.log("Failed to connect to MQTT broker:", err);
-          reject(err);
-        },
-      });
-    });
-    await this.onConnectPromise;
-    this.client.onMessageArrived = this.onMessageArrived.bind(this);
-  }
-
-  // MQTT message publish function
-  publish(msg) {
-    var payload = new Paho.Message(msg);
-    payload.destinationName = this.pubTopic;
-    this.client.send(payload);
-    console.log("Published message: " + msg);
-  }
-
-  // MQTT message publish function
-  async publishTopic(topic, msg) {
-    var payload = new Paho.Message(msg);
-    payload.destinationName = topic;
-    this.client.send(payload);
-  }
-
-  // MQTT message subscribe function
-  subscribe(topic, onMessageReceived) {
-    console.log("subscribe topic: " + topic);
-    if (!this.subscriptions[topic]) {
-      this.subscriptions[topic] = {
-        onMessageReceived: onMessageReceived,
-      };
-      this.client.subscribe(topic);
-      //console.log(`Subscribed to topic: ${topic}`);
-    } else {
-      console.warn(`Already subscribed to topic: ${topic}`);
-    }
-  }
-
-  // MQTT message received handler
-  onMessageArrived(message) {
-    const topic = message.destinationName;
-    const payload = message.payloadString;
-    if (
-      this.subscriptions[topic] &&
-      this.subscriptions[topic].onMessageReceived
-    ) {
-      this.subscriptions[topic].onMessageReceived(payload);
-    }
-  }
-}
