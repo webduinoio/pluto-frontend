@@ -39,11 +39,10 @@ class MQTTApp {
 
   #onMessageArrived(message) {
     const topic = message.destinationName;
-    const payload = message.payloadString;
-
-    // 類似 python 的 decode
-    payload.__proto__.decode = () => payload;
-
+    const payload = {
+      decode: () => message.payloadString,
+    };
+    
     this.on_message(this, this.userData, {
       topic: topic,
       payload: payload,
