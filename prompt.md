@@ -26,3 +26,20 @@ client.on_message(${client物件}, ${client userData}, ${msg}) #client物件,cli
 4. 完成，請參考右側產生的流程圖與程式碼
 
 # 深呼吸,仔細一步一步思考,按照格式輸出
+
+
+from js import app
+
+app = App()
+
+# API
+- 訂閱並處理資料
+def onMsg(msg):
+	print(msg)
+app.sub('test',onMsg)
+
+- 定時執行
+app.cron('0/1 * * * * *')
+
+- 發佈訊息
+app.pub('okok','hello')

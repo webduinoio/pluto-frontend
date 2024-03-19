@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>@breejs/later Browser Example</h1>
+    <script src="https://unpkg.com/@breejs/later"></script>
+    <script>
+      // 當@breejs/later載入完成後執行
+      window.onload = function () {
+        // 使用@breejs/later解析cron表達式
+        const schedule = later.parse.cron("0/1 * * * *", true);
+        // 定義要執行的任務
+        const task = () => {
+          console.log("任務執行中...", new Date());
+        };
+
+        // 使用later來安排任務
+        var timer = later.setInterval(task, schedule);
+        
+        console.log("任務已安排，每秒執行一次。");
+      };
+    </script>
+  </body>
+</html>
