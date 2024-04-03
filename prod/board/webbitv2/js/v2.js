@@ -102,12 +102,17 @@ btnPython.addEventListener('click', async () => {
   msg.innerHTML = '燒錄中，請稍候...';
   progressShow();
   console.log("load files...");
+  /*
   var fileArr = [
     ['board/webbitv2/fw_mpy/0x1000_bootloader.bin', 0x1000],
     ['board/webbitv2/fw_mpy/0x8000_partition-table.bin', 0x8000],
     ['board/webbitv2/fw_mpy/0x10000_micropython.bin', 0x10000],
     ['board/webbitv2/fw_mpy/0x200000_nvs.bin', 0x200000],
   ];
+  */
+  var fileArr = [
+    ['board/webbitv2/fw_mpy/micropython.bin', 0x0]
+  ]
   console.log("OK!");
   await burn.flash(fileArr, function (part, percent) {
     if (part == fileArr.length) {
