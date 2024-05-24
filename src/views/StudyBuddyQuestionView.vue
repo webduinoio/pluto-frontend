@@ -32,8 +32,8 @@ interface Message {
 }
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
-const MQTT_LOADING_TIME = 60; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
-const MQTT_FIRST_RESPONSE = 10; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
+const MQTT_LOADING_TIME = 80; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
+const MQTT_FIRST_RESPONSE = 15; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('exam');
 const prompt = ref('');
