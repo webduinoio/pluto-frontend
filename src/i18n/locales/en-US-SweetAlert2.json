@@ -1,0 +1,10 @@
+{
+  "confirmButtonText": "Confirm",
+  "cancelButtonText": "Cancel",
+  "confirm": {
+    "title": "Confirm Execution?"
+  },
+  "loading": {
+    "title": "Loading..."
+  }
+}
