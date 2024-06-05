@@ -321,7 +321,7 @@ watch(mqttLoadingTime, (val) => {
       get(mqttMsgRightViewTemp).length === 0) ||
     val > MQTT_LOADING_TIME
   ) {
-    addMessage(MessageType.AI, '我好像出了點問題，請重新整理畫面，或稍後再試一次！', true);
+    addMessage(MessageType.AI, '抱歉！我好像出了點問題，請重新整理畫面，或稍後再試一次！', true);
     set(mqttLoading, false);
   }
 });
