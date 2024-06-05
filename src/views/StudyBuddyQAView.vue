@@ -376,7 +376,7 @@ watch(mqttLoadingTime, (val) => {
   if ((val > MQTT_FIRST_RESPONSE && respMsg.length === 0) || val > MQTT_LOADING_TIME) {
     actors.value.push({
       type: ActorMessageType.AI,
-      messages: ['我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
+      messages: ['抱歉！我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
       error: true,
     });
     set(mqttLoading, false);

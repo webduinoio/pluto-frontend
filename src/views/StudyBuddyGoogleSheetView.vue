@@ -219,7 +219,7 @@ watch(mqttLoadingTime, (val) => {
   ) {
     messages.value.push({
       type: MessageType.AI,
-      message: '我好像出了點問題，請重新整理畫面，或稍後再試一次！',
+      message: '抱歉！我好像出了點問題，請重新整理畫面，或稍後再試一次！',
       error: true,
     });
     set(mqttLoading, false);
