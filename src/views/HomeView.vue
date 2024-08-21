@@ -10,7 +10,7 @@ import { useAuthorizerStore } from '@/stores/authorizer';
 import { useNotificationStore } from '@/stores/notification';
 import { useOAuthStore } from '@/stores/oauth';
 import type { Actor } from '@/types';
-import { mdiPlus } from '@mdi/js';
+import { mdiMagnify, mdiPlus } from '@mdi/js';
 import { get, set } from '@vueuse/core';
 import { onActivated, onDeactivated } from 'vue';
 import { useDisplay } from 'vuetify';
@@ -29,6 +29,7 @@ const data = ref<Actor[]>([]);
 const dataLastIndex = ref('');
 const dialog = ref(false);
 const scrollPosition = ref(0);
+const searchQuery = ref(''); // 新增搜尋用的變數
 const containerWidth = computed(() => {
   if (width.value < 750) return `340px`;
   if (width.value < 1280) return `${340 * 2}px`;
@@ -145,6 +146,7 @@ const loadActors = async () => {
   try {
     const { data: value } = await getActors({
       lastIndex: get(dataLastIndex),
+      search: searchQuery.value,
     });
     if (value.list) {
       data.value.push(...value.list);
@@ -170,17 +172,47 @@ const onLoad = async ({ done }: { done: Function }) => {
     done('error');
   }
 };
+
+const onSearch = async () => {
+  set(data, []);
+  set(dataLastIndex, '');
+  await loadActors();
+};
 </script>
 
 <template>
   <v-container class="mb-6">
     <div class="d-flex justify-space-between mt-5 mt-sm-15 px-sm-16">
       <div class="text-h4 font-weight-bold">我的小助教</div>
-      <div v-if="authorizer.canCreate">
-        <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
-          新增小助教
-        </v-btn>
-        <v-btn color="primary" v-else :icon="mdiPlus" size="small" @click="onCreate"></v-btn>
+      <div class="d-flex align-center" style="gap: 1rem">
+        <v-text-field
+          color="secondary"
+          v-model="searchQuery"
+          label="Search..."
+          variant="solo"
+          density="compact"
+          single-line
+          hide-details
+          rounded
+          clearable
+          @keyup.enter="onSearch"
+          style="width: 200px"
+        >
+          <template v-slot:append-inner>
+            <v-icon
+              color="secondary"
+              style="opacity: 1"
+              :icon="mdiMagnify"
+              @click="onSearch"
+            ></v-icon>
+          </template>
+        </v-text-field>
+        <div v-if="authorizer.canCreate">
+          <v-btn v-if="smAndUp" color="primary" :prepend-icon="mdiPlus" @click="onCreate">
+            新增小助教
+          </v-btn>
+          <v-btn color="primary" v-else :icon="mdiPlus" size="small" @click="onCreate"></v-btn>
+        </div>
       </div>
     </div>
     <v-container>
