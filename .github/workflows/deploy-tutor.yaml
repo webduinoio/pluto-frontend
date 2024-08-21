@@ -1,4 +1,4 @@
-name: Deploy to S3 Tutor Prod
+name: Deploy to Custom Server Tutor Prod
 on:
   push:
     branches:
@@ -15,12 +15,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version-file: ".tool-versions"
+          node-version-file: '.tool-versions'
 
       - name: Cache npm packages
         uses: actions/cache@v2
         with:
-          path: "**/node_modules"
+          path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-
@@ -31,14 +31,12 @@ jobs:
       - name: Build Application
         run: npm run build
 
-      - uses: jakejarvis/s3-sync-action@master
-        name: Upload App to S3 Bucket
+      - name: Upload App to Server
+        uses: appleboy/scp-action@v0.1.7
         with:
-          args: --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ env.AWS_S3_BUCKET_NAME }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "ap-northeast-2"
-          SOURCE_DIR: "dist"
-          DEST_DIR: "tutor"
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: 'dist/*'
+          target: '/mnt/i32g-nfs/pluto-frontend/public/pushTest'
