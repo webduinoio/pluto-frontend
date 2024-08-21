@@ -41,3 +41,4 @@ jobs:
           source: 'dist/*'
           target: '/mnt/i32g-nfs/pluto-frontend/public/pushTest'
           strip_components: 1
+          rm: true
