@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- 新增搜尋欄功能 - API [#8036](https://redmine.kingkit.codes/issues/8036)
+
 ## [1.11.2] - 2024.2.29
 
 ### Fixed
