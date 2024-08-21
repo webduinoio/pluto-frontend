@@ -63,7 +63,7 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            rm -rf /mnt/i32g-nfs/pluto-frontend/public_test/*
+            rm -rf /mnt/i32g-nfs/pluto-frontend/public/*
 
       - name: Upload App to Server
         uses: appleboy/scp-action@v0.1.7
@@ -73,5 +73,5 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.PORT }}
           source: 'dist/*'
-          target: '/mnt/i32g-nfs/pluto-frontend/public_test'
+          target: '/mnt/i32g-nfs/pluto-frontend/public'
           strip_components: 1
