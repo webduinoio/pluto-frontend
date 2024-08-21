@@ -30,8 +30,8 @@ interface Message {
 }
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880;
-const MQTT_LOADING_TIME = 60; // 超過 60 秒，就顯示錯誤訊息
-const MQTT_FIRST_RESPONSE = 10; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
+const MQTT_LOADING_TIME = 80; // 超過 60 秒，就顯示錯誤訊息
+const MQTT_FIRST_RESPONSE = 30; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
 const mqtt = useMqtt(generateMqttUserId(), MQTT_TOPIC.CODE);
 const actor = ref('sheet');
 const prompt = ref('');
@@ -219,7 +219,7 @@ watch(mqttLoadingTime, (val) => {
   ) {
     messages.value.push({
       type: MessageType.AI,
-      message: '我好像出了點問題，請重新整理畫面，或稍後再試一次！',
+      message: '抱歉！我好像出了點問題，請重新整理畫面，或稍後再試一次！',
       error: true,
     });
     set(mqttLoading, false);

@@ -6,6 +6,14 @@ import { useAuthorizerStore } from '@/stores/authorizer';
 import type { ServiceActor } from '@/types';
 import axios from 'axios';
 
+interface GetActorsOptions {
+  lastIndex?: string;
+  count?: number;
+  orderBy?: string | string[];
+  orderDirection?: string;
+  search?: string;
+}
+
 // TODO: 之後需再優化
 function createInstance(value: any) {
   return axios.create({
@@ -42,24 +50,30 @@ export function createActor(data: ServiceActor) {
  * 取得角色清單
  * @param options
  */
-export function getActors(options?: {
-  lastIndex?: string;
-  count?: number;
-  orderBy?: string | string[] | undefined;
-  orderDirection?: string;
-}) {
+export function getActors({
+  lastIndex = '',
+  count = 30,
+  orderBy,
+  orderDirection,
+  search,
+}: GetActorsOptions = {}) {
   const authorizer = useAuthorizerStore();
-  const { lastIndex, count, orderBy, orderDirection } = options || {};
+
+  const params: Record<string, string | number> = {
+    lastIndex,
+    count,
+    ...(orderBy && { orderBy: Array.isArray(orderBy) ? orderBy.join(',') : orderBy }),
+    ...(orderDirection && { orderDirection }),
+    ...(search && { search }),
+  };
+
   const config = {
     method: 'get',
-    params: {
-      lastIndex: lastIndex || '',
-      count: count || 30,
-    } as Record<string, string | number>,
+    params,
   };
-  if (orderBy !== undefined) config.params.orderBy = orderBy.toString();
-  if (orderDirection !== undefined) config.params.orderDirection = orderDirection;
-  return instance(`${authorizer.canReadAll ? '' : '/self'}/actor`, config);
+
+  const endpoint = authorizer.canReadAll ? '/actor' : '/self/actor';
+  return instance(endpoint, config);
 }
 
 /**

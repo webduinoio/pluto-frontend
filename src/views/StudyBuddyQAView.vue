@@ -73,8 +73,8 @@ interface ActorMessage {
 }
 
 const WIDTH_TO_SHOW_RIGHT_PANEL = 880; // 畫面寬度大於這個值才顯示 PDF Viewer
-const MQTT_LOADING_TIME = 60; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
-const MQTT_FIRST_RESPONSE = 10; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
+const MQTT_LOADING_TIME = 80; // 問答過程中，耗時超過 60 秒，顯示錯誤訊息
+const MQTT_FIRST_RESPONSE = 30; // 拋送問題，第一個回應超過 10 秒，顯示錯誤訊息
 const pdfViewerItems = ref<PDFItem[]>([]);
 const route = useRoute();
 const router = useRouter();
@@ -376,7 +376,7 @@ watch(mqttLoadingTime, (val) => {
   if ((val > MQTT_FIRST_RESPONSE && respMsg.length === 0) || val > MQTT_LOADING_TIME) {
     actors.value.push({
       type: ActorMessageType.AI,
-      messages: ['我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
+      messages: ['抱歉！我好像出了點問題，請重新整理畫面，或稍後再試一次！'],
       error: true,
     });
     set(mqttLoading, false);
