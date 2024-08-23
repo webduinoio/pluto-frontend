@@ -176,7 +176,6 @@ const onLoad = async ({ done }: { done: Function }) => {
 const onSearch = async () => {
   set(data, []);
   set(dataLastIndex, '');
-  await loadActors();
 };
 </script>
 
