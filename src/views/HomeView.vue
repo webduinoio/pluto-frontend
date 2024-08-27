@@ -30,6 +30,7 @@ const dataLastIndex = ref('');
 const dialog = ref(false);
 const scrollPosition = ref(0);
 const searchQuery = ref(''); // 新增搜尋用的變數
+const loadDataCount = ref(30);
 const containerWidth = computed(() => {
   if (width.value < 750) return `340px`;
   if (width.value < 1280) return `${340 * 2}px`;
@@ -147,9 +148,11 @@ const loadActors = async () => {
     const { data: value } = await getActors({
       lastIndex: get(dataLastIndex),
       search: searchQuery.value,
+      count: loadDataCount.value,
     });
+
     // !這裡加上判斷式，是由於 onSearch 及 onLoad 會同時呼叫 loadActors
-    // 由於 onSearch 清除 data，當 data 變動時，onLoad 也會被觸發
+    // 由於 onSearch 清除 data，當 data 清空，而觸發 scrollbar 變動，onLoad 也會被觸發
     if (value.list) {
       // 使用 Set 來跟蹤已存在的 id
       const existingIds = new Set(data.value.map((item: Actor) => item.id));
@@ -161,17 +164,17 @@ const loadActors = async () => {
       data.value.push(...filteredList);
       set(dataLastIndex, value.lastIndex);
     }
-    return value;
+    return Object.assign({}, value, { next: value.list.length === loadDataCount.value });
   } catch (err) {
     console.error(err);
-    return { list: null };
+    return { list: null, next: false };
   }
 };
 
 const onLoad = async ({ done }: { done: Function }) => {
   try {
     const value = await loadActors();
-    if (value.list) {
+    if (value.next) {
       done('ok');
     } else {
       done('empty');
