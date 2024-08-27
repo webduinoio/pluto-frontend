@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.12.2] - 2024.8.27
+
+### Fixed
+
+- 查詢後，無法再次查詢 [#8110](https://redmine.kingkit.codes/issues/8110)
+
+## [1.12.1] - 2024.8.23
+
 ### Fixed
 
 - 小助教查詢問題 [#8106](https://redmine.kingkit.codes/issues/8106)
@@ -237,7 +245,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - 問題回復處理 [#7029](https://redmine.kingkit.codes/issues/7029)
 - 小書僮清單卡片樣式跑掉 [#6983](https://redmine.kingkit.codes/issues/6983)
 
-[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/webduinoio/pluto-frontend/compare/v1.12.2...HEAD
+[1.12.2]: https://github.com/webduinoio/pluto-frontend/compare/v1.12.1...v1.12.2
+[1.12.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/webduinoio/pluto-frontend/compare/v1.11.2...v1.12.0
 [1.11.2]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.1...v1.11.2
 [1.11.1]: https://github.com/webduinoio/pluto-frontend/compare/v1.10.1...v1.11.1
