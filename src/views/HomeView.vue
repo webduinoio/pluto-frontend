@@ -148,8 +148,17 @@ const loadActors = async () => {
       lastIndex: get(dataLastIndex),
       search: searchQuery.value,
     });
+    // !這裡加上判斷式，是由於 onSearch 及 onLoad 會同時呼叫 loadActors
+    // 由於 onSearch 清除 data，當 data 變動時，onLoad 也會被觸發
     if (value.list) {
-      data.value.push(...value.list);
+      // 使用 Set 來跟蹤已存在的 id
+      const existingIds = new Set(data.value.map((item: Actor) => item.id));
+
+      // 過濾掉重複的項目
+      const filteredList = value.list.filter((item: Actor) => !existingIds.has(item.id));
+
+      // 將過濾後的項目添加到 data 中
+      data.value.push(...filteredList);
       set(dataLastIndex, value.lastIndex);
     }
     return value;
@@ -174,8 +183,9 @@ const onLoad = async ({ done }: { done: Function }) => {
 };
 
 const onSearch = async () => {
-  set(data, []);
+  data.value.splice(0, data.value.length);
   set(dataLastIndex, '');
+  await loadActors();
 };
 </script>
 
