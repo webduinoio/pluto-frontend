@@ -19,14 +19,14 @@ function voiceToTextarea(str) {
 
 function appendToShow(msg, isEnd) {
   var nowActorName = carousel.getActorName();
-  if (nowActorName == "gpt35") {
-    actorGPT35(msg, isEnd);
+  if (nowActorName == "gpt4o-mini") {
+    actorGPT4oMini(msg, isEnd);
   } else {
     actorDefault(msg, isEnd);
   }
 }
 
-function actorGPT35(msg, isEnd) {
+function actorGPT4oMini(msg, isEnd) {
   try {
     console.log(isEnd, wholeMsg);
     if (isEnd) {

@@ -158,7 +158,7 @@ class Main {
                 this.coms['runPython'].hide(true);
                 this.coms['split-v'].setHideBody(true);
             }
-            else if (info[1] == 'gpt35') {
+            else if (info[1] == 'gpt4o-mini') {
                 div_display('content-md', true);
                 div_display('content-code', false);
                 this.coms['deploy_v1'].hide(true);

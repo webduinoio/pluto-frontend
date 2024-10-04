@@ -135,7 +135,7 @@ class ImageSlider extends LitElement {
       ['wbitv1', '控制 Web:Bit v1', '../coms/wv1.png', '320px', 'https://md.webduino.io/s/-0mWxeDrn'],
       ['wbit', '控制 Web:Bit v2', '../coms/wv2.png', '320px', 'https://md.webduino.io/s/3Jh3hCuJO'],
       ['mbit', '控制 Micro:Bit', '../coms/microbit.png', '320px', 'https://md.webduino.io/s/JEuvsZRg-'],
-      ['gpt35', 'GPT-3.5', '../coms/gpt35.png', '320px', 'https://md.webduino.io/s/JEuvsZRg-'],
+      ['gpt4o-mini', 'GPT4o-mini', '../coms/gpt4o-mini.png', '320px', 'https://md.webduino.io/s/JEuvsZRg-'],
     ];
     this.actor = this.images[this.index][0];
     this.actorName = '';
