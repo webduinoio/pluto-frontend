@@ -65,23 +65,77 @@ export class WAUser extends LitElement {
       right: 10px;
       cursor: pointer;
     }
+
+    /* 新增的彈出窗口樣式 */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+    }
+    .popup {
+      width: 480px;
+      height: 80px;
+      background: #fff;
+      padding: 20px;
+      color: #000;
+      box-sizing: border-box;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .popup input {
+      flex: 1;
+      margin-left: 10px;
+      padding: 5px;
+      font-size: 16px;
+    }
+    .popup button {
+      padding: 5px 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* 新增的啟動註冊碼按鈕樣式 */
+    .activate-button {
+      display: inline-block;
+      outline: 0;
+      cursor: pointer;
+      border: 2px solid #000;
+      border-radius: 3px;
+      color: #fff;
+      background: #000;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 16px;
+      padding: 2px;
+      text-align: center;
+      transition-duration: 0.15s;
+      transition-property: all;
+      margin-left: 0px;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .activate-button:hover {
+      color: #000;
+      background: rgb(255, 218, 87);
+    }
   `;
 
   static properties = {
     isOpen: { type: Boolean },
     userInfo: { type: Object },
+    isPopupOpen: { type: Boolean },
+    registrationCode: { type: String },
   };
-
-  check() {
-    this.isOpen = false;
-    if (window.user) {
-      this.userInfo = {
-        name: window.user.name || "匿名",
-        email: window.user.email || "---",
-        role: window.user.role || '---',
-      };
-    }
-  }
 
   constructor() {
     super();
@@ -90,10 +144,45 @@ export class WAUser extends LitElement {
       email: "---",
       role: "---",
     };
+    this.isPopupOpen = false;
+    this.registrationCode = "";
+  }
+
+  check() {
+    this.isOpen = false;
+    if (window.user) {
+      this.userInfo = {
+        name: window.user.name || "匿名",
+        email: window.user.email || "---",
+        role: window.user.role || "---",
+      };
+      this.requestUpdate(); // 添加這行來觸發重新渲染
+    }
   }
 
   togglePanel() {
     this.isOpen = !this.isOpen;
+  }
+
+  openRegistrationPopup() {
+    this.togglePanel();
+    this.isPopupOpen = true;
+  }
+
+  closeRegistrationPopup() {
+    this.isPopupOpen = false;
+    this.registrationCode = "";
+  }
+
+  handleInputChange(e) {
+    this.registrationCode = e.target.value;
+    this.requestUpdate();
+  }
+
+  activateRegistration() {
+    console.log(`註冊碼: ${this.registrationCode}`);
+    // 在这里添加激活逻辑
+    this.closeRegistrationPopup();
   }
 
   render() {
@@ -116,9 +205,42 @@ export class WAUser extends LitElement {
       <div class="user-info-panel ${this.isOpen ? "open" : ""}">
         <div class="close-button" @click="${this.togglePanel}">X</div>
         <h2><span>${this.userInfo.role}</span></h2>
-        姓名：${this.userInfo.name}</p>
-        EMail: ${this.userInfo.email}</p>
+        <p>姓名：${this.userInfo.name}</p>
+        <p>EMail: ${this.userInfo.email}</p>
+        ${this.userInfo.role === "user"
+          ? html`
+              <button
+                class="activate-button"
+                @click="${this.openRegistrationPopup}"
+              >
+                啟動註冊碼
+              </button>
+            `
+          : ""}
       </div>
+
+      ${this.isPopupOpen
+        ? html`
+            <div class="popup-overlay">
+              <div class="popup">
+                <label>
+                  請輸入啟動註冊碼:
+                  <input
+                    type="text"
+                    .value="${this.registrationCode}"
+                    @input="${this.handleInputChange}"
+                  />
+                </label>
+                <button
+                  class="activate-button"
+                  @click="${this.activateRegistration}"
+                >
+                  啟動
+                </button>
+              </div>
+            </div>
+          `
+        : ""}
     `;
   }
 }
