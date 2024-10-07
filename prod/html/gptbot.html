@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
     <!-- MQTT -->
     <script src="../js/mqttapp.js"></script>
@@ -10,35 +9,46 @@
     <script src="../js/fixFlow.js"></script>
     <script src="../js/codeBlock.js"></script>
     <!-- Google Font Material Symbol -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap">
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap"
+    />
     <script type="module" src="../coms/wa-select-prompt.js"></script>
     <script type="module" src="../coms/wa-voice.js"></script>
     <script type="module" src="../coms/wa-gpt-bot.js"></script>
     <script type="module" src="../coms/wa-carousel.js"></script>
-    <link rel="stylesheet" href="./gptbot.css">
-</head>
+    <link rel="stylesheet" href="./gptbot.css" />
+  </head>
 
-<body>
+  <body>
     <div id="gptbot-content">
-        <div class="quiz-panel">
-            <wa-carousel id="carousel"></wa-carousel>
+      <div class="quiz-panel">
+        <wa-carousel id="carousel"></wa-carousel>
+      </div>
+      <div class="chat-panel">
+        <wa-select-prompt
+          id="select_prompt"
+          style="width: 100%"
+        ></wa-select-prompt
+        ><br />
+        <wa-gpt-bot id="gpt"></wa-gpt-bot>
+        <br />
+        <div class="menuBar">
+          <wa-voice
+            id="voice"
+            class="menuBtn"
+            callback="voiceToTextarea"
+          ></wa-voice>
+          <wa-gpt-btn id="sendBtn" class="menuBtn" callback="send"></wa-gpt-btn>
         </div>
-        <div class="chat-panel">
-            <wa-select-prompt id='select_prompt' style="width:100%"></wa-select-prompt><br>
-            <wa-gpt-bot id="gpt"></wa-gpt-bot>
-            <br>
-            <div class="menuBar">
-                <wa-voice id='voice' class='menuBtn' callback="voiceToTextarea"></wa-voice>
-                <wa-gpt-btn id="sendBtn" class='menuBtn' callback="send"></wa-gpt-btn>
-            </div>
-        </div>
+      </div>
     </div>
-</body>
+  </body>
 
-<script src="./oauth.js"></script>
-<script>
+  <script src="./oauth.js"></script>
+  <script>
     (async () => {
-        /*
+      /*
         if (!(await isLogin())) {
             parent.Main.popup(
                 "還差一步！",
@@ -51,7 +61,7 @@
             return;
         }
         //*/
-        /*
+      /*
         const user = await getUser();
         console.log(">>>", user);
         setCookies("userId", user?.id);
@@ -72,18 +82,15 @@
             });
         }
         //*/
-
-        // 測試用
-        parent.window.user = {
-            role: "user",
-            id: "27",
-            name: "test",
-            email: "test@test.com",
-        }
-        parent.window.Main.coms['waUser'].check();
+      // 測試用
+      parent.window.user = {
+        role: "user",
+        id: "27",
+        name: "test",
+        email: "test@test.com",
+      };
     })();
-</script>
-<script src="./gptbot-lib.js"></script>
-<script src="./gptbot.js"></script>
-
+  </script>
+  <script src="./gptbot-lib.js"></script>
+  <script src="./gptbot.js"></script>
 </html>

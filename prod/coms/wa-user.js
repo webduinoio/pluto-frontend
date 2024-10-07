@@ -148,16 +148,22 @@ export class WAUser extends LitElement {
     this.registrationCode = "";
   }
 
-  check() {
-    this.isOpen = false;
-    if (window.user) {
-      this.userInfo = {
-        name: window.user.name || "匿名",
-        email: window.user.email || "---",
-        role: window.user.role || "---",
-      };
-      this.requestUpdate(); // 添加這行來觸發重新渲染
+  firstUpdated() {
+    if (typeof window.Main != "undefined") {
+      window.Main.registry("waUser", this);
     }
+    const intervalId = setInterval(() => {
+      if (window.user) {
+        this.userInfo = {
+          name: window.user.name,
+          email: window.user.email,
+          role: window.user.role,
+        };
+        this.requestUpdate();
+        console.log("userInfo:", this.userInfo);
+        clearInterval(intervalId);
+      }
+    }, 250);
   }
 
   togglePanel() {
