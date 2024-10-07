@@ -128,7 +128,6 @@ class Main {
                 this.coms['deploy_v2'].setEnable(false);
                 this.coms['runPython'].hide(false);
                 this.coms['split-v'].setHideBody(false);
-                //this.coms['waUser'].hide(false);
             }
             else if (info[1] == 'wbitv1') {
                 div_display('content-md', false);

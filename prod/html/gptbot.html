@@ -75,10 +75,12 @@
 
         // 測試用
         parent.window.user = {
+            role: "user",
             id: "27",
             name: "test",
             email: "test@test.com",
         }
+        parent.window.Main.coms['waUser'].check();
     })();
 </script>
 <script src="./gptbot-lib.js"></script>

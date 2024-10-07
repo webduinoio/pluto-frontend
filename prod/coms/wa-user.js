@@ -44,7 +44,8 @@ export class WAUser extends LitElement {
       top: 50px;
       right: -300px;
       width: 300px;
-      height: 30%;
+      height: 240px;
+      font-size: 16px;
       background-color: #eee;
       color: black;
       box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
@@ -71,14 +72,23 @@ export class WAUser extends LitElement {
     userInfo: { type: Object },
   };
 
+  check() {
+    this.isOpen = false;
+    if (window.user) {
+      this.userInfo = {
+        name: window.user.name || "匿名",
+        email: window.user.email || "---",
+        role: window.user.role || '---',
+      };
+    }
+  }
+
   constructor() {
     super();
-    this.isOpen = false;
     this.userInfo = {
-      name: "管理者",
-      email: "admin@webduino.io",
-      role: "PRO",
-      daysLeft: -37,
+      name: "---",
+      email: "---",
+      role: "---",
     };
   }
 
@@ -105,12 +115,9 @@ export class WAUser extends LitElement {
 
       <div class="user-info-panel ${this.isOpen ? "open" : ""}">
         <div class="close-button" @click="${this.togglePanel}">X</div>
-        <h2>${this.userInfo.name} <span>${this.userInfo.role}</span></h2>
-        <p>${this.userInfo.email}</p>
-        <p>剩余天数：${this.userInfo.daysLeft}</p>
-        <p>方案介绍</p>
-        <p>学习资源</p>
-        <p>登出</p>
+        <h2><span>${this.userInfo.role}</span></h2>
+        姓名：${this.userInfo.name}</p>
+        EMail: ${this.userInfo.email}</p>
       </div>
     `;
   }
