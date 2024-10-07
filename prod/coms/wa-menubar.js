@@ -19,7 +19,7 @@ export class MenuBar extends LitElement {
   static styles = [
     css`
       .toolMenu {
-        width: 180px;
+        width: 237px;
         float: right;
         box-sizing: border-box;
         font-size: 15px;
