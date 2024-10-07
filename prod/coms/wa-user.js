@@ -38,7 +38,13 @@ export class WAUser extends LitElement {
       width: 40px;
       margin-left: -5px;
       display: inline-block;
+      transition: color 0.3s ease; /* 添加颜色过渡效果 */
     }
+
+    #msg.loading {
+      color: #777; /* 加载时的灰色 */
+    }
+
     .user-info-panel {
       position: fixed;
       top: 50px;
@@ -135,6 +141,7 @@ export class WAUser extends LitElement {
     userInfo: { type: Object },
     isPopupOpen: { type: Boolean },
     registrationCode: { type: String },
+    isLoading: { type: Boolean }, // 新增加载状态属性
   };
 
   constructor() {
@@ -146,6 +153,7 @@ export class WAUser extends LitElement {
     };
     this.isPopupOpen = false;
     this.registrationCode = "";
+    this.isLoading = true; // 初始化为加载状态
   }
 
   firstUpdated() {
@@ -159,8 +167,9 @@ export class WAUser extends LitElement {
           email: window.user.email,
           role: window.user.role,
         };
+        this.isLoading = false; // 加载完成，更新状态
         this.requestUpdate();
-        console.log("userInfo:", this.userInfo);
+        //console.log("userInfo:", this.userInfo);
         clearInterval(intervalId);
       }
     }, 250);
@@ -187,6 +196,29 @@ export class WAUser extends LitElement {
 
   activateRegistration() {
     console.log(`註冊碼: ${this.registrationCode}`);
+    var requestData = JSON.parse(JSON.stringify(this.userInfo));
+    requestData.activationCode = this.registrationCode;
+    // 使用 fetch API 發送 POST 請求
+    fetch("https://chat.nodered.vip/api/activation", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    })
+      .then((response) => {
+        // 檢查回應是否成功
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("data:", data);
+      })
+      .catch((error) => {
+        console.log("error:", error);
+      });
     // 在这里添加激活逻辑
     this.closeRegistrationPopup();
   }
@@ -205,7 +237,7 @@ export class WAUser extends LitElement {
             d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z"
           />
         </svg>
-        <span id="msg"> 帳號</span>
+        <span id="msg" class="${this.isLoading ? "loading" : ""}">帳號</span>
       </button>
 
       <div class="user-info-panel ${this.isOpen ? "open" : ""}">
