@@ -72,6 +72,7 @@ class Main {
             window.Main.registry("deploy_v1", document.getElementById('deploy_v1'));
             window.Main.registry("deploy_v2", document.getElementById('deploy_v2'));
             window.Main.registry("runPython", document.getElementById('runPython'));
+            window.Main.registry("waUser", document.getElementById('waUser'));
         }, 100);
     }
 
@@ -127,6 +128,7 @@ class Main {
                 this.coms['deploy_v2'].setEnable(false);
                 this.coms['runPython'].hide(false);
                 this.coms['split-v'].setHideBody(false);
+                //this.coms['waUser'].hide(false);
             }
             else if (info[1] == 'wbitv1') {
                 div_display('content-md', false);
