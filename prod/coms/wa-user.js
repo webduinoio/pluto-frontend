@@ -20,14 +20,17 @@ export class WAUser extends LitElement {
       margin-top: -2px;
     }
 
-    button:hover {
+    /* 修改后的按钮悬停样式，排除禁用状态 */
+    button:not([disabled]):hover {
       transform: translateY(-3px);
       color: #fff;
     }
+
     button[disabled] {
-      cursor: pointer;
+      cursor: not-allowed;
       color: #777;
     }
+
     svg {
       fill: #eee;
       width: 24px;
@@ -130,7 +133,8 @@ export class WAUser extends LitElement {
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .activate-button:hover {
+    /* 修改后的啟動註冊碼按鈕悬停样式，排除禁用状态 */
+    .activate-button:not([disabled]):hover {
       color: #000;
       background: rgb(255, 218, 87);
     }
@@ -195,7 +199,17 @@ export class WAUser extends LitElement {
             clearInterval(intervalId);
           });
       }
-    }, 250);
+    }, 500);
+  }
+
+  updated(changedProperties) {
+    if (changedProperties.has('isPopupOpen') && this.isPopupOpen) {
+      // 聚焦輸入框
+      const input = this.renderRoot.querySelector('.popup input');
+      if (input) {
+        input.focus();
+      }
+    }
   }
 
   togglePanel() {
@@ -215,6 +229,16 @@ export class WAUser extends LitElement {
   handleInputChange(e) {
     this.registrationCode = e.target.value;
     this.requestUpdate();
+  }
+
+  handleKeyPress(e) {
+    if (e.key === 'Enter' && this.isRegistrationCodeValid()) {
+      this.activateRegistration();
+    }
+  }
+
+  isRegistrationCodeValid() {
+    return this.registrationCode.length === 8;
   }
 
   activateRegistration() {
@@ -238,7 +262,7 @@ export class WAUser extends LitElement {
         return response.json();
       })
       .then((data) => {
-        console.log("data:", data);
+        console.log("activateRegistration resp:", data);
         self.userInfo['role']['name'] = data.role.name;
         self.userInfo['endDate'] = data.endDate;
         self.requestUpdate();
@@ -295,11 +319,14 @@ export class WAUser extends LitElement {
                     type="text"
                     .value="${this.registrationCode}"
                     @input="${this.handleInputChange}"
+                    @keypress="${this.handleKeyPress}"
+                    maxlength="8"
                   />
                 </label>
                 <button
                   class="activate-button"
                   @click="${this.activateRegistration}"
+                  ?disabled="${!this.isRegistrationCodeValid()}"
                 >
                   啟動
                 </button>
