@@ -1,0 +1,3465 @@
+好的，讓我來幫您寫出計算BMI的Python程式碼吧！以下是完整的程式碼和詳細註解：
+程式碼:
+```python
+# 程式說明：這個程式可以讓用戶輸入身高和體重，然後計算並顯示BMI數值，最後鼓勵用戶接下來的運動。
+
+# 請使用者輸入身高（公分）和體重（公斤）
+height = float(input(""請輸入您的身高（公分）：""))
+weight = float(input(""請輸入您的體重（公斤）：""))
+
+# 計算BMI數值
+bmi = weight / ((height/100) ** 2)
+
+# 顯示BMI數值
+print(""您的BMI數值為：{:.2f}"".format(bmi))
+
+# 根據BMI數值給出不同的鼓勵
+if bmi < 18.5:
+    print(""您的BMI偏低，建議多吃一些健康食品，並開始進行適當的運動。"")
+elif bmi >= 18.5 and bmi < 24:
+    print(""您的BMI正常，請繼續保持良好的生活習慣和運動習慣。"")
+elif bmi >= 24 and bmi < 27:
+    print(""您的BMI過重，建議減少高熱量和高脂肪的食物，並增加運動量。"")
+elif bmi >= 27 and bmi < 30:
+    print(""您的BMI輕度肥胖，建議控制飲食，增加運動量，並定期進行健康檢查。"")
+elif bmi >= 30 and bmi < 35:
+    print(""您的BMI中度肥胖，建議尋求醫生或營養師的幫助，制定合理的飲食和運動計劃。"")
+else:
+    print(""您的BMI重度肥胖，建議立即尋求醫生的幫助，制定有效的減重計劃。"")
+
+```
+流程圖:
+```dot
+digraph {
+    rankdir=TB;
+    ""開始"" -> ""輸入身高和體重"";
+    ""輸入身高和體重"" -> ""計算BMI數值"";
+    ""計算BMI數值"" -> ""顯示BMI數值"";
+    ""顯示BMI數值"" -> ""根據BMI數值給出不同的鼓勵"";
+    ""根據BMI數值給出不同的鼓勵"" -> ""結束"";
+}
+```
+
+歡迎繼續提問."
+"
+好的，讓我來幫你完成這個任務。
+
+1. 程式說明：
+這個程式會輸出一棵樹的ASCII圖形。使用Python內建的模組，並且使用print函數來輸出ASCII圖形。
+
+2. 完整程式碼和詳細註解：
+
+```
+# 輸出一棵樹的ASCII圖形
+
+# 定義樹的高度
+height = 5
+
+# 定義樹幹的寬度和高度
+trunk_width = 3
+trunk_height = 2
+
+# 輸出樹冠部分
+for i in range(height):
+    # 計算每一層的空格數和星號數
+    spaces = height - i - 1
+    stars = 2 * i + 1
+    
+    # 輸出空格和星號
+    print("" "" * spaces + ""*"" * stars)
+
+# 輸出樹幹部分
+for i in range(trunk_height):
+    # 計算每一層的空格數和星號數
+    spaces = height - trunk_width // 2
+    stars = trunk_width
+    
+    # 輸出空格和星號
+    print("" "" * spaces + ""|"" * stars)
+
+```
+
+3. 流程圖：
+
+```
+digraph {
+    rankdir=TB;
+    node[shape=box, style=filled, color=""#FFFACD""];
+    ""開始"" -> ""輸入樹的高度"";
+    ""輸入樹的高度"" -> ""定義樹幹的寬度和高度"";
+    ""定義樹幹的寬度和高度"" -> ""輸出樹冠部分"";
+    ""輸出樹冠部分"" -> ""計算每一層的空格數和星號數"";
+    ""計算每一層的空格數和星號數"" -> ""輸出空格和星號"";
+    ""輸出空格和星號"" -> ""判斷是否完成樹冠部分"";
+    ""判斷是否完成樹冠部分"" -> ""輸出樹幹部分"";
+    ""輸出樹幹部分"" -> ""計算每一層的空格數和星號數"";
+    ""計算每一層的空格數和星號數"" -> ""輸出空格和星號"";
+    ""輸出空格和星號"" -> ""判斷是否完成樹幹部分"";
+    ""判斷是否完成樹幹部分"" -> ""[結束]"";
+}
+```"
+"
+好的，讓我來回答你的問題。首先，我會先提供程式說明，然後是完整的程式碼和註解，最後是流程圖。
+
+1. 程式說明：
+這個程式會計算 2 + 10 * 8 - 30 的結果並輸出。
+
+2. 完整程式碼和註解：
+
+```python
+# 計算 2 + 10 * 8 - 30 的結果
+result = 2 + 10 * 8 - 30
+
+# 輸出結果
+print(""2 + 10 * 8 - 30 ="", result)
+```
+
+這個程式非常簡單，只有一行代碼。首先，我們使用乘法運算符 (*) 將 10 和 8 相乘，然後再使用加法運算符 (+) 和減法運算符 (-) 對其餘數字進行運算。最後，我們將結果存儲在變量 result 中，並使用 print 函數將其輸出到控制台。
+
+3. 流程圖：
+
+以下是使用 Graphviz 語法產生的簡易流程圖，用繁體中文並加上""""，在 digraph 開始標籤後添加 rankdir=TB;。流程圖使用淺黃色，[線]使用黑色。
+
+```dot
+digraph {
+    rankdir=TB;
+    node[style=""filled"", fillcolor=""#FFFACD""];
+    ""計算 2 + 10 * 8 - 30 的結果"" -> ""將 10 和 8 相乘"";
+    ""將 10 和 8 相乘"" -> ""加上 2"";
+    ""加上 2"" -> ""減去 30"";
+    ""減去 30"" -> ""輸出結果"";
+}
+```
+
+希望這個回答能夠幫助你！如果你有任何其他問題或需要進一步的說明，請隨時告訴我。"
+"
+好的，讓我來幫你解決這個問題。以下是符合你要求的回答：
+
+1. 程式說明：
+這個程式會要求用戶輸入身高和體重，然後計算並顯示他們的 BMI 值。最後，它會鼓勵用戶養成運動習慣。
+
+2. 完整程式碼和詳細註解：
+
+```python
+# 要求用戶輸入身高和體重
+height = float(input(""請輸入您的身高（公分）：""))
+weight = float(input(""請輸入您的體重（公斤）：""))
+
+# 計算 BMI 值
+bmi = weight / ((height/100) ** 2)
+
+# 顯示 BMI 值
+print(""您的 BMI 值為：{:.2f}"".format(bmi))
+
+# 鼓勵用戶養成運動習慣
+if bmi < 18.5:
+    print(""您的 BMI 值偏低，建議多吃一些健康食品並開始運動。"")
+elif bmi >= 18.5 and bmi < 24:
+    print(""您的 BMI 值正常，繼續保持良好的生活習慣！"")
+elif bmi >= 24 and bmi < 27:
+    print(""您的 BMI 值過重，建議減少高熱量食品並開始運動。"")
+elif bmi >= 27 and bmi < 30:
+    print(""您的 BMI 值輕度肥胖，建議控制飲食並增加運動量。"")
+elif bmi >= 30 and bmi < 35:
+    print(""您的 BMI 值中度肥胖，建議尋求醫生的幫助並開始健康管理。"")
+else:
+    print(""您的 BMI 值重度肥胖，建議立即尋求醫生的幫助並開始健康管理。"")
+```
+
+3. 流程圖：
+
+```dot
+digraph {
+    rankdir=TB;
+    node[shape=box, style=filled, fillcolor=lightyellow];
+    ""開始"" -> ""輸入身高和體重"";
+    ""輸入身高和體重"" -> ""計算BMI值"";
+    ""計算BMI值"" -> ""顯示BMI值"";
+    ""顯示BMI值"" -> ""判斷BMI值範圍"";
+    ""判斷BMI值範圍"" -> ""鼓勵用戶養成運動習慣"";
+    ""鼓勵用戶養成運動習慣"" -> ""結束"";
+    ""結束""[shape=oval];
+}
+```"
+"
+好的，讓我來幫你寫出符合要求的程式碼和流程圖。
+
+1. 程式說明：
+這個程式會輸出一個字串「你好，我是Webduino。」
+
+2. 完整程式碼和詳細註解：
+
+```python
+# 輸出一個字串「你好，我是Webduino。」
+print(""你好，我是Webduino。"")
+```
+
+3. 流程圖：
+
+```dot
+digraph {
+    rankdir=LR;
+    node [fontname=""Microsoft JhengHei""];
+    start [label=""開始"", shape=""ellipse""];
+    output [label=""輸出字串"", shape=""parallelogram""];
+    end [label=""結束"", shape=""ellipse""];
+
+    start -> output -> end;
+}
+```
+
+以上就是符合要求的程式碼和流程圖，希望能對你有所幫助！"
+"
+好的，讓我來幫你解決這個問題。
+
+1. 程式說明：
+這個程式會輸出一個簡單的Hello World訊息。
+
+2. 完整程式碼和詳細註解：
+
+```python
+# 輸出Hello World訊息
+print(""Hello World!"")
+```
+
+這個程式非常簡單，只有一行代碼。使用Python內建的`print()`函數，將""Hello World!""字串輸出到終端機上。
+
+3. 簡易流程圖：
+
+以下是用graphviz語法產生的簡易流程圖，用繁體中文並加上""Hello World""的訊息：
+
+```
+digraph {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+    start [label=""開始""];
+    end [label=""結束""];
+    output [label=""輸出Hello World!""];
+
+    start -> output -> end;
+}
+```
+
+希望這個回答能夠幫助你！如果你還有其他問題需要解決，歡迎隨時向我提出。"
+"
+抱歉，我之前沒有自我介紹。我是 ChatGPT，一個由 OpenAI 訓練的大型語言模型。
+
+以下是符合你要求的回答：
+
+1. 程式說明：
+這個程式可以讓使用者輸入一個整數 n，然後計算出從 1 到 n 的所有整數的和。
+
+2. 完整程式碼和詳細註解：
+
+```python
+# 要求使用者輸入一個整數 n
+n = int(input(""請輸入一個整數：""))
+
+# 初始化總和為 0
+total = 0
+
+# 使用 for 迴圈計算從 1 到 n 的所有整數的和
+for i in range(1, n+1):
+    total += i
+
+# 輸出結果
+print(""從 1 到"", n, ""的所有整數的和為："", total)
+```
+
+3. 簡易流程圖：
+
+```
+digraph {
+    rankdir=LR;
+    node [fontname=""Microsoft JhengHei""];
+
+    Start -> Input [label=""開始""];
+    Input -> ForLoop [label=""輸入 n""];
+    ForLoop -> Sum [label=""計算總和""];
+    Sum -> Output [label=""輸出結果""];
+    Output -> End [label=""結束""];
+
+    Start [shape=Mdiamond label=""開始""];
+    End [shape=Msquare label=""結束""];
+    Input [shape=parallelogram label=""輸入 n""];
+    ForLoop [shape=rectangle label=""使用 for 迴圈計算總和""];
+    Sum [shape=diamond label=""總和是否計算完畢？""];
+    Output [shape=parallelogram label=""輸出結果""];
+}
+```
+
+希望這個回答能夠幫助你！如果你有任何其他問題，歡迎隨時向我提出。"
+"
+好的，讓我來幫你解決這個問題。
+
+1. 程式說明：
+這個程式會產生一個 9x9 的乘法表，並使用 ASCII 字元來呈現。
+
+2. 產生程式碼：
+
+```
+# 產生 9x9 乘法表
+for i in range(1, 10):
+    for j in range(1, 10):
+        print(f""{i} x {j} = {i*j:2d}"", end="" "")
+    print()
+```
+
+3. Graphviz 語法：
+
+```
+digraph {
+    rankdir=LR;
+    node [fontname=""Microsoft JhengHei""];
+
+    ""開始"" -> ""迴圈1"";
+    ""迴圈1"" -> ""迴圈2"";
+    ""迴圈2"" -> ""輸出"";
+    ""輸出"" -> ""判斷"";
+    ""判斷"" -> ""結束"";
+
+    ""開始"" [label=""開始"", shape=""ellipse""];
+    ""迴圈1"" [label=""for i in range(1, 10):"", shape=""rectangle""];
+    ""迴圈2"" [label=""for j in range(1, 10):"", shape=""rectangle""];
+    ""輸出"" [label=""print(f'{i} x {j} = {i*j:2d}', end=' ')"", shape=""rectangle""];
+    ""判斷"" [label=""if j == 9:"", shape=""diamond""];
+    ""結束"" [label=""結束"", shape=""ellipse""];
+
+    ""開始"" -> ""迴圈1"";
+    ""迴圈1"" -> ""迴圈2"" [label=""True""];
+    ""迴圈2"" -> ""輸出"";
+    ""輸出"" -> ""判斷"";
+    ""判斷"" -> ""迴圈1"" [label=""True""];
+    ""判斷"" -> ""結束"" [label=""False""];
+}
+```
+
+希望這樣能夠幫助你解決問題。如果還有其他問題，歡迎隨時向我提出。"
+"
+好的，讓我來幫你解決這個問題。
+
+1. 程式說明：
+這個程式會產生一個 9x9 的乘法表，並使用 ASCII 字元來呈現。
+
+2. 完整程式碼和詳細註解：
+
+```python
+# 產生 9x9 的乘法表
+for i in range(1, 10):
+    for j in range(1, 10):
+        # 計算乘積
+        product = i * j
+        # 格式化輸出
+        print(f""{i} x {j} = {product:2d}"", end="" "")
+    # 換行
+    print()
+```
+
+3. Graphviz 標準流程圖語法：
+
+digraph {
+    rankdir=LR;
+    node [fontname=""Microsoft JhengHei""];
+    ""開始"" -> ""迴圈1"";
+    ""迴圈1"" -> ""迴圈2"";
+    ""迴圈2"" -> ""計算乘積"";
+    ""計算乘積"" -> ""格式化輸出"";
+    ""格式化輸出"" -> ""印出結果"";
+    ""印出結果"" -> ""換行"";
+    ""換行"" -> ""判斷是否完成"";
+    ""判斷是否完成"" -> ""迴圈2"" [label=""是""];
+    ""判斷是否完成"" -> ""結束"" [label=""否""];
+    ""開始"" [shape=""ellipse"", label=""開始""];
+    ""結束"" [shape=""ellipse"", label=""結束""];
+    ""迴圈1"" [label=""for i in range(1, 10):""];
+    ""迴圈2"" [label=""for j in range(1, 10):""];
+    ""計算乘積"" [label=""product = i * j""];
+    ""格式化輸出"" [label=""print(f\""{i} x {j} = {product:2d}\"", end=\"" \"")""];
+    ""印出結果"" [label=""印出結果""];
+    ""換行"" [label=""print()""];
+    ""判斷是否完成"" [label=""if j == 9:""];
+}
+```"
+"
+好的，讓我來幫你解決這個問題。以下是產生9x9乘法表的程式步驟：
+
+1. 使用雙重迴圈，從1到9遍歷每一個數字。
+2. 在內部迴圈中，將外部迴圈的當前數字與內部迴圈的當前數字相乘，並將結果存儲在一個變量中。
+3. 使用print()函數輸出每一行的乘法表。
+
+以下是完整的Python代碼和註釋：
+
+```python
+# 產生9x9乘法表
+
+# 遍歷1到9的每一個數字
+for i in range(1, 10):
+    for j in range(1, 10):
+        # 將i和j相乘，並將結果存儲在變量result中
+        result = i * j
+        # 使用print()函數輸出結果，並使用end參數指定分隔符為\t
+        print(f""{i} x {j} = {result}"", end=""\t"")
+    # 每一行結束後換行
+    print()
+
+```
+
+接下來，我們可以使用Graphviz來生成標準流程圖。以下是用繁體中文加上註釋的語法：
+
+```dot
+digraph G {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+    subgraph cluster_1 {
+        label=""產生9x9乘法表"";
+        1 [label=""遍歷1到9的每一個數字""];
+        2 [label=""遍歷1到9的每一個數字""];
+        3 [label=""將i和j相乘，並將結果存儲在變量result中""];
+        4 [label=""使用print()函數輸出結果，並使用end參數指定分隔符為\t""];
+        5 [label=""每一行結束後換行""];
+        1 -> 2;
+        2 -> 3;
+        3 -> 4;
+        4 -> 2 [label=""內部迴圈""];
+        1 -> 5 [label=""外部迴圈""];
+    }
+}
+```
+
+希望這可以幫助你理解如何產生9x9乘法表以及如何使用Graphviz生成標準流程圖。如果你有任何其他問題，請隨時告訴我。"
+"
+好的，讓我來詳細說明一下計算BMI的解題概念。
+
+首先，BMI是身體質量指數的縮寫，它是一個用於衡量人體肥胖程度的指標。計算BMI需要兩個參數：體重和身高。公式如下：
+
+BMI = 體重（kg）/ 身高^2（m）
+
+其中，身高的單位是米，而不是厘米或英尺。因此，在進行計算之前，我們需要將身高轉換為米。
+
+接下來，我們需要判斷BMI的值是否在正常範圍內。根據世界衛生組織的定義，BMI在18.5到24.9之間被視為正常範圍。如果BMI小於18.5，則被視為過輕；如果BMI大於24.9，則被視為超重或肥胖。
+
+最後，我們需要將計算結果輸出到屏幕上，以便用戶可以看到他們的BMI值和相應的健康狀況。
+
+現在，讓我按照解題概念一步步產生flow chart語法，用繁體中文並加上註釋。
+
+```flow
+st=>start: 開始
+in1=>inputoutput: 輸入體重（kg）
+in2=>inputoutput: 輸入身高（cm）
+op1=>operation: 將身高轉換為米
+op2=>operation: 計算BMI值
+cond1=>condition: BMI是否在正常範圍內？
+op3=>operation: 輸出BMI值和健康狀況
+e=>end: 結束
+
+# 連接流程
+st->in1->in2->op1->op2->cond1
+cond1(yes)->op3->e
+cond1(no)->op3->e
+```
+
+現在，讓我來輸出完整程式碼和詳細註解。
+
+```python
+# 計算BMI
+
+# 輸入體重（kg）
+weight = float(input(""請輸入您的體重（kg）：""))
+
+# 輸入身高（cm）
+height = float(input(""請輸入您的身高（cm）：""))
+
+# 將身高轉換為米
+height = height / 100
+
+# 計算BMI值
+bmi = weight / (height ** 2)
+
+# 判斷BMI是否在正常範圍內
+if bmi < 18.5:
+    status = ""過輕""
+elif bmi <= 24.9:
+    status = ""正常""
+else:
+    status = ""超重或肥胖""
+
+# 輸出BMI值和健康狀況
+print(""您的BMI值為：{:.2f}，屬於{}範圍。"".format(bmi, status))
+```
+
+這就是完整的計算BMI的程式碼和註解。希望這可以幫助你更好地理解Python的基礎知識和流程控制。如果你有任何其他問題，請隨時向我提出。"
+"
+1. 做法說明
+使用print函數，依照貓咪的臉部特徵印出相應的符號。例如：使用小括號表示眼睛，反斜線和正斜線表示耳朵，等等。
+
+2. 產生簡易流程圖
+
+```mermaid
+graph TD;
+    start[開始] --> input[輸入貓咪臉部特徵]
+    input --> process[印出相對應符號]
+    process --> output[顯示貓咪臉]
+    output --> end[結束]
+```
+
+3. 程式撰寫
+
+```python
+# 印出貓咪臉部的符號
+print(""  /\\_/\\"")
+print("" ( o.o )"")
+print(""  > ^ <"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+使用print函數，依照貓咪的臉部特徵印出相應的符號。例如：使用小括號表示眼睛，反斜線和正斜線表示耳朵，等等。
+
+2. 產生簡易流程圖
+
+```mermaid
+graph TD;
+    start[開始] --> input[輸入貓咪臉部特徵]
+    input --> process[印出相對應符號]
+    process --> output[顯示貓咪臉]
+    output --> end[結束]
+```
+
+3. 程式撰寫
+
+```python
+# 印出貓咪臉部的符號
+print(""  /\\_/\\"")
+print("" ( o.o )"")
+print(""  > ^ <"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明:
+使用nested for loop來協助產生乘法表，外層for loop會執行1到9的數字，在此以i表示；內層for loop則會執行1到9的數字，在此以j表示。程式會依序將i * j 的值加入字串中，再利用print()函式將字串列印出來。
+
+2. 產生簡易流程圖:
+
+```flow 
+digraph example {
+    rankdir=TB;
+    node[shape=box];
+    產生9x9乘法表->外層for loop;
+    外層for loop->內層for loop;
+    內層for loop->列印乘法表;
+}
+```
+
+3. 程式撰寫:
+
+```python
+# 以nested for loop產生9x9的乘法表
+for i in range(1, 10):
+    # 用一個字串來儲存每行的數字
+    row = """"
+    for j in range(1, 10):
+        # 將i*j的值加入字串中
+        row += ""{:2d} "".format(i*j)
+    # 列印出每一行的數字
+    print(row)
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明:
+使用nested for loop來協助產生乘法表，外層for loop會執行1到9的數字，在此以i表示；內層for loop則會執行1到9的數字，在此以j表示。程式會依序將i * j 的值加入字串中，再利用print()函式將字串列印出來。
+
+2. 產生簡易流程圖:
+
+```flow 
+digraph example {
+    rankdir=TB;
+    node[shape=box];
+    產生9x9乘法表->外層for loop;
+    外層for loop->內層for loop;
+    內層for loop->列印乘法表;
+}
+```
+
+3. 程式撰寫:
+
+```python
+# 以nested for loop產生9x9的乘法表
+for i in range(1, 10):
+    # 用一個字串來儲存每行的數字
+    row = """"
+    for j in range(1, 10):
+        # 將i*j的值加入字串中
+        row += ""{:2d} "".format(i*j)
+    # 列印出每一行的數字
+    print(row)
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+首先，我們需要使用兩個for迴圈，分別迴圈1到9，每一個迴圈的值分別為a和b，然後在for迴圈裡面計算a*b，最後將結果輸出即可得到九九乘法表。
+
+2. 產生簡易流程圖
+```graphviz
+digraph {
+    node[shape=""rectangle"", fontname=""Microsoft JhengHei""];
+    rankdir = TB;
+    初始條件 -> 迴圈A開始 -> 判斷A是否大於9 -> 迴圈B開始 -> 判斷B是否大於9 -> A*B -> 輸出結果 -> 迴圈B重新開始 -> 迴圈A重新開始 -> 結束
+}
+```
+
+3. 程式撰寫
+
+```python
+for a in range(1, 10):      # 迴圈A，a從1到9
+    for b in range(1, 10):  # 迴圈B，b從1到9
+        res = a * b         # 計算a*b的值
+        print(f""{a} x {b} = {res}"")  # 輸出結果
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+首先，我們需要使用兩個for迴圈，分別迴圈1到9，每一個迴圈的值分別為a和b，然後在for迴圈裡面計算a*b，最後將結果輸出即可得到九九乘法表。
+
+2. 產生簡易流程圖
+```graphviz
+digraph {
+    node[shape=""rectangle"", fontname=""Microsoft JhengHei""];
+    rankdir = TB;
+    初始條件 -> 迴圈A開始 -> 判斷A是否大於9 -> 迴圈B開始 -> 判斷B是否大於9 -> A*B -> 輸出結果 -> 迴圈B重新開始 -> 迴圈A重新開始 -> 結束
+}
+```
+
+3. 程式撰寫
+
+```python
+for a in range(1, 10):      # 迴圈A，a從1到9
+    for b in range(1, 10):  # 迴圈B，b從1到9
+        res = a * b         # 計算a*b的值
+        print(f""{a} x {b} = {res}"")  # 輸出結果
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+
+
+"
+1. 做法說明
+透過雙層迴圈，先固定一個乘數i，再將1~9的數字分別帶入另一個乘數j，最後將i*j的值輸出即可。
+
+2. 產生簡易流程圖
+```flowchart
+digraph {
+    node [shape=box]
+    A [label=""開始""]
+    B [label=""固定一個乘數i""]
+    C [label=""分別帶入1~9的乘數j""]
+    D [label=""輸出i*j的值""]
+    E [label=""是否還有其他的乘數j?""]
+    F [label=""是""]
+    G [label=""否""]
+    H [label=""是否還有其他的乘數i?""]
+    I [label=""是""]
+    J [label=""否""]
+    K [label=""結束""]
+    
+    A->B
+    B->C
+    C->D
+    D->E
+    E->F[label=""是""]
+    E->G[label=""否""]
+    G->H
+    F->C
+    H->I[label=""是""]
+    H->J[label=""否""]
+    I->B
+    J->K
+}
+```
+
+3. 程式撰寫
+```python
+for i in range(1,10): # 固定乘數i
+    for j in range(1,10): # 分別帶入乘數j
+        product = i * j # 計算i*j
+        print(""%d*%d=%-2d "" % (j, i, product), end="""") # 輸出乘法結果
+    print() # 換行
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+輸出一個字串""Hello World!""，讓電腦顯示在螢幕上。
+
+2. 產生簡易流程圖
+
+```dot
+digraph G {
+  node[shape=box, style=filled, color=""#CCCCCC""]
+  label=""顯示Hello World流程圖""
+  Start -> Output [label=""輸出Hello World!""]
+  Output -> End
+  Start[shape=circle,label="""", style=filled, color=""#8F8""]
+  End[shape=circle,label="""", style=filled, color=""#F88""]
+}
+```
+
+3. 程式撰寫
+
+```python
+print(""Hello World!"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+輸出一個字串""Hello World!""，讓電腦顯示在螢幕上。
+
+2. 產生簡易流程圖
+
+```dot
+digraph G {
+  node[shape=box, style=filled, color=""#CCCCCC""]
+  label=""顯示Hello World流程圖""
+  Start -> Output [label=""輸出Hello World!""]
+  Output -> End
+  Start[shape=circle,label="""", style=filled, color=""#8F8""]
+  End[shape=circle,label="""", style=filled, color=""#F88""]
+}
+```
+
+3. 程式撰寫
+
+```python
+print(""Hello World!"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+好的，以下是你需要的程式碼和流程圖：
+
+1. 程式說明：
+這個程式會使用WebBit開發板控制LED燈，點亮指定的燈號並設定顏色強度。具體來說，它會點亮下面的燈號 0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5，並將它們的顏色設定為紅色強度50，每隔0.25秒更新一次。
+
+2. 產生程式碼：
+
+```python
+import time
+from webduino.webbit import WebBit
+
+# 初始化WebBit
+wbit = WebBit()
+
+# 定義要點亮的燈號
+leds = [0, 1, 2, 3, 4, 9, 14, 19, 24, 23, 22, 21, 20, 15, 10, 5]
+
+# 設定顏色強度
+r = 50
+g = 0
+b = 0
+
+while True:
+    # 逐一點亮燈號
+    for led in leds:
+        wbit.show(led, r, g, b)
+        time.sleep(0.25)
+    
+    # 全屏顯示黑色
+    wbit.showAll(0, 0, 0)
+```
+
+3. 產生流程圖：
+
+```graphviz
+digraph {
+    ""開始"" -> ""初始化WebBit"";
+    ""初始化WebBit"" -> ""定義要點亮的燈號"";
+    ""定義要點亮的燈號"" -> ""設定顏色強度"";
+    ""設定顏色強度"" -> ""逐一點亮燈號"";
+    ""逐一點亮燈號"" -> ""等待0.25秒"";
+    ""等待0.25秒"" -> ""逐一點亮燈號"" [label=""循環""];
+    ""逐一點亮燈號"" -> ""全屏顯示黑色"" [label=""完成所有燈號""];
+    ""全屏顯示黑色"" -> ""等待0.25秒"" [label=""持續顯示""];
+    ""等待0.25秒"" -> ""逐一點亮燈號"" [label=""循環""];
+    ""逐一點亮燈號"" -> ""結束"";
+}
+```
+
+歡迎繼續提問."
+"
+1. 做法說明
+製作一個while迴圈及if...else判斷式的遊戲，在每輪開始時使用random函數產生1~50之間的亂數作為答案，然後根據玩家輸入的數字與答案比較大小，直到玩家猜對為止。
+
+2. 產生簡易流程圖
+
+```graphviz
+digraph Game{
+    node[fontname=""Microsoft YaHei""];
+    游戏开始->输入数字;
+    输入数字->玩家猜数字;
+    玩家猜数字->比较大小;
+    玩家猜数字->游戏结束;
+    比较大小->再大一点;
+    比较大小->再小一点;
+    比较大小->恭喜你答对;
+    再大一点->输入数字;
+    再小一点->输入数字;
+    恭喜你答对->游戏结束;
+    游戏结束->再来一次;
+    再来一次->输入数字;
+}
+```
+
+3. 程式撰寫
+
+```
+import random #匯入random函式庫
+
+while True: #使用while迴圈，讓遊戲重複進行
+    answer = random.randint(1,50) #使用random.randint選取1~50之間的亂數作為答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    while True: #使用while迴圈，持續要求使用者輸入數字
+        guess = int(input()) #使用者輸入數字
+        if guess > answer: #如果輸入數字大於答案，顯示再小一點
+            print(""再小一點"")
+        elif guess < answer: #如果輸入數字小於答案，顯示再大一點
+            print(""再大一點"")
+        else: #如果輸入數字與答案相同，顯示恭喜答對
+            print(""恭喜你答對！"")
+            break #跳出迴圈
+    print(""再玩一次嗎？請按1繼續，按其他任意鍵結束"") #詢問使用者是否再玩一次
+    play_again = input()
+    if play_again == ""1"": #如果使用者輸入1，繼續玩
+        continue #進入下一輪
+    else: #如果使用者輸入其他任意鍵，中斷遊戲
+        print(""遊戲結束"")
+        break #跳出迴圈，結束遊戲
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼。"
+
+"
+1.做法說明
+首先程式會隨機產生一個1到50的數字作為正確答案，接著玩家會不斷輸入猜測的數字，程式會判斷玩家輸入的數字的大小，如果比正確答案大或小，會提示再大或再小。當玩家輸入的數字與正確答案相符時，程式會顯示「恭喜你答對」，並進行下一輪。
+
+2.簡易流程圖
+
+```graphviz
+digraph G{
+    開始 [shape=ellipse];
+    玩家輸入 [shape=rectangle];
+    判斷 [shape=diamond];
+    猜對 [shape=rectangle];
+    結束 [shape=ellipse];
+
+    開始 -> 玩家輸入;
+    玩家輸入 -> 判斷;
+    判斷 -> 玩家輸入[label=""比正確答案小""];
+    判斷 -> 玩家輸入[label=""比正確答案大""];
+    判斷 -> 猜對[label=""與正確答案相符""];
+    猜對 -> 結束;
+}
+```
+
+3.程式撰寫
+
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```
+
+4.流程與程式碼整合完成
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```"
+"
+1.做法說明
+首先程式會隨機產生一個1到50的數字作為正確答案，接著玩家會不斷輸入猜測的數字，程式會判斷玩家輸入的數字的大小，如果比正確答案大或小，會提示再大或再小。當玩家輸入的數字與正確答案相符時，程式會顯示「恭喜你答對」，並進行下一輪。
+
+2.簡易流程圖
+
+```graphviz
+digraph G{
+    開始 [shape=ellipse];
+    玩家輸入 [shape=rectangle];
+    判斷 [shape=diamond];
+    猜對 [shape=rectangle];
+    結束 [shape=ellipse];
+
+    開始 -> 玩家輸入;
+    玩家輸入 -> 判斷;
+    判斷 -> 玩家輸入[label=""比正確答案小""];
+    判斷 -> 玩家輸入[label=""比正確答案大""];
+    判斷 -> 猜對[label=""與正確答案相符""];
+    猜對 -> 結束;
+}
+```
+
+3.程式撰寫
+
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```
+
+4.流程與程式碼整合完成
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```"
+"
+1.做法說明
+首先程式會隨機產生一個1到50的數字作為正確答案，接著玩家會不斷輸入猜測的數字，程式會判斷玩家輸入的數字的大小，如果比正確答案大或小，會提示再大或再小。當玩家輸入的數字與正確答案相符時，程式會顯示「恭喜你答對」，並進行下一輪。
+
+2.簡易流程圖
+
+```graphviz
+digraph G{
+    開始 [shape=ellipse];
+    玩家輸入 [shape=rectangle];
+    判斷 [shape=diamond];
+    猜對 [shape=rectangle];
+    結束 [shape=ellipse];
+
+    開始 -> 玩家輸入;
+    玩家輸入 -> 判斷;
+    判斷 -> 玩家輸入[label=""比正確答案小""];
+    判斷 -> 玩家輸入[label=""比正確答案大""];
+    判斷 -> 猜對[label=""與正確答案相符""];
+    猜對 -> 結束;
+}
+```
+
+3.程式撰寫
+
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```
+
+4.流程與程式碼整合完成
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```"
+"
+1.做法說明
+首先程式會隨機產生一個1到50的數字作為正確答案，接著玩家會不斷輸入猜測的數字，程式會判斷玩家輸入的數字的大小，如果比正確答案大或小，會提示再大或再小。當玩家輸入的數字與正確答案相符時，程式會顯示「恭喜你答對」，並進行下一輪。
+
+2.簡易流程圖
+
+```graphviz
+digraph G{
+    開始 [shape=ellipse];
+    玩家輸入 [shape=rectangle];
+    判斷 [shape=diamond];
+    猜對 [shape=rectangle];
+    結束 [shape=ellipse];
+
+    開始 -> 玩家輸入;
+    玩家輸入 -> 判斷;
+    判斷 -> 玩家輸入[label=""比正確答案小""];
+    判斷 -> 玩家輸入[label=""比正確答案大""];
+    判斷 -> 猜對[label=""與正確答案相符""];
+    猜對 -> 結束;
+}
+```
+
+3.程式撰寫
+
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```
+
+4.流程與程式碼整合完成
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```"
+"
+1.做法說明：
+
+1.1 隨機選出1-50中的一個整數，作為正確答案。
+1.2 在while迴圈中請使用者輸入一個數字。
+1.3 判斷使用者輸入的數值是否等於正確答案，若是則顯示「恭喜你答對」，並跳出while迴圈；若否，則根據使用者輸入的數值和正確答案大小進行相應提示，提示使用者再猜一次。
+1.4 再玩一次時需重新隨機生成正確答案。
+
+2. 產生簡易流程圖：
+
+```graphviz
+digraph {
+    Begin -> GetInput;
+    GetInput -> Compare;
+    Compare -> GetInput [label=""再猜一次""];
+    Compare -> End [label=""答對了!""];
+    End -> Begin [label=""再玩一次""];
+    Begin [label=""遊戲開始，請從1到50中，隨意輸入一個數字。""];
+    GetInput [label=""請輸入數字:""];
+    Compare [label=""比較使用者輸入與正確答案大小""];
+    End [label=""恭喜你答對!""];
+}
+```
+
+3. 程式撰寫：
+
+```python
+import random
+
+while True:
+    # 隨機生成正確答案
+    answer = random.randint(1, 50)
+    while True:
+        # 讀取使用者輸入
+        guess = int(input(""請輸入一個數字：""))
+        # 比較使用者輸入與正確答案大小
+        if guess == answer:
+            print(""恭喜你答對了！"")
+            break  # 猜對了，退出當前循環，進入下一輪
+        elif guess > answer:
+            print(""再小一點！"")
+        else:
+            print(""再大一點！"")
+    # 再玩一次
+    again = input(""是否再玩一次？(y/n)"")
+    if again.lower() == 'n':
+        break  # 不再玩，結束整個程式
+```
+
+4. 完整程式碼及測試參考：
+
+```python
+import random
+
+while True:
+    # 隨機生成正確答案
+    answer = random.randint(1, 50)
+    while True:
+        # 讀取使用者輸入
+        guess = int(input(""請輸入一個數字：""))
+        # 比較使用者輸入與正確答案大小
+        if guess == answer:
+            print(""恭喜你答對了！"")
+            break  # 猜對了，退出當前循環，進入下一輪
+        elif guess > answer:
+            print(""再小一點！"")
+        else:
+            print(""再大一點！"")
+    # 再玩一次
+    again = input(""是否再玩一次？(y/n)"")
+    if again.lower() == 'n':
+        break  # 不再玩，結束整個程式
+```
+測試結果：
+請輸入一個數字：25
+再大一點！
+請輸入一個數字：38
+再小一點！
+請輸入一個數字：34
+再大一點！
+請輸入一個數字：36
+再大一點！
+請輸入一個數字：37
+恭喜你答對了！
+是否再玩一次？(y/n)y
+請輸入一個數字：25
+再小一點！
+請輸入一個數字：15
+再小一點！
+請輸入一個數字：8
+再大一點！
+請輸入一個數字：12
+再小一點！
+請輸入一個數字：10
+再大一點！
+請輸入一個數字：11
+恭喜你答對了！
+是否再玩一次？(y/n)n"
+"
+1. 做法說明
+透過亂數產生1到50之間的正確數字，讓玩家逐次猜測，直到猜中為止。
+
+2. 產生簡易流程圖
+
+```graphviz
+digraph {
+  fontname = ""Microsoft JhengHei"";
+  fontsize = 14;
+
+  Start [label=""開始遊戲""];
+  Input [label=""輸入數字""];
+  Verify [label=""驗證數字""];
+  Bigger [label=""再大一點""];
+  Smaller [label=""再小一點""];
+  Congratulation [label=""恭喜答對""];
+  KeepPlaying [label=""繼續玩嗎？""];
+  End [label=""遊戲結束""];
+
+  Start -> Input;
+  Input -> Verify;
+  Verify -> Congratulation [label=""數字正確""];
+  Verify -> Bigger [label=""數字過小""];
+  Verify -> Smaller [label=""數字過大""];
+  Bigger -> Input;
+  Smaller -> Input;
+  Congratulation -> KeepPlaying;
+  KeepPlaying -> Input [label=""Yes""];
+  KeepPlaying -> End [label=""No""];
+}
+```
+3. 程式撰寫
+
+```python
+import random
+
+play_again = 'Yes'
+
+while play_again == 'Yes':
+    correct_answer = random.randint(1, 50)  
+    while True:
+        try:
+            guess = int(input('遊戲開始，請從1到50中，隨意猜一個數字：'))
+        except ValueError:
+            print('請輸入一個數字！')
+            continue
+
+        if guess == correct_answer:
+            print('恭喜你答對了！')
+            break    
+        elif guess > correct_answer:
+            print('再小一點！')
+        else:
+            print('再大一點！')
+
+    play_again = input('繼續玩嗎？（輸入Yes或No）')
+```
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+
+首先使用 WebBit 初始化開發板。
+
+接著每隔 0.01 秒，使用 random.choice() 從 7 種顏色中隨機一種，再逐一點亮 25 顆燈，顏色強度也是隨機的。燈號點亮後必須等待 0.01 秒，才能點亮下一顆燈。 重複上述步驟即可做到每隔0.01秒繼續點亮燈號。
+
+2. 產生簡易流程圖
+
+```graphviz
+digraph G{
+rankdir=TB;
+node [shape=rect];
+初始化開發板->每隔0.01秒搜集燈號->使用隨機顏色點亮25顆燈->等待0.01秒->逐一點亮下一顆燈->繼續重複上面步驟->每隔0.01秒搜集燈號->使用隨機顏色點亮25顆燈
+}
+```
+
+3. 程式撰寫
+
+```python
+import random
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+# 初始化開發板
+def init_board():
+    wbit = WebBit()
+
+# 隨機顏色設定
+def random_color():
+    color_type = ['white', 'blue', 'yellow', 'green', 'red', 'pink', 'purple']
+    return color_type[random.randint(0,6)]
+
+# 隨機亮度設定
+def random_intensity():
+    return random.randint(0,100)
+
+# 使用隨機顏色點亮25顆燈
+def light_up_all():
+    color = random_color()
+    
+    for i in range(25):
+        intensity = random_intensity()
+        wbit.show(i, color=color, intensity=intensity)
+        time.sleep(0.01)
+
+# 每隔0.01秒搜集燈號，並逐一點亮
+while True:
+  light_up_all()
+```"
+"
+1. 做法說明
+1. 先匯入所需的函式庫和類別,建立WebBit物件
+2. 使用while True:不斷重複以下步驟
+3. 產生一個0~6的隨機數,表示顔色種類
+4. 使用for迴圈,遍歷25顆燈,依序呼叫show(num,r,g,b)方法,設定每一顆燈的顔色 
+5. 等待0.01秒,再重複步驟3~5
+
+2. 產生簡易流程圖  
+```graphviz
+digraph flowchart {
+    node [shape=""rectangle""]
+    初始化 -> 重複
+    重複 -> 隨機產生顏色
+    隨機產生顏色 -> 設定每一顆燈的顏色 -> 等待0.01秒 -> 重複
+    設定每一顆燈的顏色 -> 結束
+}
+``` 
+
+3. 程式撰寫
+
+```python
+#匯入函式庫和類別
+import random
+import time
+from webduino.webbit import WebBit
+wbit = WebBit()
+
+#不斷重複
+while True:
+  #隨機產生顏色
+  color = random.randint(0,6)
+  #設定每一顆燈的顏色
+  for num in range(25):
+    #白
+    if color == 0:
+      wbit.show(num,100,100,100)
+    #藍
+    elif color == 1:
+      wbit.show(num,0,0,100)
+    #黃
+    elif color == 2:
+      wbit.show(num,100,100,0)
+    #綠
+    elif color == 3:
+      wbit.show(num,0,100,0)
+    #紅
+    elif color == 4:
+      wbit.show(num,100,0,0)
+    #粉紅
+    elif color == 5:
+      wbit.show(num,100,0,100)
+    #紫
+    else:
+      wbit.show(num,50,0,100)
+  #等待0.01秒
+  time.sleep(0.01)
+```"
+"
+做法說明:
+1. 使用 show() 方法點亮燈號，並迭代產生燈號 list。
+2. 使用 for 迴圈迭代燈號 list，每隔0.25秒點亮該燈號，時間使用 time.sleep() 方法設置。
+3. 根據指定顏色強度設置 rgb 值。
+
+產生簡易流程圖:
+```flow
+st=>start: 開始
+op1=>operation: 使用 show() 方法點亮燈號 0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5 
+op2=>operation: 迭代燈號 list
+op3=>operation: 使燈號一一亮起
+op4=>operation: 休眠 0.25 秒
+op5=>operation: 根據指定顏色強度設置 RGB 值
+e=>end: 結束
+st->op1->op2->op3->op4->op2->op5->op4->op3->op4->cond
+```
+
+程式撰寫:
+
+``` python
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+# 使用 show() 方法點亮燈號 0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5 
+lights = [0, 1, 2, 3, 4, 9, 14, 19, 24, 23, 22, 21, 20, 15, 10, 5]
+for light in lights:
+    wbit.show(light, 50, 0, 0)
+
+# 迭代燈號 list，每隔0.25秒點亮該燈號，時間使用 time.sleep() 方法設置
+for light in lights:
+    # 點亮該燈號
+    wbit.show(light, 50, 0, 0)
+    # 休眠 0.25 秒
+    time.sleep(0.25)
+    # 滅燈號
+    wbit.show(light, 0, 0, 0)
+
+# 根據指定顏色強度設置 RGB 值
+wbit.showAll(50, 0, 0)
+```
+
+完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+
+使用WebBit類別的show()方法控制燈號顏色，並使用time模組的sleep()方法延遲0.25秒，透過迴圈控制燈號亮起的時間與數量，最後控制下列燈號的顏色：0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5。
+
+2. 流程圖
+
+```graphviz
+digraph {
+  node[shape=""box""]
+  顯示紅色燈號->等待0.25秒->顯示綠色燈號->等待0.25秒->顯示藍色燈號->等待0.25秒->重複
+  等待0.25秒->顯示下一個燈號->等待0.25秒->顯示下一個燈號->等待0.25秒->重複
+  顯示下一個燈號->判斷是否還有下一個燈號
+  判斷是否還有下一個燈號->若有則顯示下一個燈號->若無則結束程式
+}
+```
+
+3. 程式撰寫
+
+```python
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+# 設定顏色強度
+r = 50
+g = 0
+b = 0
+
+# 控制燈號的列表
+led_list = [0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5]
+
+# 顯示燈號並等待0.25秒
+def show_led(num):
+    wbit.show(num, r, g, b)
+    time.sleep(0.25)
+
+# 顯示所有燈號並等待0.25秒
+def show_all_led():
+    wbit.showAll(r, g, b)
+    time.sleep(0.25)
+
+# 逐一顯示燈號
+for led in led_list:
+    show_led(led)
+
+# 結束程式
+wbit.close()
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼。"
+"
+1. 做法說明
+使用WebBit類別的show()方法點亮指定顏色的燈號，再利用time.sleep()函式讓程式進入休眠，等待0.25秒後繼續執行下一個指令。
+
+2. 流程圖
+```flow
+st=>start: 開始
+op=>operation: 使用WebBit類別show()方法點亮燈號 
+sleep=>operation: time.sleep()進入休眠0.25秒
+cond=>condition: 是否所有燈號都已經點亮?
+e=>end: 結束
+
+st->op->sleep->cond
+cond(yes)->e
+cond(no)->op
+```
+
+3. 程式撰寫
+
+```python
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+# 點亮指定燈號，使用紅色強度50
+wbit.show(0,50,0,0)
+wbit.show(1,50,0,0)
+wbit.show(2,50,0,0)
+wbit.show(3,50,0,0)
+wbit.show(4,50,0,0)
+wbit.show(9,50,0,0)
+wbit.show(14,50,0,0)
+wbit.show(19,50,0,0)
+wbit.show(24,50,0,0)
+wbit.show(23,50,0,0)
+wbit.show(22,50,0,0)
+wbit.show(21,50,0,0)
+wbit.show(20,50,0,0)
+wbit.show(15,50,0,0)
+wbit.show(10,50,0,0)
+wbit.show(5,50,0,0)
+
+# 程式等待0.25秒
+time.sleep(0.25)
+
+# 關閉所有燈號
+wbit.showAll(0,0,0)
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼。"
+"
+1. 做法說明
+- 使用 WebBit 類別初始化
+- 使用 show() 方法顯示指定燈號
+- 使用 time.sleep() 方法延遲時間
+- 依照題目要求重複執行以上動作
+
+2. 流程圖
+
+```graphviz
+digraph G {
+    開始 -> 設置紅色強度50;
+    設置紅色強度50 -> 使用show顯示第0顆燈號;
+    使用show顯示第0顆燈號 -> 使用show顯示第1顆燈號;
+    使用show顯示第1顆燈號 -> 使用show顯示第2顆燈號;
+    使用show顯示第2顆燈號 -> 使用show顯示第3顆燈號;
+    使用show顯示第3顆燈號 -> 使用show顯示第4顆燈號;
+    使用show顯示第4顆燈號 -> 使用show顯示第9顆燈號;
+    使用show顯示第9顆燈號 -> 使用show顯示第14顆燈號;
+    使用show顯示第14顆燈號 -> 使用show顯示第19顆燈號;
+    使用show顯示第19顆燈號 -> 使用show顯示第24顆燈號;
+    使用show顯示第24顆燈號 -> 使用show顯示第23顆燈號;
+    使用show顯示第23顆燈號 -> 使用show顯示第22顆燈號;
+    使用show顯示第22顆燈號 -> 使用show顯示第21顆燈號;
+    使用show顯示第21顆燈號 -> 使用show顯示第20顆燈號;
+    使用show顯示第20顆燈號 -> 使用show顯示第15顆燈號;
+    使用show顯示第15顆燈號 -> 使用show顯示第10顆燈號;
+    使用show顯示第10顆燈號 -> 使用show顯示第5顆燈號;
+    使用show顯示第5顆燈號 -> 延遲0.25秒;
+    延遲0.25秒 -> 使用show顯示第0顆燈號;
+    使用show顯示第0顆燈號 -> 結束;
+}
+```
+
+3. 程式撰寫
+
+```python
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+r = 50
+leds = [0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5]
+
+while True:
+    for i in leds:
+        wbit.show(i, r, 0, 0)
+        time.sleep(0.25)
+    time.sleep(0.25)
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+
+使用 for 迴圈依序控制每顆燈，使用 show() 函式將燈號指定為紅色強度 50，達到點亮的效果。使用 time 模組的 sleep 函式暫停 0.25 秒，等待燈暫停時間後點亮下一顆燈，直到所有燈號皆已點亮。 
+
+2. 流程圖
+
+```mermaid
+graph TD;
+    開始 --> 顯示0;
+    顯示0 --> 顯示1;
+    顯示1 --> 顯示2;
+    顯示2 --> 顯示3;
+    顯示3 --> 顯示4;
+    顯示4 --> 顯示9;
+    顯示9 --> 顯示14;
+    顯示14 --> 顯示19;
+    顯示19 --> 顯示24;
+    顯示24 --> 顯示23;
+    顯示23 --> 顯示22;
+    顯示22 --> 顯示21;
+    顯示21 --> 顯示20;
+    顯示20 --> 顯示15;
+    顯示15 --> 顯示10;
+    顯示10 --> 顯示5;
+    顯示5 --> 結束;
+```
+
+3. 程式撰寫
+
+```python
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+red = 50  # 紅色強度值
+
+# 燈號順序
+lights = [0,1,2,3,4,
+          9,14,19,24,
+          23,22,21,20,
+          15,10,5]
+
+for i in lights:
+    wbit.show(i, red, 0, 0)  # 顯示紅色強度50
+    time.sleep(0.25)  # 暫停0.25秒
+
+wbit.showAll(0,0,0)  # 全屏熄滅
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+
+我們可以使用 WebBit 的 show() 方法控制單獨顯示每一顆燈的顏色, 並且使用 time.sleep() 方法來控制每顆燈的點亮時間與間隔時間。
+
+2. 流程圖
+
+```graphviz
+digraph G {
+    開始 -> 顯示燈號0;
+    顯示燈號0 -> 顯示燈號1;
+    顯示燈號1 -> 顯示燈號2;
+    顯示燈號2 -> 顯示燈號3;
+    顯示燈號3 -> 顯示燈號4;
+    顯示燈號4 -> 顯示燈號9;
+    顯示燈號9 -> 顯示燈號14;
+    顯示燈號14 -> 顯示燈號19;
+    顯示燈號19 -> 顯示燈號24;
+    顯示燈號24 -> 顯示燈號23;
+    顯示燈號23 -> 顯示燈號22;
+    顯示燈號22 -> 顯示燈號21;
+    顯示燈號21 -> 顯示燈號20;
+    顯示燈號20 -> 顯示燈號15;
+    顯示燈號15 -> 顯示燈號10;
+    顯示燈號10 -> 顯示燈號5;
+    顯示燈號5 -> 結束;
+}
+```
+
+3. 程式撰寫
+
+```python
+import time
+from webduino.webbit import WebBit
+
+# 初始化 WebBit 物件
+wbit = WebBit()
+
+# 設定紅色強度 50
+r = 50
+# 綠色強度為 0，藍色強度為 0，表示全部使用紅色
+g = 0
+b = 0
+# 設定每顆燈的點亮時間
+light_time = 0.25
+# 設定每顆燈之間的間隔時間
+interval_time = 0.25
+
+# 依序點亮燈號 0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5
+for num in [0, 1, 2, 3, 4, 9, 14, 19, 24, 23, 22, 21, 20, 15, 10, 5]:
+    # 使用 show() 方法呼叫每顆燈
+    wbit.show(num, r, g, b)
+    # 持續點亮時間
+    time.sleep(light_time)
+    # 使用 show() 方法關閉燈號
+    wbit.show(num, 0, 0, 0)
+    # 間隔一段時間再點亮下一顆燈
+    time.sleep(interval_time)
+
+# 顯示完成後關閉所有燈號
+wbit.showAll(0, 0, 0)
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+做法說明：
+1. 使用 WebBit 類別初始化開發板。
+2. 使用 show() 方法點亮燈號，每隔 0.25 秒切換燈號，切換至所有燈號亮完為止。
+
+流程圖：
+```mermaid
+graph TD;
+1(開始)-->2(點亮燈號)
+2-->3(結束)
+```
+
+
+程式撰寫：
+
+```python
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+# 紅色強度50
+r = 50
+# 點亮的燈號
+light_list = [0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5]
+# 每隔0.25秒切換燈號
+interval = 0.25
+
+for i in light_list:
+    # 使用 show() 方法點亮燈號
+    wbit.show(i, r, 0, 0)
+    # 延時
+    time.sleep(interval)
+
+# 關閉所有燈號
+wbit.showAll(0,0,0)
+```"
+"
+1. 做法說明
+
+首先，我們必須利用 WebBit 這個類別初始化開發板。
+我們使用的是 show() 函數，此函數能讓我們透過指定燈號與顏色，來進行 LED 顯示操作。
+進入主要的邏輯之後，我們先定義顏色強度並將要亮的燈號放進一個串列當中，之後再利用迴圈來點亮每個燈號。
+點亮完畢後，程式會等待0.25秒，再繼續點亮下一個燈號，直到所有燈號都亮起為止。
+
+2. 流程圖
+
+```graphviz
+digraph G {
+    開始 -> 設定紅色強度與亮起的燈號;
+    設定紅色強度與亮起的燈號 -> 燈號點亮;
+    燈號點亮 -> 每隔0.25秒;
+    每隔0.25秒 -> 判斷是否所有燈號皆亮起;
+    判斷是否所有燈號皆亮起 -> 結束;
+}
+```
+
+3. 程式撰寫
+
+```python
+# 引入 WebBit 套件與 time 套件
+import time
+from webduino.webbit import WebBit
+
+# 初始化
+wbit = WebBit()
+
+# 設定顏色強度與燈號
+color = (50, 0, 0)
+leds = [0, 1, 2, 3, 4, 9, 14, 19, 24, 23, 22, 21, 20, 15, 10, 5]
+
+# 亮起每個燈號
+for led in leds:
+    wbit.show(led, *color)
+    time.sleep(0.25)
+
+# 結束
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+Step1：設定顏色強度為50，建立點亮的燈號清單
+Step2：迴圈對清單中的每個燈號進行點亮
+Step3：使用 time.sleep() 函數控制燈號間隔
+Step4：全部顯示燈號後，結束程式
+
+2. 流程圖
+```graphviz
+digraph G {
+  ""開始"" -> ""設定顏色強度和燈號清單""
+  ""設定顏色強度和燈號清單"" -> ""迴圈設定每個燈號的顏色和點亮""
+  ""迴圈設定每個燈號的顏色和點亮"" -> ""等待0.25秒""
+  ""等待0.25秒"" -> ""判斷是否設定了所有燈號""
+  ""判斷是否設定了所有燈號"" -> {是} ""全部顯示燈號""
+  ""判斷是否設定了所有燈號"" -> {否} ""迴圈設定每個燈號的顏色和點亮""
+  ""全部顯示燈號"" -> ""結束""
+}
+```
+
+3. 程式撰寫
+
+```python
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+color = [50,0,0] # 紅色強度為50
+lights = [0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5] # 要點亮的燈號
+
+for i in lights:
+    wbit.show(i,color[0],color[1],color[2])
+    time.sleep(0.25)
+    
+wbit.showAll(0,0,0) # 顯示全部燈號熄滅
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+好的，讓我來幫你解決這個問題。
+
+1. 程式說明：
+這個程式會輸出 ""Hello, World!"" 字串。
+
+2. 完整程式碼和詳細註解：
+
+```python
+# 輸出 ""Hello, World!"" 字串
+print(""Hello, World!"")
+```
+
+3. 流程圖：
+
+```dot
+digraph HelloWorld {
+    ""開始"" -> ""輸出 Hello, World! 字串"" -> ""結束"";
+}
+```
+
+希望這樣的回答對你有所幫助！如果你還有其他問題，歡迎隨時向我提出。
+歡迎繼續提問."
+"
+好的，讓我來幫你解決這個問題。
+
+1. 程式說明：
+這個程式會輸出 ""Hello, World!"" 字串。
+
+2. 完整程式碼和詳細註解：
+
+```python
+# 輸出 ""Hello, World!"" 字串
+print(""Hello, World!"")
+```
+
+3. 流程圖：
+
+```dot
+digraph HelloWorld {
+    ""開始"" -> ""輸出 Hello, World! 字串"" -> ""結束"";
+}
+```
+
+希望這樣的回答對你有所幫助！如果你還有其他問題，歡迎隨時向我提出。
+歡迎繼續提問."
+"
+好的，以下是你需要的程式碼和流程圖：
+
+1. 程式說明：
+當按下按鈕A時，會播放 do re me 的音樂；當按下按鈕B時，會播放 me re do 的音樂。
+
+2. 完整程式碼和詳細註解：
+
+```python
+import time
+from webduino.webbit import WebBit
+
+# 初始化
+wbit = WebBit()
+
+# 播放 do re me 音樂
+def play_music_A():
+    music = [[262, 0.25], [294, 0.25], [330, 0.25]]
+    wbit.play(music)
+
+# 播放 me re do 音樂
+def play_music_B():
+    music = [[330, 0.25], [294, 0.25], [262, 0.25]]
+    wbit.play(music)
+
+while True:
+    # 如果按下按鈕A，播放 do re me 音樂
+    if wbit.btnA():
+        play_music_A()
+    # 如果按下按鈕B，播放 me re do 音樂
+    elif wbit.btnB():
+        play_music_B()
+```
+
+3. 簡易流程圖：
+
+```graphviz
+digraph {
+    rankdir=TB;
+    ""開始"" -> ""等待按鈕事件"";
+    ""等待按鈕事件"" -> ""如果按下按鈕A，播放 do re me 音樂"";
+    ""等待按鈕事件"" -> ""如果按下按鈕B，播放 me re do 音樂"";
+    ""如果按下按鈕A，播放 do re me 音樂"" -> ""等待按鈕事件"";
+    ""如果按下按鈕B，播放 me re do 音樂"" -> ""等待按鈕事件"";
+}
+```
+歡迎繼續提問."
+"
+好的，讓我來幫你解決這個問題。首先，我會先提供一下程式說明：
+
+這個程式會輸出一隻貓咪的臉，使用 ASCII 字元來繪製。
+
+接下來是完整的 Python 程式碼和詳細註解：
+
+```python
+# 輸出貓咪的臉
+print("" /\\_/\\"")
+print(""( o.o )"")
+print("" > ^ <"")
+```
+
+最後是流程圖：
+
+```dot
+digraph {
+    rankdir=TB;
+    node [shape=box, style=filled, fillcolor=lightyellow];
+    ""開始"" -> ""輸出貓咪的臉"" -> ""結束"";
+}
+```
+
+希望這樣的回答對你有所幫助！如果你還有其他的問題需要解決，歡迎再向我提出。
+歡迎繼續提問."
+"
+好的，讓我來幫你設計這個猜數字遊戲吧！
+
+1. 程式說明：
+這個遊戲會隨機產生一個 1 到 50 的整數，然後要求玩家輸入一個數字。如果玩家輸入的數字比正確答案大，則顯示「再小一點」；如果玩家輸入的數字比正確答案小，則顯示「再大一點」；如果玩家的數字與正確答案相符，則顯示「恭喜你答對」。遊戲結束後，會詢問玩家是否要繼續下一輪。
+
+2. 產生程式碼：
+
+```python
+import random
+
+while True:
+    answer = random.randint(1, 50)  # 隨機產生一個 1 到 50 的整數
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    while True:
+        guess = input()  # 要求玩家輸入一個數字
+        if not guess.isdigit():  # 如果玩家輸入的不是數字，則提示重新輸入
+            print(""請輸入數字！"")
+            continue
+        guess = int(guess)
+        if guess > answer:
+            print(""再小一點"")
+        elif guess < answer:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+    play_again = input(""是否要繼續下一輪？(y/n)"")  # 詢問玩家是否要繼續下一輪
+    if play_again.lower() != ""y"":
+        break  # 不想再玩了就跳出迴圈
+```
+
+3. 產生流程圖：
+
+```dot
+digraph {
+    rankdir=TB;
+    start [label=""開始"", shape=""ellipse"", style=""filled"", fillcolor=""#FFFFCC""];
+    input_guess [label=""請求玩家輸入數字"", shape=""parallelogram"", style=""filled"", fillcolor=""#FFFFCC""];
+    check_guess [label=""檢查玩家輸入的數字"", shape=""diamond"", style=""filled"", fillcolor=""#FFFFCC""];
+    too_big [label=""玩家輸入的數字比正確答案大"", shape=""box"", style=""filled"", fillcolor=""#FFFFCC""];
+    too_small [label=""玩家輸入的數字比正確答案小"", shape=""box"", style=""filled"", fillcolor=""#FFFFCC""];
+    correct [label=""玩家猜對了"", shape=""box"", style=""filled"", fillcolor=""#FFFFCC""];
+    play_again [label=""詢問玩家是否要繼續下一輪"", shape=""parallelogram"", style=""filled"", fillcolor=""#FFFFCC""];
+    end [label=""結束"", shape=""ellipse"", style=""filled"", fillcolor=""#FFFFCC""];
+
+    start -> input_guess;
+    input_guess -> check_guess;
+    check_guess -> too_big [label=""玩家輸入的數字 > 正確答案""];
+    check_guess -> too_small [label=""玩家輸入的數字 < 正確答案""];
+    check_guess -> correct [label=""玩家輸入的數字 = 正確答案""];
+    too_big -> input_guess;
+    too_small -> input_guess;
+    correct -> play_again;
+    play_again -> start [label=""玩家想繼續下一輪""];
+    play_again -> end [label=""玩家不想再玩了""];
+}
+```
+
+希望這個程式和流程圖對你有所幫助！如果你還有其他 Python 相關的問題，歡迎隨時向我提出。
+歡迎繼續提問."
+"
+
+1. 做法說明
+
+我們可以使用 WebBit 的 show() 方法控制單獨顯示每一顆燈的顏色, 並且使用 time.sleep() 方法來控制每顆燈的點亮時間與間隔時間。
+
+2. 流程圖
+
+```graphviz
+digraph G {
+    開始 -> 顯示燈號0;
+    顯示燈號0 -> 顯示燈號1;
+    顯示燈號1 -> 顯示燈號2;
+    顯示燈號2 -> 顯示燈號3;
+    顯示燈號3 -> 顯示燈號4;
+    顯示燈號4 -> 顯示燈號9;
+    顯示燈號9 -> 顯示燈號14;
+    顯示燈號14 -> 顯示燈號19;
+    顯示燈號19 -> 顯示燈號24;
+    顯示燈號24 -> 顯示燈號23;
+    顯示燈號23 -> 顯示燈號22;
+    顯示燈號22 -> 顯示燈號21;
+    顯示燈號21 -> 顯示燈號20;
+    顯示燈號20 -> 顯示燈號15;
+    顯示燈號15 -> 顯示燈號10;
+    顯示燈號10 -> 顯示燈號5;
+    顯示燈號5 -> 結束;
+}
+```
+
+3. 程式撰寫
+
+```python
+import time
+from webduino.webbit import WebBit
+
+# 初始化 WebBit 物件
+wbit = WebBit()
+
+# 設定紅色強度 50
+r = 50
+# 綠色強度為 0，藍色強度為 0，表示全部使用紅色
+g = 0
+b = 0
+# 設定每顆燈的點亮時間
+light_time = 0.25
+# 設定每顆燈之間的間隔時間
+interval_time = 0.25
+
+# 依序點亮燈號 0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5
+for num in [0, 1, 2, 3, 4, 9, 14, 19, 24, 23, 22, 21, 20, 15, 10, 5]:
+    # 使用 show() 方法呼叫每顆燈
+    wbit.show(num, r, g, b)
+    # 持續點亮時間
+    time.sleep(light_time)
+    # 使用 show() 方法關閉燈號
+    wbit.show(num, 0, 0, 0)
+    # 間隔一段時間再點亮下一顆燈
+    time.sleep(interval_time)
+
+# 顯示完成後關閉所有燈號
+wbit.showAll(0, 0, 0)
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼
+歡迎繼續提問."
+"
+
+1.做法說明
+首先程式會隨機產生一個1到50的數字作為正確答案，接著玩家會不斷輸入猜測的數字，程式會判斷玩家輸入的數字的大小，如果比正確答案大或小，會提示再大或再小。當玩家輸入的數字與正確答案相符時，程式會顯示「恭喜你答對」，並進行下一輪。
+
+2.簡易流程圖
+
+```graphviz
+digraph G{
+    開始 [shape=ellipse];
+    玩家輸入 [shape=rectangle];
+    判斷 [shape=diamond];
+    猜對 [shape=rectangle];
+    結束 [shape=ellipse];
+
+    開始 -> 玩家輸入;
+    玩家輸入 -> 判斷;
+    判斷 -> 玩家輸入[label=""比正確答案小""];
+    判斷 -> 玩家輸入[label=""比正確答案大""];
+    判斷 -> 猜對[label=""與正確答案相符""];
+    猜對 -> 結束;
+}
+```
+
+3.程式撰寫
+
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```
+
+4.流程與程式碼整合完成
+```python
+import random
+
+while True:
+    ans = random.randint(1, 50)  # 隨機產生正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+
+    while True:
+        guess = int(input(""請輸入你的猜測數字：""))
+        if guess > ans:
+            print(""再小一點"")
+        elif guess < ans:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break  # 猜對了就跳出迴圈
+
+    play_again = input(""是否要再玩一次？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        print(""遊戲結束"")
+        break  # 不想再玩了就跳出迴圈
+```
+歡迎繼續提問."
+"
+1. 做法說明
+- 讓使用者輸入身高（單位：公分）和體重（單位：公斤）
+- 利用BMI計算公式：體重（公斤）/身高^2（公尺^2）計算BMI值
+- 顯示計算後的BMI值
+- 如果BMI小於18.5，則顯示「你的BMI值過低，需要多運動」
+- 如果BMI在18.5~23.9之間，則顯示「你的BMI值正常，繼續保持運動習慣」
+- 如果BMI在24~27之間，則顯示「你的BMI值過高，需要多運動」
+- 如果BMI大於27，則顯示「你的BMI值超標，需要多運動」
+
+2. 產生簡易流程圖
+```flow
+健康檢查系統->讓使用者輸入身高和體重
+讓使用者輸入身高和體重->利用BMI公式，計算BMI值
+利用BMI公式，計算BMI值->判斷BMI值範圍
+判斷BMI值範圍->顯示運動鼓勵
+```
+
+3. 程式撰寫
+```python
+# 讓使用者輸入身高和體重
+height = float(input(""請輸入身高（公分）："")) / 100
+weight = float(input(""請輸入體重（公斤）：""))
+
+# 利用BMI公式，計算BMI值
+bmi = weight / height ** 2
+
+# 判斷BMI值範圍，並顯示運動鼓勵
+if bmi < 18.5:
+    print(""你的BMI值過低，需要多運動"")
+elif 18.5 <= bmi <= 23.9:
+    print(""你的BMI值正常，繼續保持運動習慣"")
+elif 24 <= bmi <= 27:
+    print(""你的BMI值過高，需要多運動"")
+else:
+    print(""你的BMI值超標，需要多運動"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明：
+輸入身高和體重，計算BMI值，並根據BMI值判斷是否屬於健康範圍，並鼓勵用戶養成運動習慣。
+
+2. 概念流程圖：
+
+```digraph G
+    label=""計算BMI概念流程圖""
+    start[label=""開始""]
+    input[label=""輸入身高與體重""]
+    calculate[label=""計算BMI值""]
+    judge[label=""判斷BMI值是否在健康範圍內""]
+    encourage[label=""鼓勵用戶養成運動習慣""]
+    end[label=""結束""]
+    start->input->calculate->judge->encourage->end
+    judge->end [label=""不健康""]
+    judge->encourage [label=""健康""]
+```
+
+3. 程式撰寫：
+
+```python
+# 輸入身高和體重
+height = float(input(""請輸入您的身高（單位：公尺）：""))
+weight = float(input(""請輸入您的體重（單位：公斤）：""))
+
+# 計算BMI值
+bmi = weight / (height ** 2)
+
+# 判斷BMI值是否在健康範圍內
+if bmi < 18.5:
+    print(""您的BMI值為{:.1f}，屬於過輕，需要增加體重和養成運動習慣。"".format(bmi))
+elif bmi < 24:
+    print(""您的BMI值為{:.1f}，屬於健康範圍內，請繼續保持良好的生活習慣。"".format(bmi))
+elif bmi < 27:
+    print(""您的BMI值為{:.1f}，屬於過重，需要進行減重和養成運動習慣。"".format(bmi))
+elif bmi < 30:
+    print(""您的BMI值為{:.1f}，屬於輕度肥胖，需要積極進行減重和養成運動習慣。"".format(bmi))
+elif bmi < 35:
+    print(""您的BMI值為{:.1f}，屬於中度肥胖，需要積極進行減重和養成運動習慣，並諮詢專業醫護人員的意見。"".format(bmi))
+else:
+    print(""您的BMI值為{:.1f}，屬於重度肥胖，需要積極進行減重和養成運動習慣，並諮詢專業醫護人員的意見。"".format(bmi))
+    
+# 鼓勵用戶養成運動習慣
+print(""希望您能夠養成運動習慣，保持健康的生活態度！"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+首先，請使用者輸入身高與體重，接著計算BMI數值，最後輸出BMI數值，並根據BMI數值給予適當的建議，鼓勵用戶養成健康的運動習慣。
+
+2. 概念流程圖
+```digraph
+graph[fontname = ""Microsoft JhengHei""];
+node[fontname = ""Microsoft JhengHei""];
+Start -> Input[label = ""輸入身高與體重""];
+Input -> Calculate[label = ""計算BMI數值""];
+Calculate -> Output[label = ""輸出BMI數值""];
+Output -> Advice[label = ""根據BMI數值給出建議""];
+Advice -> End[label = ""結束""];
+End[label = ""結束""];
+```
+
+3. 程式撰寫
+```
+# 計算BMI與提供運動建議
+height = float(input(""請輸入身高(公尺): ""))
+weight = float(input(""請輸入體重(公斤): ""))
+bmi = weight / (height ** 2)
+print(""您的BMI為: "", bmi)
+
+if bmi < 18.5:
+    print(""您的BMI過低, 需要增加體重, 養成運動習慣"")
+elif bmi >= 18.5 and bmi < 24:
+    print(""您的BMI在正常範圍, 要維持健康的生活習慣"")
+elif bmi >= 24 and bmi < 27:
+    print(""您的BMI有些過高, 建議控制飲食並多運動"")
+elif bmi >= 27 and bmi < 30:
+    print(""您的BMI已達輕度肥胖, 建議積極控制飲食並增加運動量"")
+elif bmi >= 30 and bmi < 35:
+    print(""您的BMI已達中度肥胖, 請務必積極控制飲食並增加運動量"")
+else:
+    print(""您的BMI已達重度肥胖, 請儘速控制飲食並且積極增加運動量"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+
+由使用者輸入身高與體重，進行BMI計算，最後輸出BMI數值。然後向用戶顯示BMI範圍以及鼓勵用戶進行運動。
+
+2. 概念流程圖
+
+```digraph{
+    ""開始"" -> ""輸入身高與體重""
+    ""輸入身高與體重"" -> ""計算BMI""
+    ""計算BMI"" -> ""顯示BMI數值""
+    ""顯示BMI數值"" -> ""判斷BMI範圍""
+    ""判斷BMI範圍"" -> ""顯示運動鼓勵""
+    ""顯示運動鼓勵"" -> ""結束""
+}```
+
+3. 程式撰寫
+```python
+# 輸入身高(公尺)與體重(公斤)
+height = float(input(""請輸入身高(公尺): ""))
+weight = float(input(""請輸入體重(公斤): ""))
+
+# 計算BMI
+bmi = weight / (height ** 2)
+
+# 顯示BMI數值
+print(""你的BMI數值為: {:.2f}"".format(bmi))
+
+# 判斷BMI範圍
+if bmi < 18.5:
+    print(""你的體重過輕，建議增加運動量。"")
+elif bmi >= 18.5 and bmi < 24:
+    print(""你的體重屬於正常範圍，繼續保持。"")
+elif bmi >= 24 and bmi < 27:
+    print(""你的體重稍高，建議多加運動。"")
+elif bmi >= 27 and bmi < 30:
+    print(""你的體重屬於輕度肥胖，建議加強運動。"")
+elif bmi >= 30 and bmi < 35:
+    print(""你的體重屬於中度肥胖，建議積極改善飲食習慣並加強運動。"")
+else:
+    print(""你的體重屬於重度肥胖，建議尋求醫師協助並積極改善飲食習慣和運動習慣。"")"
+"
+1. 做法說明
+Step1. 取得使用者輸入的身高和體重
+Step2. 計算BMI值
+Step3. 顯示BMI值
+Step4. 根據BMI值提供相對應鼓勵
+
+2. 概念流程圖
+```graphviz
+digraph {
+    node[fontname=""微軟正黑體""]
+    rankdir=""LR""; 
+    input[shape=""parallelogram"", label=""輸入身高和體重""]
+    BMIFunc[shape=""rectangle"", label=""計算BMI值""]
+    output[shape=""parallelogram"", label=""顯示BMI值""]
+    encourage[shape=""parallelogram"", label=""根據BMI值提供相對應鼓勵""]
+    input -> BMIFunc -> output -> encourage
+}
+```
+
+3. 程式撰寫
+```python
+#輸入身高與體重
+height = float(input(""請輸入身高(公分): ""))
+weight = float(input(""請輸入體重(公斤): ""))
+
+#計算BMI值
+BMI = weight / ((height / 100) ** 2)
+
+#顯示BMI值
+print(""BMI值為: "", round(BMI, 2))
+
+#根據BMI值提供相對應鼓勵
+if BMI < 18.5:
+    print(""建議多攝取一些營養均衡的食物並且適度運動"")
+elif BMI >= 18.5 and BMI < 24:
+    print(""繼續保持健康的生活習慣!"")
+else:
+    print(""建議減少攝取高熱量的食物，並加強運動習慣，讓自己更健康!"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 做法說明
+(1) 隨機選擇一個1~50的數字作為答案。
+(2) 讓使用者輸入猜測的數字。
+(3) 判斷猜測的數字是否符合答案，若符合顯示「恭喜你答對」，否則顯示「再大一點」或「再小一點」。
+(4) 當猜對時，按照要求進行下一輪遊戲或結束遊戲。
+
+2. 概念流程圖
+```dot
+digraph {
+    node[shape=box];
+    Start -> Input -> checkAns -> {
+        Correct[shape=doublecircle];
+        Wrong -> Input;
+    }
+    Correct -> Input[style=dashed];
+}
+```
+
+3. 程式撰寫
+
+```
+import random
+
+while True:
+    # 產生隨機數字
+    ans = random.randint(1, 50)
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    while True:
+        guess = int(input(""請輸入您的猜想：""))
+        if guess == ans:
+            print(""恭喜你答對了！"")
+            break
+        elif guess > ans:
+            print(""再小一點。"")
+        else:
+            print(""再大一點。"")
+    cont = input(""請問您是否要再玩一次(y/n)?"")
+    if cont.lower() == 'n':
+        print(""感謝您的遊玩！"")
+        break
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+（1）顯示「遊戲開始，請從1到50中，隨意輸入一個數字。」提示玩家輸入數字
+（2）從1到50中隨機生成一個答案
+（3）獲取玩家輸入的數字，與答案進行比較，判斷並提示玩家重新輸入直到猜對為止
+（4）在玩家猜對後，詢問玩家是否繼續遊戲，如果許可則再進行下一輪遊戲，否則結束遊戲
+2. 流程圖
+
+```mermaid
+graph TD;
+    A[開始]-->B[顯示提示，獲取玩家輸入]
+    B-->C{猜對}
+    C-- NO -->B
+    C-- YES -->D[詢問是否繼續遊戲]
+    D-- NO -->E[結束遊戲]
+    D-- YES -->B
+```
+
+3. 程式撰寫
+
+```python
+import random  # 引入 random 模塊
+
+while True:
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    answer = random.randint(1, 50)
+
+    while True:
+        guess = int(input())
+        if guess < answer:
+            print(""再大一點"")
+        elif guess > answer:
+            print(""再小一點"")
+        else:
+            print(""恭喜你答對"")
+            break
+
+    play_again = input(""是否繼續遊戲？請輸入 Y 或 N："")
+    if play_again.lower() == ""n"":
+        print(""遊戲結束"")
+        break
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼。"
+"
+1. 解決問題步驟
+1.1 產生隨機數字 
+1.2 讓使用者可以輸入數字 
+1.3 判斷輸入數字與隨機數字大小
+1.4 顯示答對或再猜一次
+
+2. 流程圖
+
+```
+digraph G{
+  start -> guessnumber -> userinput -> compare
+  compare -> tooLarge[ label = ""Number is too large"" ]
+  compare -> tooSmall[ label = ""Number is too small"" ]
+  compare -> success[ label = ""Correct"" ]
+  tooLarge -> userinput
+  tooSmall -> userinput
+  success -> continue[ label = ""Continue?"" ]
+  yes -> guessnumber
+  no -> end
+  continue -> yes[ label = ""Yes"" ]
+  continue -> no[ label = ""No"" ]
+  guessnumber[label = ""1. Generate random number"", shape = rectangle]
+  userinput[label = ""2. User inputs number"", shape = rectangle]
+  compare[label = ""3. Compare number"", shape = rectangle]
+  continue[label = ""4. Ask if user wants to continue"", shape = rectangle]
+  end[label = ""End Game"", shape = rectangle]
+  }
+```
+
+3. 程式撰寫
+
+```python
+import random
+
+def guessNumber():
+    answer = random.randint(1, 50) #產生1到50的隨機數
+    while True:
+        guess = int(input(""請輸入你猜的數字："")) #讓使用者輸入數字
+        if guess > answer:
+            print(""再小一點"")
+        elif guess < answer:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對了！"")
+            continue_game = input(""是否繼續玩遊戲？(Y/N)"").upper()
+            if continue_game == ""Y"":
+                answer = random.randint(1, 50) #產生新的隨機數
+                continue
+            else:
+                print(""感謝你的遊玩！"")
+                break
+
+if __name__ == '__main__':
+    guessNumber()
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟:
+(1) 顯示""遊戲開始，請從1到50中，隨意輸入一個數字。""
+(2) 讓玩家輸入猜測的數字
+(3) 判斷玩家輸入的數字是否正確，如果正確，則顯示""恭喜你答對""；如果玩家猜得太大，則顯示""再小一點""；如果玩家猜得太小，則顯示""再大一點""
+(4) 讓玩家繼續猜，如果繼續猜，則返回步驟(2)，否則處理下一輪遊戲
+
+2. 流程圖
+
+```graphviz
+digraph g {
+  node [shape=rectangle, style=rounded]
+  Start -> ShowMessage -> GetGuess -> VerifyGuess -> LoopOrEnd
+  LoopOrEnd -> ShowMessage [label=""If player wants to continue playing""]
+  LoopOrEnd -> End [label=""If player wants to end playing""]
+  ShowMessage [label=""遊戲開始，請從1到50中，隨意輸入一個數字。""]
+  GetGuess [label=""等待玩家輸入""]
+  VerifyGuess [label=""判斷猜測是否正確""]
+  LoopOrEnd [label=""繼續進行下一輪或結束遊戲""]
+  End [label=""遊戲結束""]
+}
+```
+
+3. 程式撰寫
+
+```python
+import random
+
+while True:
+    answer = random.randint(1,50)     # 隨機產生答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+
+    while True:
+        guess = input()               # 等待玩家輸入
+        if guess.isdigit():
+            guess = int(guess)
+            break
+        else:
+            print(""請輸入數字！"")
+
+    if guess == answer:
+        print(""恭喜你答對！"")
+    elif guess > answer:
+        print(""再小一點！"")
+    else:
+        print(""再大一點！"")
+
+    print(""請問是否繼續遊戲？（輸入 Y 或 y 繼續，其他任意鍵結束遊戲）"")
+    choice = input()
+    if choice != 'Y' and choice != 'y':
+        break
+
+print(""遊戲結束"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+先產生一個1~50的隨機數字，讓使用者做猜測，比對結果並提示是否繼續遊戲。
+若繼續遊戲，則再產生一個1~50的隨機數字，重複以上流程。
+若結束遊戲，則程式正常結束。
+
+2. 流程圖
+
+```mermaid
+graph TD;
+開始-->猜測數字;
+猜測數字-->比對結果;
+比對結果-->繼續遊戲{};
+繼續遊戲{}-->是-->猜測數字;
+繼續遊戲{}-->否-->結束遊戲;
+結束遊戲-->結束;
+```
+
+3. 程式撰寫
+
+``` python
+import random
+
+while True:
+    target = random.randint(1, 50)  # 產生1~50的隨機數字
+    while True:  # 進行一次猜數字的遊戲
+        guess = input(""遊戲開始，請從1到50中，隨意輸入一個數字："")
+        if not guess.isdigit():
+            print(""輸入錯誤，請輸入數字！"")
+            continue
+        guess = int(guess)
+        if guess > target:
+            print(""再小一點"")
+        elif guess < target:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break
+    choice = input(""是否繼續遊戲？(y/n)"")
+    if choice == ""n"":
+        break
+
+print(""遊戲結束！"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+1. 顯示歡迎訊息，提示玩家輸入
+2. 電腦隨機產生一個1到50間的正確答案
+3. 讓玩家輸入猜測的數字
+4. 比對玩家輸入的數字與正確答案，顯示結果訊息
+5. 繼續進行下一輪，回到步驟3
+
+
+2. 流程圖
+
+```graphviz
+digraph G {
+  rankdir = LR;  //從左到右排列
+  node [shape = rectangle];
+  
+  // 歡迎訊息
+  MSG -> INPUT [label = ""遊戲開始，請從1到50中，隨意輸入一個數字.""];
+  // 輸入猜測的數字
+  INPUT -> RAND [label = ""請輸入一個數字: ""];
+  // 比對是否正確
+  RAND -> OUT [label = ""猜測結果""];
+  OUT -> INPUT [label = ""繼續進行下一輪""];
+}
+```
+
+3. 程式撰寫
+
+```py
+import random # 引入random套件 
+
+# 設定正確答案
+answer = random.randint(1, 50)
+
+# 顯示歡迎訊息，提示玩家輸入
+print(""遊戲開始，請從1到50中，隨意輸入一個數字."")
+
+while True:
+    # 讓玩家輸入猜測的數字
+    guess = int(input(""請輸入一個數字: ""))
+    
+    # 比對玩家輸入的數字與正確答案，顯示結果訊息
+    if guess > answer:
+        print(""再小一點"")
+    elif guess < answer:
+        print(""再大一點"")
+    else:
+        print(""恭喜你答對"")
+        break # 跳出迴圈，結束遊戲
+```
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+1. 顯示開始遊戲訊息，讓玩家輸入1~50的任意整數。
+2. 亂數生成一個正確答案。
+3. 判斷使用者輸入的數字是比正確答案大、小或相等，分別顯示不同提示訊息。
+4. 如果輸入的數字不是正確答案，還要再繼續重複步驟3，直到答對。
+5. 顯示答對訊息，再重新開始遊戲。
+
+2. 流程圖
+```digraph example {
+    開始遊戲 -> 輸入數字
+    輸入數字 -> 判斷大小
+    判斷大小 -> 再次輸入數字
+    再次輸入數字 -> 判斷大小
+    判斷大小 -> 答對
+    答對 -> 開始遊戲
+}```
+
+3. 程式撰寫
+
+```python
+import random
+
+again = True            # 是否再玩一次
+answer = random.randint(1, 50)  # 亂數生成正確答案
+
+while again:
+    guess = 0   # 初始化玩家猜的數字
+    
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+
+    while guess != answer:
+        guess = int(input("">> ""))
+
+        if guess > answer:
+            print(""再小一點"")
+        elif guess < answer:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對"")
+
+    play_again = input(""還要再玩一次嗎？(y/n)"")
+    if play_again.lower() == ""n"":  # 允許用戶不區分大小寫
+        again = False
+
+print(""遊戲結束"")
+```
+
+4. 完整程式碼，請參考右側產生的程式碼方塊。"
+"
+1. 解決問題步驟
+先隨機產生一個1到50的目標數字，讓使用者與之猜測，判斷使用者所輸入的數字是否等於目標數字，若等於則顯示答對，不等於則提示輸入的數字應該大一些或小一些。
+
+2. 流程圖
+
+```python
+digraph G{
+    顯示輸入提示 -> 接收使用者數字 -> 判斷數字大小 -> 再次接收數字 -> 結束判斷 -> 顯示結束提示
+}
+```
+
+3. 程式撰寫
+
+```python
+import random  # 引入亂數模組
+
+while True:
+    target_num = random.randint(1, 50)  # 隨機產生目標數字
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    while True:
+        guess_num = input()  # 接收使用者的輸入
+        if not guess_num.isdigit():  # 判斷使用者輸入的是否為整數
+            print(""請輸入正確的數字"")
+            continue
+        guess_num = int(guess_num)
+        if guess_num == target_num:
+            print(""恭喜你答對了！"")
+            break
+        elif guess_num > target_num:
+            print(""再小一點"")
+        else:
+            print(""再大一點"")
+    print(""遊戲結束，是否要繼續遊戲？（是/否）"")
+    play_again = input()
+    if play_again.lower() != ""是"":  # 轉換成小寫字母，並判斷使用者是否想繼續遊戲
+        break
+print(""遊戲結束"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼。"
+"
+1. 解決問題步驟
+輸入玩家猜的數字，判斷玩家是否猜對，沒有則提示該猜更大或更小的數字，並且判斷次數是否達到上限(猜50次)，若達到上限則提示玩家再試一次或退出遊戲，若未達到上限則請玩家繼續猜下一個數字。
+2. 流程圖
+```graphviz
+digraph game_flowchart {
+    node[fontname=""微軟正黑體"", shape=box];
+    Start -> Enter[input=""請輸入一個數字""] -> Check[判斷輸入的答案是否正確];
+    Check -> Win[猜對了，顯示「恭喜你答對！」];
+    Check -> Smaller[猜小了，顯示「再大一點」];
+    Check -> Larger[猜大了，顯示「再小一點」];
+    Smaller -> Enter;
+    Larger ->Enter;
+    Win -> Continue[input=""是否繼續遊戲(y/n)？""] -> Restart[繼續遊戲就回到Start] -> End;
+    Check -> Gameover[遊戲次數已用完，顯示「遊戲結束，可以重新開始或退出遊戲」] -> Restart;
+}
+```
+3. 程式撰寫
+
+```python
+import random
+
+while True:
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字"")
+    answer = random.randint(1, 50)
+    guess_count = 0
+    
+    while guess_count < 5:  # 設定猜測的次數不能超過5次
+        guess = int(input(""輸入你的答案： ""))
+        guess_count += 1
+        
+        if guess == answer:
+            print(""恭喜你答對了"")
+            break
+        elif guess < answer:
+            print(""猜小了，再大一點"")
+        elif guess > answer:
+            print(""猜大了，再小一點"")
+            
+        if guess_count == 5:
+            print(""遊戲次數已用完，不要灰心再來一次吧"")
+            
+    replay = input(""是否繼續遊戲(y/n)? "")
+    if replay == 'n':
+        break
+        
+print(""遊戲結束，歡迎再次來玩喲"")      
+```
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+(1) 顯示「遊戲開始，請從1到50中，隨意輸入一個數字。」
+(2) 接受使用者的輸入
+(3) 判斷輸入的數字與正確答案大小比較，顯示提示
+(4) 繼續進行下一輪遊戲
+
+2. 流程圖
+
+```graphviz
+digraph guessing_number_game {
+  start [label=""開始遊戲""];
+  input [label=""輸入數字""];
+  guess [label=""比較數字大小，並顯示提示""];
+  replay [label=""再玩一次？""];
+  win [label=""答對了""];
+
+  start -> input;
+  input -> guess;
+  guess -> win [label=""猜中了""];
+  guess -> input [label=""猜錯了""];
+  win -> replay;
+  replay -> input;
+}
+```
+
+3. 程式撰寫
+
+```python
+import random
+
+playing = True
+while playing:
+    answer = random.randint(1, 50)  # 產生1到50的隨機數字
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    guess = -1  # 初始猜測數字
+
+    while guess != answer:
+        guess = int(input(""猜猜看：""))
+        if guess > answer:
+            print(""再小一點"")
+        elif guess < answer:
+            print(""再大一點"")
+
+    print(""恭喜你答對了！"")
+    replay = input(""再玩一次？(Y/N)"").upper()
+    playing = True if replay == ""Y"" else False
+
+print(""遊戲結束"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+(1) 顯示「遊戲開始，請從1到50中，隨意輸入一個數字。」
+(2) 接受使用者的輸入
+(3) 判斷輸入的數字與正確答案大小比較，顯示提示
+(4) 繼續進行下一輪遊戲
+
+2. 流程圖
+
+```graphviz
+digraph guessing_number_game {
+  start [label=""開始遊戲""];
+  input [label=""輸入數字""];
+  guess [label=""比較數字大小，並顯示提示""];
+  replay [label=""再玩一次？""];
+  win [label=""答對了""];
+
+  start -> input;
+  input -> guess;
+  guess -> win [label=""猜中了""];
+  guess -> input [label=""猜錯了""];
+  win -> replay;
+  replay -> input;
+}
+```
+
+3. 程式撰寫
+
+```python
+import random
+
+playing = True
+while playing:
+    answer = random.randint(1, 50)  # 產生1到50的隨機數字
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    guess = -1  # 初始猜測數字
+
+    while guess != answer:
+        guess = int(input(""猜猜看：""))
+        if guess > answer:
+            print(""再小一點"")
+        elif guess < answer:
+            print(""再大一點"")
+
+    print(""恭喜你答對了！"")
+    replay = input(""再玩一次？(Y/N)"").upper()
+    playing = True if replay == ""Y"" else False
+
+print(""遊戲結束"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+(1) 顯示「遊戲開始，請從1到50中，隨意輸入一個數字。」
+(2) 接受使用者的輸入
+(3) 判斷輸入的數字與正確答案大小比較，顯示提示
+(4) 繼續進行下一輪遊戲
+
+2. 流程圖
+
+```graphviz
+digraph guessing_number_game {
+  start [label=""開始遊戲""];
+  input [label=""輸入數字""];
+  guess [label=""比較數字大小，並顯示提示""];
+  replay [label=""再玩一次？""];
+  win [label=""答對了""];
+
+  start -> input;
+  input -> guess;
+  guess -> win [label=""猜中了""];
+  guess -> input [label=""猜錯了""];
+  win -> replay;
+  replay -> input;
+}
+```
+
+3. 程式撰寫
+
+```python
+import random
+
+playing = True
+while playing:
+    answer = random.randint(1, 50)  # 產生1到50的隨機數字
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    guess = -1  # 初始猜測數字
+
+    while guess != answer:
+        guess = int(input(""猜猜看：""))
+        if guess > answer:
+            print(""再小一點"")
+        elif guess < answer:
+            print(""再大一點"")
+
+    print(""恭喜你答對了！"")
+    replay = input(""再玩一次？(Y/N)"").upper()
+    playing = True if replay == ""Y"" else False
+
+print(""遊戲結束"")
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+Step1：顯示輸入視窗，提示玩家輸入數字。
+Step2：玩家輸入數字。
+Step3：比對玩家輸入數字和正確答案的大小。
+Step4：如果不同，顯示「再大一點」或「再小一點」，回到Step1。
+Step5：如果相同，顯示「恭喜你答對」，回到Step1。
+2. 流程圖
+
+```graphviz
+digraph {
+    node[style=""rounded""];
+    Start->Input[label=""遊戲開始，請從1到50中，隨意輸入一個數字。""];
+    Input->Compare;
+    Compare->Bigger[label=""比對玩家輸入數字和正確答案的大小""];
+    Compare->Smaller[label=""比對玩家輸入數字和正確答案的大小""];
+    Bigger->Input;
+    Smaller->Input;
+    Compare->Win[label=""比對玩家輸入數字和正確答案的大小""];
+    Win[label=""恭喜你答對""];
+    Win->Input;
+    Input->End;
+    End->Start;
+}
+```
+
+3. 程式撰寫
+
+```python
+import random
+
+while True:
+    answer = random.randint(1,50)  # 設定正確答案
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+    
+    while True:
+        guess = input()
+        if not guess.isdigit() or int(guess) < 1 or int(guess) > 50:  # 判斷輸入是否為數字以及是否在1到50之間
+            print(""請輸入1到50中的數字！"")
+        elif int(guess) > answer:
+            print(""再小一點"")
+        elif int(guess) < answer:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對"")
+            break
+            
+    play_again = input(""遊戲結束，請問要再玩一次嗎？(請輸入Y或N)"").lower()
+    if play_again != ""y"":
+        break
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 解決問題步驟
+(1) 顯示歡迎畫面和遊戲說明
+(2) 設定正確答案
+(3) 玩家輸入數字，並回饋判斷結果
+(4) 根據結果，判斷是否繼續遊戲
+(5) 結束遊戲
+
+2. 流程圖
+```digraph
+graph [fontname = ""Microsoft Jhenghei""];
+
+Start -> DisplayIntro;
+DisplayIntro -> SetAnswer;
+SetAnswer -> GetGuess;
+GetGuess -> CompareGuess;
+CompareGuess -> ContinueGame;
+ContinueGame -> GetGuess [label=""True""];
+ContinueGame -> EndGame [label=""False""];
+EndGame -> Stop;
+
+{rank=same; Start, DisplayIntro, SetAnswer}
+{rank=same; GetGuess, CompareGuess, ContinueGame}
+```
+
+3. 程式撰寫
+
+```python
+import random
+
+while True:
+    # 顯示歡迎畫面和遊戲說明
+    print(""遊戲開始，請從1到50中，隨意輸入一個數字。"")
+  
+    # 設定正確答案
+    answer = random.randint(1, 50)
+  
+    while True:
+        # 玩家輸入數字
+        guess = input(""請輸入一個數字："")
+        
+        # 檢查是否是數字
+        if not guess.isdigit():
+            print(""請輸入數字！"")
+            continue
+        
+        # 將字串轉成整數
+        guess = int(guess)
+        
+        # 回饋判斷結果
+        if guess > answer:
+            print(""再小一點"")
+        elif guess < answer:
+            print(""再大一點"")
+        else:
+            print(""恭喜你答對！"")
+            break
+    
+    # 判斷是否繼續遊戲
+    play_again = input(""是否再玩一次？請輸入 'Y' 或 'N'："")
+    if play_again.upper() != 'Y':
+        break
+
+print(""遊戲結束！"")
+
+```
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 程式撰寫
+
+```
+import time
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+# 定義音符的頻率
+pitches = {
+    1: 262,
+    2: 294,
+    3: 330,
+    4: 349,
+    5: 392,
+    6: 440,
+}
+
+# 播放音符
+def play_pitch(pitch, duration):
+    wbit.tone(pitches[pitch], duration)
+    time.sleep(duration)
+
+# 播放音樂片段
+def play_song(notes):
+    for pitch, duration in notes:
+        play_pitch(pitch, duration)
+
+# 播放整首歌曲
+song = [
+    [[1, 1], [5, 1], [6, 2], [5, 2], [1, 1], [5, 1], [6, 2], [5, 2]],
+    [[4, 1], [4, 1], [3, 1], [3, 1], [2, 1], [2, 1], [1, 2]],
+    [[5, 1], [5, 1], [4, 1], [4, 1], [3, 1], [3, 1], [2, 2]],
+    [[5, 1], [5, 1], [4, 1], [4, 1], [3, 1], [3, 1], [2, 2]],
+    [[1, 1], [5, 1], [6, 2], [5, 2], [1, 1], [5, 1], [6, 2], [5, 2]],
+    [[4, 1], [4, 1], [3, 1], [3, 1], [2, 1], [2, 1], [1, 2]]
+]
+
+for notes in song:
+    play_song(notes)
+```
+
+2. 概念流程圖
+
+```digraph G {
+    node [fontname=""Arial""]
+    subgraph cluster_main {
+        label = ""主程式""
+        node [shape=rectangle]
+        play_song -> play_pitch
+        play_pitch -> wbit.tone
+    }
+}
+```
+
+3. 流程說明
+
+- 先建立一個字典 pitches，儲存每個音符的頻率。
+- 定義 play_pitch 函式，接收 pitch 和 duration 兩個參數，分別表示音符的音高和持續時間。
+- 在 play_pitch 中使用 wbit.tone 播放指定頻率的聲音，並暫停指定時長的時間。
+- 定義 play_song 函式，接收 notes 參數，表示一個音樂片段。
+- 在 play_song 中使用 for 迴圈遍歷 notes，逐個播放音符。
+- 最後在主程式中定義整首歌曲 song，使用 for 迴圈遍歷所有片段並調用 play_song 播放。
+
+4. 做法說明
+
+- 根據題目給出的數字譜將音符轉換為代表音高的整數，存放在 notes 中。
+- 定義 play_pitch 函式，使用 Webduino 的 tone 方法播放特定頻率的聲音。
+- 定義 play_song 函式，遍歷 notes，逐個調用 play_pitch 函式以播放整個片段。
+- 最後在主程式中定義整首歌曲 song，調用 play_song 播放整首歌曲。"
+"
+1. 程式撰寫
+
+```python
+import time
+import random
+from webduino.webbit import WebBit
+
+# 初始化
+wbit = WebBit()
+
+# 顏色強度的數值 0~100
+color_intensity = 50
+
+# 燈的顏色: 0=白, 1=藍, 2=黃, 3=綠, 4=紅, 5=粉紅, 6=紫
+colors = [ (255, 255, 255), (0, 0, 255), (255, 210, 0), (0, 255, 0), (255, 0, 0), (255, 20, 147), (102, 0, 102) ]
+
+while True:
+    # 隨機選擇一個顏色
+    color = colors[random.randint(0, 6)]
+    
+    # 隨機點亮一顆燈
+    light_idx = random.randint(0, 24)
+    wbit.show(light_idx, color[0] * color_intensity // 100, color[1] * color_intensity // 100, color[2] * color_intensity // 100)
+    
+    # 暫停 0.01 秒
+    time.sleep(0.01)
+```
+
+2. 概念流程圖
+
+```digraph G
+    label = ""隨機燈光流程""
+
+    start [label=""開始""]
+    initialize [label=""初始化""]
+    loop [label=""無限循環""]
+    choose_color [label=""隨機選擇一個顏色""]
+    choose_light [label=""隨機點亮一顆燈""]
+    show_light [label=""顯示燈光顏色""]
+    delay [label=""暫停 0.01 秒""]
+    end [label=""結束""]
+
+    start -> initialize -> loop -> choose_color -> choose_light -> show_light -> delay -> loop
+    loop -> end [style=dotted]
+```
+
+3. 制定計畫
+
+此題目主要要求我們每隔0.01秒隨機點亮25顆燈，並繼續循環發光。在這個問題當中，我們可以使用`time.sleep()`方法達成燈之間逐次點亮的效果，使用`random`模組選擇顏色和燈光。同時需要呼叫`show()` 方法顯示燈光，並使用無限迴圈不斷循環發光。
+
+4. 做法說明
+
+首先，我們需要初始化WebBit。
+
+```python
+wbit = WebBit()
+```
+
+接著，我們設定燈光顏色強度的數值。
+
+```python
+color_intensity = 50
+```
+
+我們也需要定義七種燈光顏色。
+
+```python
+colors = [ (255, 255, 255), (0, 0, 255), (255, 210, 0), (0, 255, 0), (255, 0, 0), (255, 20, 147), (102, 0, 102) ]
+```
+
+接著進入無限循環，每次循環會隨機選擇一種顏色和燈光，顯示該燈光顏色，然後暫停 0.01 秒，持續不斷點亮燈光。
+
+```python
+while True:
+    # 隨機選擇一個顏色
+    color = colors[random.randint(0, 6)]
+    
+    # 隨機點亮一顆燈
+    light_idx = random.randint(0, 24)
+    wbit.show(light_idx, color[0] * color_intensity // 100, color[1] * color_intensity // 100, color[2] * color_intensity // 100)
+    
+    # 暫停 0.01 秒
+    time.sleep(0.01)
+```
+
+最後，我們可以使用以下命令啟動程式。
+
+```python
+python3 lighting.py
+```
+
+完成!"
+"
+1. 程式撰寫
+
+```python
+import random
+import time
+from webduino import WebBit
+
+wbit = WebBit()
+colors = [""FFFFFF"", ""0000FF"", ""FFFF00"", ""00FF00"", ""FF0000"", ""FFC0CB"", ""800080""]
+
+while True:
+    for i in range(25):
+        r, g, b = [int(color[i:i + 2], 16) for color in colors]
+        wbit.show(i, r, g, b)
+        time.sleep(0.01)
+```
+
+2. 概念流程圖
+
+```graphviz
+digraph G {
+  rankdir=LR;
+  node [shape=rectangle, fontsize=14, fontname=""微軟正黑體""];
+  A [label=""開始""];
+  B [label=""初始化 WebBit 並宣告顏色清單""];
+  C [label=""進入無窮迴圈""];
+  D [label=""針對每顆 LED 進行點亮"", shape=rectangle, style=dashed];
+  E [label=""轉換顏色 RGB 值後呼叫 show() 方法""];
+  F [label=""暫停 0.01 秒""];
+  G [label=""結束""];
+
+  { rank=same; A; B; }
+  A -> B -> C -> D;
+  D -> E -> F -> D [constraint=false];
+  [A, B, C, D, E, F, G] -> G;
+
+}
+```
+
+3. 做法說明
+
+首先從 `webduino` 模組引入 `WebBit` 類別, 並初始化一個 `wbit` 物件.
+
+接著宣告一個代表顏色清單的 `colors` 串列.
+
+進入無窮迴圈後, 使用 `range(25)` 針對每顆 LED 燈進行點亮, 並使用 `random` 模組隨機取得其中一種顏色.
+
+取得顏色後, 使用 `show()` 方法點亮燈號(i)所對應的 LED 燈, 並將 RGB 值傳入.
+
+最後使用 `time.sleep()` 函式暫停 0.01 秒.
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+1. 程式撰寫
+
+```
+import time
+import random
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+while True:
+    r = random.randint(0,100)
+    g = random.randint(0,100)
+    b = random.randint(0,100)
+    for i in range(25):
+        color = random.choice(['white', 'blue', 'yellow', 'green', 'red', 'pink', 'purple'])
+        if color == 'white':
+            wbit.show(i, r, g, b)
+        else:
+            wbit.show(i, 0, 0, 0)
+            time.sleep(0.01)
+```
+
+2. 概念流程圖
+
+```digraph G 
+    A[開始] -> B[隨機取RGB值]
+    B -> C[隨機亮燈]
+    C -> B 
+```
+
+3. 做法說明
+
+使用while迴圈持續執行亮燈的動作。每次迴圈先使用random函式庫隨機生成RGB三個數值，然後再在for迴圈中，使用random.choice選擇隨機顏色，如果是白色就設定燈的顏色為RGB，其他顏色就暫停0.01秒不亮燈。接著持續迴圈，再隨機取RGB值點亮燈。
+
+4. 完成，請參考右側產生的流程圖與程式碼"
+"
+Python程式碼:
+
+```
+import time
+import random
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+# 設定每種顏色的RGB數值
+white = [100, 100, 100]
+blue = [0, 0, 100]
+yellow = [100, 100, 0]
+green = [0, 100, 0]
+red = [100, 0, 0]
+pink = [100, 20, 70]
+purple = [60, 0, 60]
+
+# 將所有燈關閉
+wbit.showAll(0, 0, 0)
+
+while True:
+    # 隨機選擇一種顏色
+    color = random.choice([white, blue, yellow, green, red, pink, purple])
+    for i in range(25):
+        # 將每顆燈隨機點亮
+        wbit.show(i, color[0], color[1], color[2])
+        time.sleep(0.01)
+        
+    time.sleep(0.01)
+```
+
+概念流程圖:
+
+```digraph G {
+    程式開始 -> 關閉所有燈
+    關閉所有燈 -> 建立隨機種子
+    建立隨機種子 -> 重複執行以下步驟:
+    建立隨機種子 -> 隨機選擇一種顏色
+    隨機選擇一種顏色 -> 建立循環張數i=0,直到i=24:
+    建立循環張數i=0,直到i=24 -> 將每顆燈用隨機選擇的顏色點亮
+    將每顆燈用隨機選擇的顏色點亮 -> 等待0.01秒
+    等待0.01秒 -> 回到建立循環張數i=0,直到i=24
+    回到建立循環張數i=0,直到i=24 -> 等待0.01秒
+    等待0.01秒 -> 回到建立隨機種子
+}
+```
+
+做法說明:
+
+1. 設定每種顏色的RGB數值
+2. 將所有燈關閉
+3. 進入無限迴圈
+4. 隨機選擇一種顏色
+5. 用迴圈將每顆燈點亮
+6. 等待0.01秒
+7. 回到第5步
+8. 等待0.01秒"
+"
+1. Python程式撰寫
+
+```
+import time
+import random
+from webduino.webbit import WebBit
+
+wbit = WebBit()
+
+while True:
+    for i in range(25):
+        r = random.randint(0, 100)
+        g = random.randint(0, 100)
+        b = random.randint(0, 100)
+        wbit.show(i, r, g, b)
+    time.sleep(0.01)
+```
+
+2. 概念流程圖
+
+```graphviz
+digraph G {
+    A [label=""每隔0.01秒,隨機使用白色,藍色,黃色,綠色,紅色,粉紅色,紫色點亮25顆燈""]
+    B [label=""顯示燈的顏色""]
+    C [label=""重複""]
+    A -> B -> C -> B
+}
+```
+
+3. 做法說明
+
+使用 while 迴圈，每隔0.01秒隨機顯示25顆燈的顏色，並使用 wbit.show() 方法顯示顏色。
+
+4. 完成，請參考右側產生的流程圖與程式碼。"
+"
+1. Python程式撰寫
+
+```python
+import time
+import random
+from webduino.webbit import WebBit
+
+# 初始化Webduino
+wbit = WebBit()
+
+# 燈的顏色
+white = (100, 100, 100)
+blue = (0, 0, 100)
+yellow = (100, 100, 0)
+green = (0, 100, 0)
+red = (100, 0, 0)
+pink = (100, 0, 100)
+purple = (50, 0, 50)
+colors = [white, blue, yellow, green, red, pink, purple]
+
+# 隨機顯示顏色
+def showRandomColor():
+    color = random.choice(colors)
+    for i in range(25):
+        wbit.show(i, color[0], color[1], color[2])
+
+# 主要程式
+while True:
+    showRandomColor()
+    time.sleep(0.01)
+```
+
+2. 概念流程圖
+
+```digraph G
+rankdir=LR;
+開始 -> 顯示隨機燈顏色 -> 等待0.01秒 -> 顯示隨機燈顏色 -> 等待0.01秒 -> ... -> 結束;
+``` 
+
+3. 做法說明
+
+程式會不斷執行while True迴圈, 主要流程是顯示隨機燈顏色和等待0.01秒。將燈的顏色存成 colors list, 使用 random.choice 隨機取一個顏色顯示在所有燈上，顏色使用 show() 方法控制。
+
+4. 完成，請參考右側產生的流程圖與程式碼"
