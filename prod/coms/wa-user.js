@@ -3,6 +3,7 @@ import {
   html,
   css,
 } from "https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js";
+import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.esm.min.js';
 
 export class WAUser extends LitElement {
   static styles = css`
@@ -18,6 +19,7 @@ export class WAUser extends LitElement {
       width: 96px;
       margin-left: -15px;
       margin-top: -2px;
+      float: right;
     }
 
     /* 修改后的按钮悬停样式，排除禁用状态 */
@@ -55,13 +57,14 @@ export class WAUser extends LitElement {
       width: 300px;
       height: 240px;
       font-size: 16px;
-      background-color: #eee;
+      background-color: #fff;
       color: black;
-      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+      box-shadow: -5px 0 5px rgba(0, 0, 0, 0.1);
       transition: right 0.3s ease-in-out;
       z-index: 1000;
       padding: 20px;
       box-sizing: border-box;
+      border-radius: 8px;
     }
 
     .user-info-panel.open {
@@ -189,7 +192,7 @@ export class WAUser extends LitElement {
             return response.json();
           })
           .then((data) => {
-            console.log("server data:", data);
+            //console.log("server data:", data);
             self.isLoading = false;
             self.requestUpdate();
             self.userInfo = data;
@@ -242,7 +245,7 @@ export class WAUser extends LitElement {
 
   activateRegistration() {
     var self = this;
-    console.log(`註冊碼: ${this.registrationCode}`);
+    //console.log(`註冊碼: ${this.registrationCode}`);
     var requestData = JSON.parse(JSON.stringify(this.userInfo));
     requestData.activationCode = this.registrationCode;
     // 使用 fetch API 發送 POST 請求
@@ -261,20 +264,33 @@ export class WAUser extends LitElement {
         return response.json();
       })
       .then((data) => {
-        console.log("activateRegistration resp:", data);
+        //console.log("activateRegistration resp:", data);
         self.userInfo["role"]["name"] = data.role.name;
         self.userInfo["endDate"] = data.endDate;
-        if (data.state == 'success') {
-          alert('啟用成功 , 使用期限: ' + data.endDate);
+        if (data.state === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: '啟用成功',
+            text: '使用期限: ' + data.endDate,
+          });
         } else {
-          alert('啟用失敗: ' + data.descript);
+          Swal.fire({
+            icon: 'error',
+            title: '啟用失敗',
+            text: data.descript,
+          });
         }
         self.requestUpdate();
       })
       .catch((error) => {
         console.log("error:", error);
+        Swal.fire({
+          icon: 'error',
+          title: '錯誤',
+          text: '發生了一些錯誤，請稍後再試。',
+        });
       });
-    // 在这里添加激活逻辑
+    // 在這裡添加激活邏輯
     this.closeRegistrationPopup();
   }
 

@@ -25,8 +25,8 @@ export class RunPython extends LitElement {
     css`
       svg {
         fill: #990;
-        width: 24px;
-        height: 24px;
+        width: 16px;
+        height: 16px;
       }
       .btn {
         transition: all 0.5s ease;
@@ -36,7 +36,7 @@ export class RunPython extends LitElement {
         font-size: 16px;
         display: flex;
         align-items: center;
-        width: 70px;
+        width: 80px;
       }
       .btn:hover {
         transform: translateY(-3px);
