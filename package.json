@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "gitbook-plugin-mermaid-gb3": "^2.1.0",
+    "hashids": "^2.3.0",
     "lit": "^2.6.1",
     "showdown-highlight": "^3.1.0"
   }
