@@ -157,20 +157,43 @@ export class WAUser extends LitElement {
   }
 
   firstUpdated() {
+    var self = this;
     if (typeof window.Main != "undefined") {
       window.Main.registry("waUser", this);
     }
     const intervalId = setInterval(() => {
       if (window.user) {
-        this.userInfo = {
+        self.userInfo = {
+          id: window.user.id,
           name: window.user.name,
           email: window.user.email,
           role: window.user.role,
         };
-        this.isLoading = false; // 加载完成，更新状态
-        this.requestUpdate();
-        //console.log("userInfo:", this.userInfo);
-        clearInterval(intervalId);
+        fetch("https://chat.nodered.vip/api/activationQry", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(this.userInfo),
+        })
+          .then((response) => {
+            // 檢查回應是否成功
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("server data:", data);
+            self.isLoading = false;
+            self.requestUpdate();
+            self.userInfo = data;
+            clearInterval(intervalId);
+          })
+          .catch((error) => {
+            console.log("error:", error);
+            clearInterval(intervalId);
+          });
       }
     }, 250);
   }
@@ -195,6 +218,7 @@ export class WAUser extends LitElement {
   }
 
   activateRegistration() {
+    var self = this;
     console.log(`註冊碼: ${this.registrationCode}`);
     var requestData = JSON.parse(JSON.stringify(this.userInfo));
     requestData.activationCode = this.registrationCode;
@@ -215,6 +239,9 @@ export class WAUser extends LitElement {
       })
       .then((data) => {
         console.log("data:", data);
+        self.userInfo['role']['name'] = data.role.name;
+        self.userInfo['endDate'] = data.endDate;
+        self.requestUpdate();
       })
       .catch((error) => {
         console.log("error:", error);
@@ -242,10 +269,11 @@ export class WAUser extends LitElement {
 
       <div class="user-info-panel ${this.isOpen ? "open" : ""}">
         <div class="close-button" @click="${this.togglePanel}">X</div>
-        <h2><span>${this.userInfo.role}</span></h2>
+        <h2><span>${this.userInfo.role.name}</span></h2>
         <p>姓名：${this.userInfo.name}</p>
         <p>EMail: ${this.userInfo.email}</p>
-        ${this.userInfo.role === "user"
+        
+        ${this.userInfo.role.name === "user"
           ? html`
               <button
                 class="activate-button"
@@ -254,7 +282,7 @@ export class WAUser extends LitElement {
                 啟動註冊碼
               </button>
             `
-          : ""}
+          : html`<p>使用有效期: ${this.userInfo.endDate}</p>`}
       </div>
 
       ${this.isPopupOpen
