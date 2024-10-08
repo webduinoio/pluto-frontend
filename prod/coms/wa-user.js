@@ -167,6 +167,7 @@ export class WAUser extends LitElement {
     }
     const intervalId = setInterval(() => {
       if (window.user) {
+        clearInterval(intervalId);
         self.userInfo = {
           id: window.user.id,
           name: window.user.name,
@@ -192,20 +193,18 @@ export class WAUser extends LitElement {
             self.isLoading = false;
             self.requestUpdate();
             self.userInfo = data;
-            clearInterval(intervalId);
           })
           .catch((error) => {
             console.log("error:", error);
-            clearInterval(intervalId);
           });
       }
-    }, 500);
+    }, 250);
   }
 
   updated(changedProperties) {
-    if (changedProperties.has('isPopupOpen') && this.isPopupOpen) {
+    if (changedProperties.has("isPopupOpen") && this.isPopupOpen) {
       // 聚焦輸入框
-      const input = this.renderRoot.querySelector('.popup input');
+      const input = this.renderRoot.querySelector(".popup input");
       if (input) {
         input.focus();
       }
@@ -232,13 +231,13 @@ export class WAUser extends LitElement {
   }
 
   handleKeyPress(e) {
-    if (e.key === 'Enter' && this.isRegistrationCodeValid()) {
+    if (e.key === "Enter" && this.isRegistrationCodeValid()) {
       this.activateRegistration();
     }
   }
 
   isRegistrationCodeValid() {
-    return this.registrationCode.length === 8;
+    return this.registrationCode.length === 6;
   }
 
   activateRegistration() {
@@ -263,8 +262,13 @@ export class WAUser extends LitElement {
       })
       .then((data) => {
         console.log("activateRegistration resp:", data);
-        self.userInfo['role']['name'] = data.role.name;
-        self.userInfo['endDate'] = data.endDate;
+        self.userInfo["role"]["name"] = data.role.name;
+        self.userInfo["endDate"] = data.endDate;
+        if (data.state == 'success') {
+          alert('啟用成功 , 使用期限: ' + data.endDate);
+        } else {
+          alert('啟用失敗: ' + data.descript);
+        }
         self.requestUpdate();
       })
       .catch((error) => {
@@ -296,7 +300,7 @@ export class WAUser extends LitElement {
         <h2><span>${this.userInfo.role.name}</span></h2>
         <p>姓名：${this.userInfo.name}</p>
         <p>EMail: ${this.userInfo.email}</p>
-        
+
         ${this.userInfo.role.name === "user"
           ? html`
               <button
@@ -320,7 +324,7 @@ export class WAUser extends LitElement {
                     .value="${this.registrationCode}"
                     @input="${this.handleInputChange}"
                     @keypress="${this.handleKeyPress}"
-                    maxlength="8"
+                    maxlength="6"
                   />
                 </label>
                 <button
