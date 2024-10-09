@@ -38,47 +38,48 @@
 <script src="./oauth.js"></script>
 <script>
   (async () => {
-    /*
-      if (!(await isLogin())) {
-          parent.Main.popup(
-              "還差一步！",
-              "註冊帳號以獲取免費體驗",
-              "info",
-              "前往註冊",
-          ).then(() => {
-              logout();
-          });
-          return;
-      }
-      //*/
-    /*
-      const user = await getUser();
-      console.log(">>>", user);
-      setCookies("userId", user?.id);
+    //*
+    if (!(await isLogin())) {
+      parent.Main.popup(
+        "還差一步！",
+        "註冊帳號以獲取免費體驗",
+        "info",
+        "前往註冊",
+      ).then(() => {
+        logout();
+      });
+      return;
+    }
+    //*/
+    //*
+    const user = await getUser();
+    console.log(">>>", user);
+    setCookies("userId", user?.id);
 
-      // 將 user 資訊存到父視窗的 window.user 物件中
-      if (parent && parent.window) {
-          parent.window.user = user;
-      }
+    // 將 user 資訊存到父視窗的 window.user 物件中
+    if (parent && parent.window) {
+      parent.window.user = user;
+    }
 
-      if (!localStorage.getItem("isReadTerm")) {
-          parent.Main.popup(
-              "歡迎加入！",
-              "您可以免費體驗直到 2024/12/31",
-              "info",
-              "知道了",
-          ).then(() => {
-              localStorage.setItem("isReadTerm", true)
-          });
-      }
-      //*/
-    // 測試用
+    if (!localStorage.getItem("isReadTerm")) {
+      parent.Main.popup(
+        "歡迎加入！",
+        "您可以免費體驗直到 2024/12/31",
+        "info",
+        "知道了",
+      ).then(() => {
+        localStorage.setItem("isReadTerm", true)
+      });
+    }
+    //*/
+    /*/ 測試用
     parent.window.user = {
       id: 4,
-      name: "許益祥",
-      email: "marty@kingkit101.com",
+      name: "xxx",
+      email: "yyy@kingkit101.com",
       role: { id: 2, name: 'user' },
     };
+    //*/
   })();
 </script>
 <script src="./gptbot-lib.js"></script>
