@@ -56,7 +56,7 @@ export class RunPython extends LitElement {
       await this.pyodide.runPythonAsync(code);
       return null;
     } catch (err) {
-      if (err instanceof this.pyodide.PythonError) {
+      if (this.pyodide && err.constructor.name === 'PythonError') {
         var errMsg = err.message.split("\n").slice(-3).join(" ");
         var result = errMsg.replace(/(line )(\d+)/, function (match, p1, p2) {
           return p1 + (parseInt(p2) - 2);
@@ -85,135 +85,34 @@ export class RunPython extends LitElement {
       output.scrollBottom();
     }
 
-    function convertCode(code) {
-      var imp = "import js\nimport asyncio\n";
-      var convertCode =
-        imp + code.replaceAll(/input\(/g, "await js.window.Main.input(");
-      console.log(">>>>>>\n", convertCode);
-      return convertCode;
-    }
-
-    function convertCode_sheet(code) {
-      // replace input
-      const pattern = /(?<!_)input\(([^)]*)\)/g;
-      const replacement = "await js.window.Main.input($1)";
-      code = code.replace(pattern, replacement);
-      // fix await await
-      code = code.replace(/await await/g, "await");
-
-      var imp = "import js\nimport asyncio\n";
-      code = code.replace(/import json, sheet/g, "import json");
-      code = code.replace(/import json,sheet/g, "import json");
-      code = code.replace(/import random, json, sheet/g, "import random, json");
-      code = code.replace(/import sheet/g, "");
-      //code = code.replace(/= input\(/g, '= await input(');
-
-      code = code.replace(/asyncio.run(main())/g, "await main()");
-      var convertCode = imp + code;
-      convertCode = convertCode.replaceAll(
-        /await sheet.select\(/g,
-        "await js.window.Main.select("
-      );
-      console.log("==============", "\n" + convertCode);
-      return convertCode;
+    function stdin_func() {
+      var rtn = prompt("Python input() 请输入:") || "";
+      console.log("rtn:", rtn);
+      return rtn;
     }
 
     run.addEventListener("click", async function () {
       output.cls();
-      var newCode = convertCode(editor.getCode());
-      self.runPythonCode(newCode).then((result) => {
-        if (result != null) {
-          result = result.substring(result.indexOf(",") + 1);
-          output.showErr(result);
-        }
-      });
-      //pyodide.runPython(editor.getCode());
+      var newCode = editor.getCode();
+      //await self.runPythonCode(newCode);
+      await pyodide.runPythonAsync(newCode);
     });
 
     let pyodide;
     console.log("init pyodide....");
     pyodide = await loadPyodide({
-      //stdin: stdin_func,
+      stdin: stdin_func,
       stdout: stdout_func,
       stderr: stderr_func,
     });
     run.style["color"] = "#eee";
     icon.style["fill"] = "#eee";
 
-    window.Main.input = async function (msg) {
-      return new Promise((resolve, reject) => {
-        output.addInput(msg, function (rtnData) {
-          resolve(rtnData);
-        });
-      });
-    };
     this.pyodide = pyodide;
     this.output = output;
     // Pyodide is now ready to use...
     // console.log("pyodide ready !");
     run.removeAttribute("disabled");
-  }
-
-  testCase(idx, newCode, sampleinput, sampleoutput) {
-    console.log("testcase #" + idx);
-    //        console.log("sampleinput:" + sampleinput);
-    //        console.log("sampleoutput:" + sampleoutput);
-    let allInputData = ""; // for debug
-    this.pyodide.setStdin({
-      stdin: function () {
-        var anInput = sampleinput.shift();
-        if (typeof anInput == "undefined") {
-          throw "EOF";
-        } else {
-          anInput = anInput + "\n";
-        }
-        allInputData += anInput;
-        return anInput;
-      },
-      //autoEOF: true
-    });
-    var self = this;
-    return new Promise((resolve, reject) => {
-      this.output.cls();
-      self.runPythonCode(newCode).then((result) => {
-        if (result != null) {
-          result = result.substring(result.indexOf(",") + 1);
-          output.showErr(result);
-        }
-        var outputData = self.output.getOutputData();
-        //cut of last \n
-        outputData = outputData.substring(0, outputData.length - 1);
-        //console.log("sampleinput=", sampleinput, " \noutputData=" + outputData);
-        let correctOutput = sampleoutput.join("\n");
-        let resultOutput = outputData;
-        //console.log("input:", allInputData, " , check [" + correctOutput + "]==[" + resultOutput + "]");
-        //console.log(correctOutput, correctOutput.length);
-        //console.log(resultOutput, resultOutput.length);
-        resolve(correctOutput == resultOutput);
-      });
-    });
-  }
-
-  async frontTest(exam) {
-    //var exam = document.getElementById("exam");
-    var info = exam.getInfo();
-    // copy testdata
-    var sample = JSON.parse(info["sample"]);
-    this.output.cls();
-    var newCode = editor.getCode();
-    var success = true;
-    for (var i = 0; i < sample.length; i = i + 2) {
-      var idx = i / 2 + 1;
-      var input = sample[i];
-      var out = sample[i + 1];
-      //            console.log(">>>", input, out);
-      var result = await this.testCase(idx, newCode, input, out);
-      if (!result) {
-        success = false;
-        break;
-      }
-    }
-    alert("測試" + (success ? "成功" : "失敗"));
   }
 
   hide(state) {

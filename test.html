@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>Pyodide Python 執行器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #output {
+            width: 100%;
+            height: 200px;
+            background-color: #f5f5f5;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pyodide Python 執行器</h1>
+    <textarea id="python-code" placeholder="在此輸入您的 Python 程式碼，例如：&#10;print('Hello, Pyodide!')">print(input())</textarea>
+    <br>
+    <button id="run-button">執行程式碼</button>
+    <h2>輸出結果：</h2>
+    <div id="output"></div>
+
+    <!-- 加載 Pyodide -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <script>
+        let pyodideReadyPromise = loadPyodide();
+
+        async function runPython() {
+            // 等待 Pyodide 加載完成
+            let pyodide = await pyodideReadyPromise;
+            let code = document.getElementById("python-code").value;
+            let outputElement = document.getElementById("output");
+            outputElement.textContent = "";
+
+            // 捕捉 Python 的標準輸出
+            pyodide.setStdout({
+                batched: (text) => {
+                    outputElement.textContent += text;
+                }
+            });
+            pyodide.setStderr({
+                batched: (text) => {
+                    outputElement.textContent += text;
+                }
+            });
+
+            try {
+                await pyodide.runPythonAsync(code);
+            } catch (err) {
+                outputElement.textContent += err;
+            }
+        }
+
+        document.getElementById("run-button").addEventListener("click", runPython);
+    </script>
+</body>
+</html>
