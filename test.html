@@ -36,7 +36,38 @@
 </head>
 <body>
     <h1>Pyodide Python 執行器</h1>
-    <textarea id="python-code" placeholder="在此輸入您的 Python 程式碼，例如：&#10;print('Hello, Pyodide!')">print(input())</textarea>
+    <textarea id="python-code" placeholder="在此輸入您的 Python 程式碼，例如：&#10;print('Hello, Pyodide!')">
+import random
+def guess_number_game():
+    while True:
+        # 顯示遊戲開始的提示
+        print("遊戲開始，請從1到50中，隨意輸入一個數字。")
+        
+        # 隨機生成1到50的數字
+        correct_number = random.randint(1, 50)
+        
+        while True:
+            # 玩家輸入數字
+            player_guess = int(input("請輸入你的猜測: "))
+            
+            # 比較玩家的猜測與正確答案
+            if player_guess > correct_number:
+                print("再小一點")
+            elif player_guess < correct_number:
+                print("再大一點")
+            else:
+                print("恭喜你答對")
+                break  # 猜對了，跳出內部迴圈
+        
+        # 詢問玩家是否要繼續遊戲
+        continue_game = input("是否要繼續遊戲? (是/否): ")
+        if continue_game.lower() != '是':
+            print("感謝遊玩，遊戲結束！")
+            break  # 結束遊戲
+# 開始遊戲
+guess_number_game()
+        
+        </textarea>
     <br>
     <button id="run-button">執行程式碼</button>
     <h2>輸出結果：</h2>
@@ -48,25 +79,37 @@
         let pyodideReadyPromise = loadPyodide();
 
         async function runPython() {
-            // 等待 Pyodide 加載完成
             let pyodide = await pyodideReadyPromise;
             let code = document.getElementById("python-code").value;
             let outputElement = document.getElementById("output");
             outputElement.textContent = "";
 
-            // 捕捉 Python 的標準輸出
+            // 修改输出处理，添加换行符
+            let printOutput = (text) => {
+                outputElement.textContent += text + "\n";  // 在每次输出后添加换行符
+                outputElement.scrollTop = outputElement.scrollHeight;
+            };
+
             pyodide.setStdout({
-                batched: (text) => {
-                    outputElement.textContent += text;
-                }
+                batched: printOutput
             });
             pyodide.setStderr({
-                batched: (text) => {
-                    outputElement.textContent += text;
-                }
+                batched: printOutput
             });
 
+            // 实现交互式输入
+            pyodide.runPython(`
+                import sys
+                from js import prompt
+                
+                def custom_input(*args):
+                    return prompt("请输入：")
+                    
+                input = custom_input
+            `);
+
             try {
+                // 修改执行代码逻辑，直接执行整个代码块
                 await pyodide.runPythonAsync(code);
             } catch (err) {
                 outputElement.textContent += err;

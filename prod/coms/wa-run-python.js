@@ -50,10 +50,16 @@ export class RunPython extends LitElement {
 
   async runPythonCode(code) {
     try {
-      var self = this;
       window.mqtt = MQTTAppV2;
       mqtt.disconnectAll();
-      await this.pyodide.runPythonAsync(code);
+
+      let lines = code.split('\n');
+      for (let line of lines) {
+        line = line.trim();
+        if (line) {
+          await this.pyodide.runPythonAsync(line);
+        }
+      }
       return null;
     } catch (err) {
       if (this.pyodide && err.constructor.name === 'PythonError') {
@@ -76,26 +82,35 @@ export class RunPython extends LitElement {
     this.run = run;
 
     function stdout_func(msg) {
-      output.show(msg);
+      output.show(msg + "\n");
       output.scrollBottom();
     }
 
     function stderr_func(msg) {
-      output.show(msg);
+      output.show(msg + "\n");
       output.scrollBottom();
     }
 
     function stdin_func() {
-      var rtn = prompt("Python input() 请输入:") || "";
-      console.log("rtn:", rtn);
+      var rtn = prompt("请输入：") || "";
       return rtn;
     }
 
     run.addEventListener("click", async function () {
       output.cls();
       var newCode = editor.getCode();
-      //await self.runPythonCode(newCode);
-      await pyodide.runPythonAsync(newCode);
+      
+      await self.pyodide.runPython(`
+        import sys
+        from js import prompt
+        
+        def custom_input(*args):
+            return prompt("请输入：")
+            
+        input = custom_input
+      `);
+      
+      await self.runPythonCode(newCode);
     });
 
     let pyodide;
@@ -105,13 +120,12 @@ export class RunPython extends LitElement {
       stdout: stdout_func,
       stderr: stderr_func,
     });
+    
     run.style["color"] = "#eee";
     icon.style["fill"] = "#eee";
 
     this.pyodide = pyodide;
     this.output = output;
-    // Pyodide is now ready to use...
-    // console.log("pyodide ready !");
     run.removeAttribute("disabled");
   }
 
