@@ -132,10 +132,10 @@ class ImageSlider extends LitElement {
     this.lastIdx = -1;
     this.images = [
       ['python', 'Python 助教', '../coms/python_logo.png', '320px', 'https://md.webduino.io/s/jW7cOvXmg'],
-      ['wbitv1', '控制 Web:Bit v1', '../coms/wv1.png', '320px', 'https://md.webduino.io/s/-0mWxeDrn'],
       ['wbit', '控制 Web:Bit v2', '../coms/wv2.png', '320px', 'https://md.webduino.io/s/3Jh3hCuJO'],
-      ['mbit', '控制 Micro:Bit', '../coms/microbit.png', '320px', 'https://md.webduino.io/s/JEuvsZRg-'],
-      ['gpt4o-mini', 'GPT4o-mini', '../coms/gpt4o-mini.png', '320px', 'https://md.webduino.io/s/JEuvsZRg-'],
+      ['wbitv1', '控制 Web:Bit v1', '../coms/wv1.png', '320px', 'https://md.webduino.io/s/-0mWxeDrn'],
+      //['mbit', '控制 Micro:Bit', '../coms/microbit.png', '320px', 'https://md.webduino.io/s/JEuvsZRg-'],
+      //['gpt4o-mini', 'GPT4o-mini', '../coms/gpt4o-mini.png', '320px', 'https://md.webduino.io/s/JEuvsZRg-'],
     ];
     this.actor = this.images[this.index][0];
     this.actorName = '';
