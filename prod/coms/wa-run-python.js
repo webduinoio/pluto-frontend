@@ -3,7 +3,6 @@ import {
   html,
   css,
 } from "https://cdn.jsdelivr.net/gh/lit/dist@2/all/lit-all.min.js";
-import MQTTAppV2 from "../js/py-mqtt-v2.js";
 
 /**
  * filename：wa-run-python.js
@@ -50,18 +49,9 @@ export class RunPython extends LitElement {
 
   async runPythonCode(code) {
     try {
-      window.mqtt = MQTTAppV2;
-      mqtt.disconnectAll();
-
-      let lines = code.split('\n');
-      for (let line of lines) {
-        line = line.trim();
-        if (line) {
-          await this.pyodide.runPythonAsync(line);
-        }
-      }
-      return null;
+      return await this.pyodide.runPythonAsync(code);
     } catch (err) {
+      console.error("整體執行錯誤:", err);
       if (this.pyodide && err.constructor.name === 'PythonError') {
         var errMsg = err.message.split("\n").slice(-3).join(" ");
         var result = errMsg.replace(/(line )(\d+)/, function (match, p1, p2) {
